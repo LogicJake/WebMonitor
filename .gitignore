@@ -1,0 +1,10 @@
+
+*.sqlite
+
+__pycache__/
+
+log/
+
+\.env
+
+.vscode/
