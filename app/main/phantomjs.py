@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-24 13:33:44
+@LastEditTime: 2019-03-24 21:20:25
 '''
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -30,7 +30,7 @@ class PhantomJS():
                 res = content[0]
         except Exception as e:
             # driver.save_screenshot()
-            pass
+            raise Exception('获取不到文本信息')
 
         driver.close()
         return res

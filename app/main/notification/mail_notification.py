@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 20:23:33
-@LastEditTime: 2019-03-24 20:54:00
+@LastEditTime: 2019-03-24 22:21:07
 '''
 import smtplib
 from email.header import Header
@@ -16,8 +16,8 @@ from app.main.notification.notification import Notification
 
 class MailNotification(Notification):
     def __init__(self):
-        setting = MailSetting.query.first()
-        if setting.mail_sender != '默认用户名@mail.com:
+        setting = db.session.query(MailSetting).first()
+        if setting.mail_sender != '默认用户名@mail.com':
             self.mail_server = setting.mail_server
             self.mail_port = setting.mail_port
             self.mail_username = setting.mail_username
@@ -32,7 +32,6 @@ class MailNotification(Notification):
         message['From'] = Header('WebMonitor', 'utf-8')
         message['Subject'] = Header('检测到变化', 'utf-8')
 
-        # 异常处理
         smtpObj = smtplib.SMTP()
         smtpObj.connect(self.mail_server, self.mail_port)
         smtpObj.login(self.mail_username, self.mail_password)

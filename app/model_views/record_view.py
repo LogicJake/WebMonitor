@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-24 17:25:31
+@LastEditTime: 2019-03-24 21:25:55
 '''
 from flask_admin.contrib.sqla import ModelView
 from wtforms.validators import ValidationError
@@ -53,9 +53,11 @@ class RecordView(ModelView):
         'selector': '元素选择',
         'is_chrome': '是否使用无头浏览器',
         'frequency': '频率(分钟)',
-        'last_run': '上次运行时间'
+        'last_run': '上次运行时间',
+        'last_status': '上次运行结果'
     }
-    column_list = ['title', 'url',  'frequency', 'create_time', 'last_run']
+    column_list = ['title', 'url',  'frequency',
+                   'create_time', 'last_run', 'last_status']
 
     form_args = dict(
         url=dict(validators=[check_url]),
@@ -67,7 +69,7 @@ class RecordView(ModelView):
         'is_chrome': [('no', 'no'), ('yes', 'yes')]
     }
 
-    form_excluded_columns = ('last_run', 'create_time')
+    form_excluded_columns = ('last_run', 'create_time', 'last_status')
 
     form_widget_args = {
         'last_run': {
