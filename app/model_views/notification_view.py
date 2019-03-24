@@ -3,13 +3,9 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-24 18:19:40
+@LastEditTime: 2019-03-24 18:42:28
 '''
 from flask_admin.contrib.sqla import ModelView
-from wtforms.validators import ValidationError
-import requests
-from lxml import etree
-from app.main.phantomjs import PhantomJS
 
 
 class NotificationView(ModelView):

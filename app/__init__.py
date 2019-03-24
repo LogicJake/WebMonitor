@@ -7,6 +7,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
 from app.model_views.record_view import RecordView
 from app.model_views.notification_view import NotificationView
+from app.model_views.mail_setting_view import MailSettingView
+
 from flask_apscheduler import APScheduler
 
 
@@ -40,10 +42,18 @@ def create_app(config_name):
     # 视图
     from app.models.record import Record
     from app.models.notification import Notification
+    from app.models.mail_setting import MailSetting
     admin.add_view(RecordView(Record, db.session, name='监控管理'))
     admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
+    admin.add_view(MailSettingView(MailSetting, db.session, name='系统邮箱设置'))
 
     with app.test_request_context():
         db.create_all()
+        mail_setting = MailSetting.query.first()
+        # 插入默认邮箱配置
+        if mail_setting is None:
+            mail_setting = MailSetting()
+            db.session.add(mail_setting)
+            db.session.commit()
 
     return app
