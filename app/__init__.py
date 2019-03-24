@@ -6,19 +6,22 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
 from app.model_views.record_view import RecordView
+from flask_apscheduler import APScheduler
+
 
 db = SQLAlchemy()
 admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')
+scheduler = APScheduler()
+app = Flask(__name__)
 
 
 def create_app(config_name):
-    app = Flask(__name__)
     from config import config
     app.config.from_object(config[config_name])
 
-    # 注册蓝图
-    from app.main.views import bp as main_bp
-    app.register_blueprint(main_bp)
+    # # 注册蓝图
+    # from app.main.views import bp as main_bp
+    # app.register_blueprint(main_bp)
 
     # 注册数据库
     db.init_app(app)
@@ -28,6 +31,10 @@ def create_app(config_name):
         app,
         index_view=AdminIndexView(
             name='导航栏', template='admin/index.html', url='/'))
+
+    # 注册APScheduler
+    scheduler.init_app(app)
+    scheduler.start()
 
     from app.models.record import Record
     admin.add_view(RecordView(Record, db.session, name='监控管理'))
