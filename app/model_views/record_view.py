@@ -1,7 +1,15 @@
+#!/usr/bin/env python
+# coding=UTF-8
+'''
+@Author: LogicJake
+@Date: 2019-03-24 11:01:56
+@LastEditTime: 2019-03-24 13:31:41
+'''
 from flask_admin.contrib.sqla import ModelView
 from wtforms.validators import ValidationError
 import requests
 from lxml import etree
+from app.main.phantomjs import PhantomJS
 
 
 def check_url(form, field):
@@ -16,16 +24,24 @@ def check_selector(form, field):
     selector_type = form.selector_type.data
     selector = form.selector.data
     url = form.url.data
+    is_chrome = form.is_chrome.data
 
-    r = requests.get(url, timeout=10)
-    html = r.text
+    if not is_chrome:
+        r = requests.get(url, timeout=10)
+        html = r.text
 
-    if selector_type == 'xpath':
-        s = etree.HTML(html)
-        content = s.xpath(selector)
+        if selector_type == 'xpath':
+            s = etree.HTML(html)
+            content = s.xpath(selector)
 
-        if len(content) == 0:
-            raise ValidationError('获取不到文本信息，可以尝试选择使用无头浏览器再试一次')
+            if len(content) == 0:
+                raise ValidationError('获取不到文本信息，可以尝试选择使用无头浏览器再试一次')
+    else:
+        if selector_type == 'xpath':
+            phantomjs = PhantomJS()
+            res = phantomjs.get_by_xpath(url, selector)
+            if res is None:
+                raise ValidationError('获取不到文本信息，请确保xpath语句正确')
 
 
 class RecordView(ModelView):
@@ -35,9 +51,10 @@ class RecordView(ModelView):
         'create_time': '创建时间',
         'selector_type': '元素选择器类型',
         'selector': '元素选择',
-        'is_chrome': '是否使用无头浏览器'
+        'is_chrome': '是否使用无头浏览器',
+        'frequency': '频率(分钟)'
     }
-    column_list = ['title', 'url', 'create_time']
+    column_list = ['title', 'url',  'frequency', 'create_time']
     form_args = dict(
         url=dict(validators=[check_url]),
         selector=dict(validators=[check_selector]))

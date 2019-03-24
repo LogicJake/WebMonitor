@@ -8,3 +8,5 @@ log/
 \.env
 
 .vscode/
+
+ghostdriver\.log

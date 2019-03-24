@@ -5,7 +5,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
-from app.model_views import RecordView
+from app.model_views.record_view import RecordView
 
 db = SQLAlchemy()
 admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')

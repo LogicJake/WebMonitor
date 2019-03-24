@@ -9,4 +9,5 @@ class Record(db.Model):
     selector_type = db.Column(db.String(64), nullable=False)
     selector = db.Column(db.String(64), nullable=False)
     is_chrome = db.Column(db.String(64), nullable=False, default='no')
+    frequency = db.Column(db.Integer, nullable=False, default='5')
     create_time = db.Column(db.DateTime, nullable=True, default=datetime.now)
