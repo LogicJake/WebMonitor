@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+# coding=UTF-8
+'''
+@Author: LogicJake
+@Date: 2019-03-24 16:35:24
+@LastEditTime: 2019-03-24 18:03:21
+'''
 from .. import db
 from datetime import datetime
 from sqlalchemy import event

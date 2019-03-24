@@ -6,6 +6,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
 from app.model_views.record_view import RecordView
+from app.model_views.notification_view import NotificationView
 from flask_apscheduler import APScheduler
 
 
@@ -36,8 +37,11 @@ def create_app(config_name):
     scheduler.init_app(app)
     scheduler.start()
 
+    # 视图
     from app.models.record import Record
+    from app.models.notification import Notification
     admin.add_view(RecordView(Record, db.session, name='监控管理'))
+    admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
 
     with app.test_request_context():
         db.create_all()
