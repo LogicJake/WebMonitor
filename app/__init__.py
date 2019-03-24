@@ -22,9 +22,9 @@ def create_app(config_name):
     from config import config
     app.config.from_object(config[config_name])
 
-    # # 注册蓝图
-    # from app.main.views import bp as main_bp
-    # app.register_blueprint(main_bp)
+    # 注册蓝图
+    from app.main.views import bp as main_bp
+    app.register_blueprint(main_bp)
 
     # 注册数据库
     db.init_app(app)
