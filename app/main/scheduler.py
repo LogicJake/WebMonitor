@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-25 19:07:20
+@LastEditTime: 2019-03-25 19:40:07
 '''
 from datetime import datetime
 
@@ -11,7 +11,7 @@ from apscheduler.jobstores.base import JobLookupError
 
 from app import app, db, scheduler
 from app.main.selector.selector_handler import new_handler
-from app.models.record import Record
+from app.models.task import Task
 from app.models.notification import Notification
 
 
@@ -37,10 +37,10 @@ def wraper_msg(title, content):
 def send_message(id, content):
     from app.main.notification.notification_handler import new_handler
 
-    record = Record.query.filter_by(id=id).first()
-    mail = record.mail
-    telegrame = record.telegrame
-    title = record.title
+    task = Task.query.filter_by(id=id).first()
+    mail = task.mail
+    telegrame = task.telegrame
+    title = task.title
 
     header, content = wraper_msg(title, content)
 
@@ -66,10 +66,10 @@ def monitor(id, url, selector_type, selector, is_chrome):
         except Exception as e:
             status = repr(e)
 
-        record = Record.query.filter_by(id=id).first()
-        record.last_run = datetime.now()
-        record.last_status = status
-        db.session.add(record)
+        task = Task.query.filter_by(id=id).first()
+        task.last_run = datetime.now()
+        task.last_status = status
+        db.session.add(task)
         db.session.commit()
 
 
