@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-25 13:25:32
+@LastEditTime: 2019-03-25 16:25:57
 '''
 from datetime import datetime
 
@@ -27,14 +27,18 @@ def get_content(url, is_chrome, selector_type, selector):
             return selector_handler.get_by_xpath(url, selector)
 
 
+def send_message(id, content):
+    from app.main.notification.notification_handler import new_handler
+    handler = new_handler('mail')
+    handler.send('835410808@qq.com', content)
+
+
 def monitor(id, url, selector_type, selector, is_chrome):
     with app.app_context():
         status = '成功'
         try:
             content = get_content(url, is_chrome, selector_type, selector)
-            from app.main.notification.notification_handler import new_handler
-            handler = new_handler('mail')
-            handler.send('835410808@qq.com', content)
+            send_message(id, content)
         except Exception as e:
             status = repr(e)
 

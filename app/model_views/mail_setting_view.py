@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 18:41:42
-@LastEditTime: 2019-03-25 11:10:04
+@LastEditTime: 2019-03-25 16:23:09
 '''
 
 from flask_admin.contrib.sqla import ModelView
@@ -15,7 +15,7 @@ class MailSettingView(ModelView):
         'mail_port': '端口',
         'mail_username': '用户名',
         'mail_password': '密码',
-        'mail_sender': '发送人邮箱'
+        'mail_sender': '发件人'
     }
 
     can_create = False

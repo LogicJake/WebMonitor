@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-25 13:20:03
+@LastEditTime: 2019-03-25 17:05:27
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -57,9 +57,14 @@ class RecordView(ModelView):
         'title', 'url', 'frequency', 'create_time', 'last_run', 'last_status'
     ]
 
-    form_args = dict(
-        url=dict(validators=[check_url]),
-        selector=dict(validators=[check_selector]))
+    form_args = {
+        'url': {
+            'validators': [check_url],
+        },
+        'selector': {
+            'validators': [check_selector]
+        }
+    }
 
     form_choices = {
         'selector_type': [('xpath', 'xpath'), ('css selector',
