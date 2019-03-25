@@ -26,7 +26,7 @@ def check_selector(form, field):
     url = form.url.data
     is_chrome = form.is_chrome.data
 
-    if not is_chrome:
+    if is_chrome == 'no':
         r = requests.get(url, timeout=10)
         html = r.text
 
@@ -56,8 +56,9 @@ class RecordView(ModelView):
         'last_run': '上次运行时间',
         'last_status': '上次运行结果'
     }
-    column_list = ['title', 'url',  'frequency',
-                   'create_time', 'last_run', 'last_status']
+    column_list = [
+        'title', 'url', 'frequency', 'create_time', 'last_run', 'last_status'
+    ]
 
     form_args = dict(
         url=dict(validators=[check_url]),
