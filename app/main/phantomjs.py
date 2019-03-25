@@ -3,12 +3,9 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-24 21:20:25
+@LastEditTime: 2019-03-25 11:09:15
 '''
 from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-import time
 from lxml import etree
 import warnings
 
@@ -38,5 +35,4 @@ class PhantomJS():
 
 if __name__ == "__main__":
     phantomjs = PhantomJS()
-    phantomjs.get_by_xpath('https://www.baidu.com/',
-                           '//*[@id="su"]/@value')
+    phantomjs.get_by_xpath('https://www.baidu.com/', '//*[@id="su"]/@value')

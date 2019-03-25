@@ -3,11 +3,9 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 18:29:53
-@LastEditTime: 2019-03-24 18:56:51
+@LastEditTime: 2019-03-25 11:10:18
 '''
 from .. import db
-from datetime import datetime
-from sqlalchemy import event
 
 
 class MailSetting(db.Model):

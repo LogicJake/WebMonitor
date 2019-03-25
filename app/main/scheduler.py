@@ -3,15 +3,17 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-24 22:27:26
+@LastEditTime: 2019-03-25 11:09:50
 '''
 from datetime import datetime
 
-from apscheduler.jobstores.base import JobLookupError
+import requests
 
+import etree
 from app import app, db, scheduler
 from app.main.phantomjs import PhantomJS
 from app.models.record import Record
+from apscheduler.jobstores.base import JobLookupError
 
 
 def get_content(url, is_chrome, selector_type, selector):
@@ -54,12 +56,19 @@ def monitor(id, url, selector_type, selector, is_chrome):
 
 
 def add_job(id, url, selector_type, selector, is_chrome, interval):
-    scheduler.add_job(func=monitor,
-                      args=(id, url, selector_type, selector, is_chrome,),
-                      trigger='interval',
-                      minutes=interval,
-                      id='task_{}'.format(id),
-                      replace_existing=True)
+    scheduler.add_job(
+        func=monitor,
+        args=(
+            id,
+            url,
+            selector_type,
+            selector,
+            is_chrome,
+        ),
+        trigger='interval',
+        minutes=interval,
+        id='task_{}'.format(id),
+        replace_existing=True)
 
 
 def remove_job(id):

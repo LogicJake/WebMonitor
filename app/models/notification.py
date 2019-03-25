@@ -3,11 +3,9 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 18:03:07
-@LastEditTime: 2019-03-24 18:17:07
+@LastEditTime: 2019-03-25 11:10:26
 '''
 from .. import db
-from datetime import datetime
-from sqlalchemy import event
 
 
 class Notification(db.Model):
