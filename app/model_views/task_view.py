@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-25 19:51:16
+@LastEditTime: 2019-03-25 20:08:53
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -44,23 +44,25 @@ def check_selector(form, field):
 class TaskView(ModelView):
     column_labels = {
         'id': '任务id',
-        'title': '任务名称',
+        'name': '任务名称',
         'url': '监控网址',
         'create_time': '创建时间',
         'selector_type': '元素选择器类型',
         'selector': '元素选择',
         'is_chrome': '是否使用无头浏览器',
         'frequency': '频率(分钟)',
-        'last_run': '上次运行时间',
-        'last_status': '上次运行结果',
         'mail': '邮件提醒',
         'telegrame': 'telegrame提醒',
-        'work_status': '任务状态'
     }
 
     column_list = [
-        'id', 'title', 'url', 'frequency', 'create_time', 'mail', 'telegrame',
-        'last_run', 'last_status', 'work_status'
+        'id',
+        'name',
+        'url',
+        'frequency',
+        'create_time',
+        'mail',
+        'telegrame',
     ]
 
     form_args = {
@@ -78,7 +80,6 @@ class TaskView(ModelView):
         'is_chrome': [('no', 'no'), ('yes', 'yes')],
         'mail': [('yes', 'yes'), ('no', 'no')],
         'telegrame': [('no', 'no'), ('yes', 'yes')],
-        'work_status': [('run', 'run'), ('stop', 'stop')]
     }
 
-    form_excluded_columns = ('last_run', 'create_time', 'last_status')
+    form_excluded_columns = ('create_time')

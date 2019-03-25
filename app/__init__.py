@@ -8,7 +8,7 @@ from flask_admin import Admin, AdminIndexView
 from app.model_views.task_view import TaskView
 from app.model_views.notification_view import NotificationView
 from app.model_views.mail_setting_view import MailSettingView
-
+from app.model_views.task_status_view import TaskStatusView
 from flask_apscheduler import APScheduler
 
 db = SQLAlchemy()
@@ -42,7 +42,9 @@ def create_app(config_name):
     from app.models.task import Task
     from app.models.mail_setting import MailSetting
     from app.models.notification import Notification
+    from app.models.task_status import TaskStatus
 
+    admin.add_view(TaskStatusView(TaskStatus, db.session, name='任务状态'))
     admin.add_view(TaskView(Task, db.session, name='任务管理'))
     admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
     admin.add_view(MailSettingView(MailSetting, db.session, name='系统邮箱设置'))

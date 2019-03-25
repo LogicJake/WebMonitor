@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-25 19:40:07
+@LastEditTime: 2019-03-25 21:03:38
 '''
 from datetime import datetime
 
@@ -11,8 +11,9 @@ from apscheduler.jobstores.base import JobLookupError
 
 from app import app, db, scheduler
 from app.main.selector.selector_handler import new_handler
-from app.models.task import Task
 from app.models.notification import Notification
+from app.models.task import Task
+from app.models.task_status import TaskStatus
 
 
 def get_content(url, is_chrome, selector_type, selector):
@@ -40,9 +41,9 @@ def send_message(id, content):
     task = Task.query.filter_by(id=id).first()
     mail = task.mail
     telegrame = task.telegrame
-    title = task.title
+    name = task.name
 
-    header, content = wraper_msg(title, content)
+    header, content = wraper_msg(name, content)
 
     if mail == 'yes':
         handler = new_handler('mail')
@@ -66,10 +67,10 @@ def monitor(id, url, selector_type, selector, is_chrome):
         except Exception as e:
             status = repr(e)
 
-        task = Task.query.filter_by(id=id).first()
-        task.last_run = datetime.now()
-        task.last_status = status
-        db.session.add(task)
+        task_status = TaskStatus.query.filter_by(id=id).first()
+        task_status.last_run = datetime.now()
+        task_status.last_status = status
+        db.session.add(task_status)
         db.session.commit()
 
 
@@ -94,11 +95,3 @@ def remove_job(id):
         scheduler.remove_job('task_{}'.format(id))
     except JobLookupError:
         pass
-
-
-def pause_job(id):
-    scheduler.pause_job('task_{}'.format(id))
-
-
-def resume_job(id):
-    scheduler.resume_job('task_{}'.format(id))
