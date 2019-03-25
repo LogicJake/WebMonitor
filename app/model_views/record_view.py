@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-24 21:25:55
+@LastEditTime: 2019-03-25 12:18:44
 '''
 from flask_admin.contrib.sqla import ModelView
 from wtforms.validators import ValidationError
@@ -21,27 +21,30 @@ def check_url(form, field):
 
 
 def check_selector(form, field):
-    selector_type = form.selector_type.data
-    selector = form.selector.data
-    url = form.url.data
-    is_chrome = form.is_chrome.data
+    try:
+        selector_type = form.selector_type.data
+        selector = form.selector.data
+        url = form.url.data
+        is_chrome = form.is_chrome.data
 
-    if is_chrome == 'no':
-        r = requests.get(url, timeout=10)
-        html = r.text
+        if is_chrome == 'no':
+            r = requests.get(url, timeout=10)
+            html = r.text
 
-        if selector_type == 'xpath':
-            s = etree.HTML(html)
-            content = s.xpath(selector)
+            if selector_type == 'xpath':
+                s = etree.HTML(html)
+                content = s.xpath(selector)
 
-            if len(content) == 0:
-                raise ValidationError('获取不到文本信息，可以尝试选择使用无头浏览器再试一次')
-    else:
-        if selector_type == 'xpath':
-            phantomjs = PhantomJS()
-            res = phantomjs.get_by_xpath(url, selector)
-            if res is None:
-                raise ValidationError('获取不到文本信息，请确保xpath语句正确')
+                print(type(content[0]))
+                if len(content) == 0:
+                    raise ValidationError('获取不到文本信息，可以尝试选择使用无头浏览器再试一次')
+        else:
+            if selector_type == 'xpath':
+                phantomjs = PhantomJS()
+                phantomjs.get_by_xpath(url, selector)
+                # raise ValidationError('获取不到文本信息，请确保xpath语句正确')
+    except Exception as e:
+        raise ValidationError(str(e))
 
 
 class RecordView(ModelView):

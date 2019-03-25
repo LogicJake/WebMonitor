@@ -3,13 +3,13 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-25 11:09:50
+@LastEditTime: 2019-03-25 12:15:54
 '''
 from datetime import datetime
 
 import requests
 
-import etree
+from lxml import etree
 from app import app, db, scheduler
 from app.main.phantomjs import PhantomJS
 from app.models.record import Record
