@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-25 19:39:17
+@LastEditTime: 2019-03-25 19:51:16
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -43,7 +43,8 @@ def check_selector(form, field):
 
 class TaskView(ModelView):
     column_labels = {
-        'title': '目标名称',
+        'id': '任务id',
+        'title': '任务名称',
         'url': '监控网址',
         'create_time': '创建时间',
         'selector_type': '元素选择器类型',
@@ -58,7 +59,7 @@ class TaskView(ModelView):
     }
 
     column_list = [
-        'title', 'url', 'frequency', 'create_time', 'mail', 'telegrame',
+        'id', 'title', 'url', 'frequency', 'create_time', 'mail', 'telegrame',
         'last_run', 'last_status', 'work_status'
     ]
 

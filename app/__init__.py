@@ -43,7 +43,7 @@ def create_app(config_name):
     from app.models.mail_setting import MailSetting
     from app.models.notification import Notification
 
-    admin.add_view(TaskView(Task, db.session, name='监控管理'))
+    admin.add_view(TaskView(Task, db.session, name='任务管理'))
     admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
     admin.add_view(MailSettingView(MailSetting, db.session, name='系统邮箱设置'))
 
