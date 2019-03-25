@@ -11,7 +11,6 @@ from app.model_views.mail_setting_view import MailSettingView
 
 from flask_apscheduler import APScheduler
 
-
 db = SQLAlchemy()
 admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')
 scheduler = APScheduler()
@@ -41,8 +40,9 @@ def create_app(config_name):
 
     # 视图
     from app.models.record import Record
-    from app.models.notification import Notification
     from app.models.mail_setting import MailSetting
+    from app.models.notification import Notification
+
     admin.add_view(RecordView(Record, db.session, name='监控管理'))
     admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
     admin.add_view(MailSettingView(MailSetting, db.session, name='系统邮箱设置'))
@@ -54,6 +54,26 @@ def create_app(config_name):
         if mail_setting is None:
             mail_setting = MailSetting()
             db.session.add(mail_setting)
+            db.session.commit()
+
+        notis = Notification.query.all()
+        mail_exist = False
+        telegrame_exist = False
+
+        if len(notis) != 0:
+            for noti in notis:
+                if noti.type == 'mail':
+                    mail_exist = True
+                if noti.type == 'telegrame':
+                    telegrame_exist = True
+
+        if not mail_exist:
+            mail_noti = Notification('mail')
+            db.session.add(mail_noti)
+            db.session.commit()
+        if not telegrame_exist:
+            telegrame_noti = Notification('telegrame')
+            db.session.add(telegrame_noti)
             db.session.commit()
 
     return app

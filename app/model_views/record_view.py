@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-25 17:05:27
+@LastEditTime: 2019-03-25 18:50:04
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -51,10 +51,14 @@ class RecordView(ModelView):
         'is_chrome': '是否使用无头浏览器',
         'frequency': '频率(分钟)',
         'last_run': '上次运行时间',
-        'last_status': '上次运行结果'
+        'last_status': '上次运行结果',
+        'mail': '邮件提醒',
+        'telegrame': 'telegrame提醒'
     }
+
     column_list = [
-        'title', 'url', 'frequency', 'create_time', 'last_run', 'last_status'
+        'title', 'url', 'frequency', 'create_time', 'mail', 'telegrame',
+        'last_run', 'last_status'
     ]
 
     form_args = {
@@ -69,16 +73,9 @@ class RecordView(ModelView):
     form_choices = {
         'selector_type': [('xpath', 'xpath'), ('css selector',
                                                'css selector')],
-        'is_chrome': [('no', 'no'), ('yes', 'yes')]
+        'is_chrome': [('no', 'no'), ('yes', 'yes')],
+        'mail': [('yes', 'yes'), ('no', 'no')],
+        'telegrame': [('no', 'no'), ('yes', 'yes')]
     }
 
     form_excluded_columns = ('last_run', 'create_time', 'last_status')
-
-    form_widget_args = {
-        'last_run': {
-            'readonly': True
-        },
-        'create_time': {
-            'readonly': True
-        },
-    }

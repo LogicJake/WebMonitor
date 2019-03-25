@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-25 16:25:57
+@LastEditTime: 2019-03-25 19:07:20
 '''
 from datetime import datetime
 
@@ -12,6 +12,7 @@ from apscheduler.jobstores.base import JobLookupError
 from app import app, db, scheduler
 from app.main.selector.selector_handler import new_handler
 from app.models.record import Record
+from app.models.notification import Notification
 
 
 def get_content(url, is_chrome, selector_type, selector):
@@ -27,10 +28,33 @@ def get_content(url, is_chrome, selector_type, selector):
             return selector_handler.get_by_xpath(url, selector)
 
 
+def wraper_msg(title, content):
+    header = title
+    content = content
+    return header, content
+
+
 def send_message(id, content):
     from app.main.notification.notification_handler import new_handler
-    handler = new_handler('mail')
-    handler.send('835410808@qq.com', content)
+
+    record = Record.query.filter_by(id=id).first()
+    mail = record.mail
+    telegrame = record.telegrame
+    title = record.title
+
+    header, content = wraper_msg(title, content)
+
+    if mail == 'yes':
+        handler = new_handler('mail')
+        mail_info = Notification.query.filter_by(type='mail').first()
+        mail_address = mail_info.number
+        handler.send(mail_address, header, content)
+
+    if telegrame == 'yes':
+        handler = new_handler('telegrame')
+        mail_info = Notification.query.filter_by(type='telegrame').first()
+        mail_address = mail_info.number
+        handler.send(mail_address, header, content)
 
 
 def monitor(id, url, selector_type, selector, is_chrome):

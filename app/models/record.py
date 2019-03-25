@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-25 12:59:46
+@LastEditTime: 2019-03-25 18:29:02
 '''
 from .. import db
 from datetime import datetime
@@ -21,6 +21,9 @@ class Record(db.Model):
     create_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
     last_run = db.Column(db.DateTime, nullable=False, default=datetime.now)
     last_status = db.Column(db.String(64), nullable=False, default='创建任务成功')
+    # 通知方式
+    mail = db.Column(db.String(32), nullable=False, default='yes')
+    telegrame = db.Column(db.String(32), nullable=False, default='no')
 
 
 def after_insert_listener(mapper, connection, target):

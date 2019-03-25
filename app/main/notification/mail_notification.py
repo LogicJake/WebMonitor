@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 20:23:33
-@LastEditTime: 2019-03-24 22:21:07
+@LastEditTime: 2019-03-25 19:00:02
 '''
 import smtplib
 from email.header import Header
@@ -26,11 +26,13 @@ class MailNotification(Notification):
         else:
             raise Exception('没有设置系统邮箱，无法发送邮件通知')
 
-    def send(self, to, content):
+    def send(self, to, header, content):
+        if to == '默认':
+            raise Exception('没有设置通知邮箱，无法发送邮件通知')
         message = MIMEText(content, 'plain', 'utf-8')
         message['To'] = Header(to, 'utf-8')
         message['From'] = Header('WebMonitor', 'utf-8')
-        message['Subject'] = Header('检测到变化', 'utf-8')
+        message['Subject'] = Header(header, 'utf-8')
 
         smtpObj = smtplib.SMTP()
         smtpObj.connect(self.mail_server, self.mail_port)

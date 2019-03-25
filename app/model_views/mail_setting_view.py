@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 18:41:42
-@LastEditTime: 2019-03-25 16:23:09
+@LastEditTime: 2019-03-25 18:48:42
 '''
 
 from flask_admin.contrib.sqla import ModelView
@@ -19,7 +19,6 @@ class MailSettingView(ModelView):
     }
 
     can_create = False
-    can_edit = True
     can_delete = False
 
     column_descriptions = {'mail_sender': '一般为邮箱地址', 'mail_password': '授权码'}
