@@ -3,18 +3,22 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-25 11:09:15
+@LastEditTime: 2019-03-25 11:23:18
 '''
 from selenium import webdriver
 from lxml import etree
 import warnings
-
+from wtforms.validators import ValidationError
+from selenium.common.exceptions import WebDriverException
 warnings.filterwarnings("ignore")
 
 
 class PhantomJS():
     def get_by_xpath(self, url, xpath):
-        driver = webdriver.PhantomJS()
+        try:
+            driver = webdriver.PhantomJS()
+        except WebDriverException as e:
+            raise ValidationError(str(e))
         driver.get(url)
 
         html = driver.page_source
