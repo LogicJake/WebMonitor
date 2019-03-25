@@ -20,8 +20,14 @@ def after_update_listener(mapper, connection, target):
     from app.main.scheduler import add_job, remove_job
 
     if target.task_status == 'run':
-        add_job(target.id, target.url, target.selector_type, target.selector,
-                target.is_chrome, target.frequency)
+        from app.models.task import Task
+        task = Task.__table__
+
+        select_res = connection.execute(
+            task.select().where(Task.id == target.id))
+
+        for t in select_res:
+            add_job(target.id, t[2], t[3], t[4], t[5], t[6])
     else:
         remove_job(target.id)
 

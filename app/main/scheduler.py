@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-25 21:03:38
+@LastEditTime: 2019-03-25 21:56:49
 '''
 from datetime import datetime
 
@@ -95,3 +95,12 @@ def remove_job(id):
         scheduler.remove_job('task_{}'.format(id))
     except JobLookupError:
         pass
+
+
+def is_job_exist(id):
+    jobs = scheduler.get_jobs()
+    for job in jobs:
+        if job.id == 'task_{}'.format(id):
+            return True
+
+    return False

@@ -58,6 +58,7 @@ def create_app(config_name):
             db.session.add(mail_setting)
             db.session.commit()
 
+        # 插入默认通知方式
         notis = Notification.query.all()
         mail_exist = False
         telegrame_exist = False
@@ -77,5 +78,17 @@ def create_app(config_name):
             telegrame_noti = Notification('telegrame')
             db.session.add(telegrame_noti)
             db.session.commit()
+
+        # 在系统重启时重启任务
+        from app.main.scheduler import add_job, is_job_exist
+        task_statuss = TaskStatus.query.all()
+        for task_status in task_statuss:
+            if task_status.task_status == 'run':
+                task_id = task_status.task_id
+                if not is_job_exist(task_id):
+                    task = Task.query.filter_by(id=task_id).first()
+                    add_job(task.id, task.url, task.selector_type,
+                            task.selector, task.is_chrome, task.frequency)
+        print(scheduler.get_jobs())
 
     return app
