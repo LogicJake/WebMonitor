@@ -10,6 +10,8 @@ from app.model_views.notification_view import NotificationView
 from app.model_views.mail_setting_view import MailSettingView
 from app.model_views.task_status_view import TaskStatusView
 from flask_apscheduler import APScheduler
+import psutil
+import os
 
 db = SQLAlchemy()
 admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')
@@ -79,16 +81,19 @@ def create_app(config_name):
             db.session.add(telegrame_noti)
             db.session.commit()
 
-        # 在系统重启时重启任务
-        from app.main.scheduler import add_job, is_job_exist
-        task_statuss = TaskStatus.query.all()
-        for task_status in task_statuss:
-            if task_status.task_status == 'run':
-                task_id = task_status.task_id
-                if not is_job_exist(task_id):
+        ppid = psutil.Process(os.getppid())
+        ppid_name = ppid.name()
+        # 加这一步判断主要是因为，
+        # 在debug模式下，会启动另外一个线程来自动重载，
+        # 这样会导致在两个线程中都启动任务，造成重复
+        if 'python' not in ppid_name:
+            # 在系统重启时重启任务
+            from app.main.scheduler import add_job
+            task_statuss = TaskStatus.query.all()
+            for task_status in task_statuss:
+                if task_status.task_status == 'run':
+                    task_id = task_status.task_id
                     task = Task.query.filter_by(id=task_id).first()
                     add_job(task.id, task.url, task.selector_type,
                             task.selector, task.is_chrome, task.frequency)
-        print(scheduler.get_jobs())
-
     return app
