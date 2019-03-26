@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-25 12:31:35
-@LastEditTime: 2019-03-25 13:19:30
+@LastEditTime: 2019-03-26 16:18:16
 '''
 import requests
 from lxml import etree
@@ -22,6 +22,8 @@ class RequestsSelector(Selector):
 
         if len(content) != 0:
             res = content[0]
+            if type(res) == etree._Element:
+                res = res.text
         else:
             raise Exception('无法获取文本信息')
 
