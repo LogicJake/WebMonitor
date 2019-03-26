@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 17:31:42
+@LastEditTime: 2019-03-26 18:24:16
 '''
 from datetime import datetime
 
@@ -73,7 +73,7 @@ def monitor(id):
         except Exception as e:
             status = repr(e)
 
-        task_status = TaskStatus.query.filter_by(id=id).first()
+        task_status = TaskStatus.query.filter_by(task_id=id).first()
         task_status.last_run = datetime.now()
         task_status.last_status = status
         db.session.add(task_status)
