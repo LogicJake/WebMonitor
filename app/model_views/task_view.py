@@ -3,13 +3,14 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-26 18:34:24
+@LastEditTime: 2019-03-26 20:51:37
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
 from wtforms.validators import ValidationError
-
+from flask_login import current_user
 from app.main.selector.selector_handler import new_handler
+from flask import redirect, url_for
 
 
 def check_url(form, field):
@@ -59,6 +60,12 @@ def check_selector(form, field):
 
 
 class TaskView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('main.login'))
+
     column_labels = {
         'id': '任务id',
         'name': '任务名称',

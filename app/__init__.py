@@ -3,25 +3,42 @@
 # @Date:   2019-02-15 19:33:23
 # @Last Modified time: 2019-03-13 17:06:37
 from flask import Flask
+from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
 from app.model_views.task_view import TaskView
 from app.model_views.notification_view import NotificationView
 from app.model_views.mail_setting_view import MailSettingView
 from app.model_views.task_status_view import TaskStatusView
+from app.model_views.user_view import UserView
+
 from flask_apscheduler import APScheduler
+from flask_bootstrap import Bootstrap
+
 import psutil
 import os
 
 db = SQLAlchemy()
+login = LoginManager()
 admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')
 scheduler = APScheduler()
 app = Flask(__name__)
+bootstrap = Bootstrap()
 
 
 def create_app(config_name):
     from config import config
     app.config.from_object(config[config_name])
+
+    # 注册flask-login
+    login.init_app(app)
+
+    # bootstrap
+    bootstrap.init_app(app)
+
+    @login.user_loader
+    def load_user(user_id):
+        return User.query.get(user_id)
 
     # 注册蓝图
     from app.main.views import bp as main_bp
@@ -45,11 +62,13 @@ def create_app(config_name):
     from app.models.mail_setting import MailSetting
     from app.models.notification import Notification
     from app.models.task_status import TaskStatus
+    from app.models.user import User
 
     admin.add_view(TaskStatusView(TaskStatus, db.session, name='任务状态'))
     admin.add_view(TaskView(Task, db.session, name='任务管理'))
     admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
     admin.add_view(MailSettingView(MailSetting, db.session, name='系统邮箱设置'))
+    admin.add_view(UserView(User, db.session, name='账号密码管理'))
 
     with app.test_request_context():
         db.create_all()
@@ -58,6 +77,18 @@ def create_app(config_name):
         if mail_setting is None:
             mail_setting = MailSetting()
             db.session.add(mail_setting)
+            db.session.commit()
+
+        # 初始化账号密码
+        user = User.query.first()
+        if user is None:
+            import random
+            import string
+            random_password = ''.join(
+                random.sample(string.ascii_letters + string.digits, 10))
+
+            user = User('admin', random_password)
+            db.session.add(user)
             db.session.commit()
 
         # 插入默认通知方式

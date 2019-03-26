@@ -1,0 +1,22 @@
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css">
+</head>
+
+<body>
+    <h1 align="center">登录</h1>
+    {% if error %}
+    <p class=error><strong>Error:</strong> {{ error }}
+        {% endif %}
+        {% import 'bootstrap/wtf.html' as wtf %}
+        <div align="center">
+
+            <form action="{{ url_for("main.login") }}" method="post" name="login">
+                {{ form.csrf_token }}
+                {{ wtf.form_field(form.username) }}
+                {{ wtf.form_field(form.password) }}
+                {{ wtf.form_field(form.remember_me) }}
+                {{ wtf.form_field(form.submit) }}
+            </form>
+        </div>
+</body>
