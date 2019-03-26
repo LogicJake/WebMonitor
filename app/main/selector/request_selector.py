@@ -3,28 +3,34 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-25 12:31:35
-@LastEditTime: 2019-03-26 16:18:16
+@LastEditTime: 2019-03-26 17:00:29
 '''
 import requests
-from lxml import etree
 
-from app.main.selector.selector import Selector
+from app.main.selector.selector import Selector as FatherSelector
+from scrapy.selector import Selector
 
 
-class RequestsSelector(Selector):
-    def get_by_xpath(self, url, xpath):
+class RequestsSelector(FatherSelector):
+    def get_html(self, url):
         r = requests.get(url, timeout=10)
         html = r.text
-        s = etree.HTML(html)
-        res = None
+        return html
 
-        content = s.xpath(xpath)
+    def get_by_xpath(self, url, xpath):
+        html = self.get_html(url)
+        res = Selector(text=html).xpath(xpath).extract()
 
-        if len(content) != 0:
-            res = content[0]
-            if type(res) == etree._Element:
-                res = res.text
+        if len(res) != 0:
+            return res[0]
         else:
             raise Exception('无法获取文本信息')
 
-        return res
+    def get_by_css(self, url, xpath):
+        html = self.get_html(url)
+        res = Selector(text=html).css(xpath).extract()
+
+        if len(res) != 0:
+            return res[0]
+        else:
+            raise Exception('无法获取文本信息')

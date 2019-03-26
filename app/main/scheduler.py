@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 15:51:46
+@LastEditTime: 2019-03-26 17:31:42
 '''
 from datetime import datetime
 
@@ -64,7 +64,6 @@ def monitor(id):
             last_content = last.content
             content = get_content(url, is_chrome, selector_type, selector,
                                   regular_expression)
-            print(rule, content, last_content)
             if is_changed(rule, content, last_content):
                 send_message(content, name, mail, wechat)
                 last.content = content

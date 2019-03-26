@@ -22,11 +22,19 @@ def get_content(url,
 
         if selector_type == 'xpath':
             content = selector_handler.get_by_xpath(url, selector)
+        elif selector_type == 'css':
+            content = selector_handler.get_by_css(url, selector)
+        else:
+            raise Exception('无效选择器')
     else:
         selector_handler = new_handler('phantomjs')
 
         if selector_type == 'xpath':
             content = selector_handler.get_by_xpath(url, selector)
+        elif selector_type == 'css':
+            content = selector_handler.get_by_css(url, selector)
+        else:
+            raise Exception('无效选择器')
 
     if regular_expression:
         content = extract_by_re(content, regular_expression)

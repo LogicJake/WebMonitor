@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-26 14:55:27
+@LastEditTime: 2019-03-26 16:58:01
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -32,11 +32,19 @@ def check_selector(form, field):
 
             if selector_type == 'xpath':
                 selector_handler.get_by_xpath(url, selector)
+            elif selector_type == 'css':
+                selector_handler.get_by_css(url, selector)
+            else:
+                raise Exception('无效选择器')
         else:
             selector_handler = new_handler('phantomjs')
 
             if selector_type == 'xpath':
                 selector_handler.get_by_xpath(url, selector)
+            elif selector_type == 'css':
+                selector_handler.get_by_css(url, selector)
+            else:
+                raise Exception('无效选择器')
     except Exception as e:
         raise ValidationError(repr(e))
 
@@ -76,8 +84,7 @@ class TaskView(ModelView):
     }
 
     form_choices = {
-        'selector_type': [('xpath', 'xpath'), ('css selector',
-                                               'css selector')],
+        'selector_type': [('xpath', 'xpath'), ('css', 'css selector')],
         'is_chrome': [('no', 'no'), ('yes', 'yes')],
         'mail': [('yes', 'yes'), ('no', 'no')],
         'wechat': [('no', 'no'), ('yes', 'yes')],

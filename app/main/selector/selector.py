@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-25 12:23:59
-@LastEditTime: 2019-03-25 12:24:39
+@LastEditTime: 2019-03-26 16:45:34
 '''
 from abc import ABCMeta, abstractmethod
 
@@ -13,4 +13,8 @@ class Selector():
 
     @abstractmethod
     def get_by_xpath(self):
+        pass
+
+    @abstractmethod
+    def get_by_css(self):
         pass
