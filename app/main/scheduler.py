@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 09:09:13
+@LastEditTime: 2019-03-26 09:57:08
 '''
 from datetime import datetime
 
@@ -40,7 +40,7 @@ def send_message(id, content):
 
     task = Task.query.filter_by(id=id).first()
     mail = task.mail
-    telegrame = task.telegrame
+    wechat = task.wechat
     name = task.name
 
     header, content = wraper_msg(name, content)
@@ -51,11 +51,11 @@ def send_message(id, content):
         mail_address = mail_info.number
         handler.send(mail_address, header, content)
 
-    if telegrame == 'yes':
-        handler = new_handler('telegrame')
-        mail_info = Notification.query.filter_by(type='telegrame').first()
-        mail_address = mail_info.number
-        handler.send(mail_address, header, content)
+    if wechat == 'yes':
+        handler = new_handler('wechat')
+        wechat_info = Notification.query.filter_by(type='wechat').first()
+        key = wechat_info.number
+        handler.send(key, header, content)
 
 
 def monitor(id, url, selector_type, selector, is_chrome):

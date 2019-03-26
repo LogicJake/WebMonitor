@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-25 20:08:53
+@LastEditTime: 2019-03-26 09:35:16
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -52,7 +52,7 @@ class TaskView(ModelView):
         'is_chrome': '是否使用无头浏览器',
         'frequency': '频率(分钟)',
         'mail': '邮件提醒',
-        'telegrame': 'telegrame提醒',
+        'wechat': '微信提醒',
     }
 
     column_list = [
@@ -62,7 +62,7 @@ class TaskView(ModelView):
         'frequency',
         'create_time',
         'mail',
-        'telegrame',
+        'wechat',
     ]
 
     form_args = {
@@ -79,7 +79,7 @@ class TaskView(ModelView):
                                                'css selector')],
         'is_chrome': [('no', 'no'), ('yes', 'yes')],
         'mail': [('yes', 'yes'), ('no', 'no')],
-        'telegrame': [('no', 'no'), ('yes', 'yes')],
+        'wechat': [('no', 'no'), ('yes', 'yes')],
     }
 
     form_excluded_columns = ('create_time')

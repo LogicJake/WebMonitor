@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-26 09:20:58
+@LastEditTime: 2019-03-26 10:08:56
 '''
 from .. import db
 from datetime import datetime
@@ -13,16 +13,16 @@ from sqlalchemy import event
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
-    url = db.Column(db.String(64), nullable=False)
-    selector_type = db.Column(db.String(64), nullable=False, default='xpath')
-    selector = db.Column(db.String(64), nullable=False)
-    is_chrome = db.Column(db.String(64), nullable=False, default='no')
+    url = db.Column(db.String(128), nullable=False)
+    selector_type = db.Column(db.String(32), nullable=False, default='xpath')
+    selector = db.Column(db.String(128), nullable=False)
+    is_chrome = db.Column(db.String(32), nullable=False, default='no')
     frequency = db.Column(db.Integer, nullable=False, default='5')
     create_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     # 通知方式
     mail = db.Column(db.String(32), nullable=False, default='yes')
-    telegrame = db.Column(db.String(32), nullable=False, default='no')
+    wechat = db.Column(db.String(32), nullable=False, default='no')
 
 
 def after_insert_listener(mapper, connection, target):

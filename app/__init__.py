@@ -63,22 +63,22 @@ def create_app(config_name):
         # 插入默认通知方式
         notis = Notification.query.all()
         mail_exist = False
-        telegrame_exist = False
+        wechat_exist = False
 
         if len(notis) != 0:
             for noti in notis:
                 if noti.type == 'mail':
                     mail_exist = True
-                if noti.type == 'telegrame':
-                    telegrame_exist = True
+                if noti.type == 'wechat':
+                    wechat_exist = True
 
         if not mail_exist:
             mail_noti = Notification('mail')
             db.session.add(mail_noti)
             db.session.commit()
-        if not telegrame_exist:
-            telegrame_noti = Notification('telegrame')
-            db.session.add(telegrame_noti)
+        if not wechat_exist:
+            wechat_noti = Notification('wechat')
+            db.session.add(wechat_noti)
             db.session.commit()
 
         ppid = psutil.Process(os.getppid())
