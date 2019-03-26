@@ -3,12 +3,12 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-25 12:31:35
-@LastEditTime: 2019-03-26 17:00:29
+@LastEditTime: 2019-03-26 21:39:23
 '''
 import requests
+from scrapy.selector import Selector
 
 from app.main.selector.selector import Selector as FatherSelector
-from scrapy.selector import Selector
 
 
 class RequestsSelector(FatherSelector):

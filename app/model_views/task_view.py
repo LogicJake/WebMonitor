@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-26 20:51:37
+@LastEditTime: 2019-03-26 21:28:58
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -25,7 +25,6 @@ def check_noti(form, field):
     is_wechat = form.wechat.data
     is_mail = form.mail.data
 
-    print(is_wechat, is_mail)
     if is_wechat == 'no' and is_mail == 'no':
         raise ValidationError('必须选择一个通知方式')
 

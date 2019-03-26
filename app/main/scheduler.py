@@ -3,19 +3,21 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 18:24:16
+@LastEditTime: 2019-03-26 21:38:34
 '''
 from datetime import datetime
 
 from apscheduler.jobstores.base import JobLookupError
 
 from app import app, db, scheduler
-from app.models.notification import Notification
-from app.models.task import Task
-from app.models.content import Content
-from app.models.task_status import TaskStatus
 from app.main.extract_info import get_content
 from app.main.rule import is_changed
+from app.models.content import Content
+from app.models.notification import Notification
+from app.models.task import Task
+from app.models.task_status import TaskStatus
+from config import logger
+import traceback
 
 
 def wraper_msg(title, content):
@@ -71,6 +73,7 @@ def monitor(id):
                 db.session.commit()
                 status = '监测到变化，最新值：' + content
         except Exception as e:
+            logger.error(traceback.format_exc())
             status = repr(e)
 
         task_status = TaskStatus.query.filter_by(task_id=id).first()
@@ -94,4 +97,4 @@ def remove_job(id):
     try:
         scheduler.remove_job('task_{}'.format(id))
     except JobLookupError:
-        pass
+        logger.info('task_{} 不存在'.format(id))

@@ -3,7 +3,15 @@
 # @Date:   2019-02-15 19:35:17
 # @Last Modified time: 2019-03-13 17:09:23
 import os
+import logging
+import logging.config
+
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+os.makedirs('log', exist_ok=True)
+logging.config.fileConfig('log.conf')
+logger = logging.getLogger()
+logger.info('Finish loading config')
 
 
 class BaseConfig:

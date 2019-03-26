@@ -3,15 +3,16 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 20:23:33
-@LastEditTime: 2019-03-25 19:00:02
+@LastEditTime: 2019-03-26 21:33:03
 '''
 import smtplib
 from email.header import Header
 from email.mime.text import MIMEText
 
 from app import db
-from app.models.mail_setting import MailSetting
 from app.main.notification.notification import Notification
+from app.models.mail_setting import MailSetting
+from config import logger
 
 
 class MailNotification(Notification):
@@ -24,10 +25,12 @@ class MailNotification(Notification):
             self.mail_sender = setting.mail_sender
             self.mail_password = setting.mail_password
         else:
+            logger.error('没有设置系统邮箱，无法发送邮件通知')
             raise Exception('没有设置系统邮箱，无法发送邮件通知')
 
     def send(self, to, header, content):
         if to == '默认':
+            logger.error('没有设置通知邮箱，无法发送邮件通知')
             raise Exception('没有设置通知邮箱，无法发送邮件通知')
         message = MIMEText(content, 'plain', 'utf-8')
         message['To'] = Header(to, 'utf-8')

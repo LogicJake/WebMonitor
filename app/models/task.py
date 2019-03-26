@@ -3,11 +3,15 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-26 18:33:25
+@LastEditTime: 2019-03-26 21:40:13
 '''
-from .. import db
 from datetime import datetime
+
 from sqlalchemy import event
+
+from config import logger
+
+from .. import db
 
 
 class Task(db.Model):
@@ -36,6 +40,8 @@ def after_insert_listener(mapper, connection, target):
     connection.execute(task_status.insert().values(
         task_id=target.id, task_name=target.name))
 
+    logger.info('添加新任务task-{}({})'.format(target.id, target.name))
+
 
 def after_update_listener(mapper, connection, target):
     from app.main.scheduler import add_job, remove_job
@@ -43,6 +49,7 @@ def after_update_listener(mapper, connection, target):
     remove_job(target.id)
 
     add_job(target.id, target.frequency)
+    logger.info('task-{}更新'.format(target.id))
 
 
 def after_delete_listener(mapper, connection, target):
@@ -58,6 +65,8 @@ def after_delete_listener(mapper, connection, target):
     from app.models.content import Content
     content = Content.__table__
     connection.execute(content.delete().where(Content.task_id == target.id))
+
+    logger.info('task-{}删除'.format(target.id))
 
 
 event.listen(Task, 'after_insert', after_insert_listener)

@@ -3,14 +3,14 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-26 17:00:35
+@LastEditTime: 2019-03-26 21:39:27
 '''
 import warnings
 
+from scrapy.selector import Selector
 from selenium import webdriver
 
 from app.main.selector.selector import Selector as FatherSelector
-from scrapy.selector import Selector
 
 warnings.filterwarnings("ignore")
 

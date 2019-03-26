@@ -15,7 +15,6 @@ from app.model_views.user_view import UserView
 from flask_apscheduler import APScheduler
 from flask_bootstrap import Bootstrap
 from flask_babelex import Babel
-
 import psutil
 import os
 
@@ -28,7 +27,7 @@ bootstrap = Bootstrap()
 
 
 def create_app(config_name):
-    from config import config
+    from config import config, logger
     app.config.from_object(config[config_name])
 
     # 中文化
@@ -88,7 +87,7 @@ def create_app(config_name):
             import string
             random_password = ''.join(
                 random.sample(string.ascii_letters + string.digits, 10))
-
+            logger.info('数据库初始化成功，初始密码为' + random_password)
             user = User('admin', random_password)
             db.session.add(user)
             db.session.commit()
@@ -123,9 +122,13 @@ def create_app(config_name):
             # 在系统重启时重启任务
             from app.main.scheduler import add_job
             task_statuss = TaskStatus.query.all()
+            count = 0
             for task_status in task_statuss:
                 if task_status.task_status == 'run':
+                    count += 1
                     task_id = task_status.task_id
                     task = Task.query.filter_by(id=task_id).first()
                     add_job(task.id, task.frequency)
+                    logger.info('重启任务-' + str(task_id))
+            logger.info('重启{}个任务'.format(count))
     return app
