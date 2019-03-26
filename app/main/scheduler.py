@@ -3,30 +3,17 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 09:57:08
+@LastEditTime: 2019-03-26 13:42:29
 '''
 from datetime import datetime
 
 from apscheduler.jobstores.base import JobLookupError
 
 from app import app, db, scheduler
-from app.main.selector.selector_handler import new_handler
 from app.models.notification import Notification
 from app.models.task import Task
 from app.models.task_status import TaskStatus
-
-
-def get_content(url, is_chrome, selector_type, selector):
-    if is_chrome == 'no':
-        selector_handler = new_handler('request')
-
-        if selector_type == 'xpath':
-            return selector_handler.get_by_xpath(url, selector)
-    else:
-        selector_handler = new_handler('phantomjs')
-
-        if selector_type == 'xpath':
-            return selector_handler.get_by_xpath(url, selector)
+from app.main.extract_info import get_content
 
 
 def wraper_msg(title, content):
@@ -58,11 +45,12 @@ def send_message(id, content):
         handler.send(key, header, content)
 
 
-def monitor(id, url, selector_type, selector, is_chrome):
+def monitor(id, url, selector_type, selector, is_chrome, regular_expression):
     with app.app_context():
         status = '成功'
         try:
-            content = get_content(url, is_chrome, selector_type, selector)
+            content = get_content(url, is_chrome, selector_type, selector,
+                                  regular_expression)
             send_message(id, content)
         except Exception as e:
             status = repr(e)
@@ -74,7 +62,8 @@ def monitor(id, url, selector_type, selector, is_chrome):
         db.session.commit()
 
 
-def add_job(id, url, selector_type, selector, is_chrome, interval):
+def add_job(id, url, selector_type, selector, is_chrome, interval,
+            regular_expression):
     scheduler.add_job(
         func=monitor,
         args=(
@@ -83,6 +72,7 @@ def add_job(id, url, selector_type, selector, is_chrome, interval):
             selector_type,
             selector,
             is_chrome,
+            regular_expression,
         ),
         trigger='interval',
         minutes=interval,

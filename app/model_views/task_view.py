@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-26 09:35:16
+@LastEditTime: 2019-03-26 13:39:43
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -53,16 +53,13 @@ class TaskView(ModelView):
         'frequency': '频率(分钟)',
         'mail': '邮件提醒',
         'wechat': '微信提醒',
+        'regular_expression': '正则表达式',
     }
 
+    column_descriptions = {'regular_expression': '使用正则表达式进一步提取信息，可以留空'}
+
     column_list = [
-        'id',
-        'name',
-        'url',
-        'frequency',
-        'create_time',
-        'mail',
-        'wechat',
+        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat'
     ]
 
     form_args = {
