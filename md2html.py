@@ -1,5 +1,4 @@
 import markdown
-from bs4 import BeautifulSoup
 
 
 class Markdown2Html:
