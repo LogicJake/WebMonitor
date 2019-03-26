@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-25 20:46:26
+@LastEditTime: 2019-03-26 09:20:58
 '''
 from .. import db
 from datetime import datetime
@@ -38,7 +38,9 @@ def after_insert_listener(mapper, connection, target):
 
 
 def after_update_listener(mapper, connection, target):
-    from app.main.scheduler import add_job
+    from app.main.scheduler import add_job, remove_job
+
+    remove_job(target.id)
 
     add_job(target.id, target.url, target.selector_type, target.selector,
             target.is_chrome, target.frequency)
