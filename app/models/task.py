@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-26 15:50:04
+@LastEditTime: 2019-03-26 18:33:25
 '''
 from .. import db
 from datetime import datetime
@@ -22,7 +22,7 @@ class Task(db.Model):
     regular_expression = db.Column(db.String(128))
     rule = db.Column(db.String(128))
     # 通知方式
-    mail = db.Column(db.String(32), nullable=False, default='yes')
+    mail = db.Column(db.String(32), nullable=False, default='no')
     wechat = db.Column(db.String(32), nullable=False, default='no')
 
 

@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-26 16:58:01
+@LastEditTime: 2019-03-26 18:34:24
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -18,6 +18,15 @@ def check_url(form, field):
         requests.get(url, timeout=10)
     except Exception as e:
         raise ValidationError(repr(e))
+
+
+def check_noti(form, field):
+    is_wechat = form.wechat.data
+    is_mail = form.mail.data
+
+    print(is_wechat, is_mail)
+    if is_wechat == 'no' and is_mail == 'no':
+        raise ValidationError('必须选择一个通知方式')
 
 
 def check_selector(form, field):
@@ -80,13 +89,16 @@ class TaskView(ModelView):
         },
         'selector': {
             'validators': [check_selector]
+        },
+        'wechat': {
+            'validators': [check_noti]
         }
     }
 
     form_choices = {
         'selector_type': [('xpath', 'xpath'), ('css', 'css selector')],
         'is_chrome': [('no', 'no'), ('yes', 'yes')],
-        'mail': [('yes', 'yes'), ('no', 'no')],
+        'mail': [('no', 'no'), ('yes', 'yes')],
         'wechat': [('no', 'no'), ('yes', 'yes')],
     }
 
