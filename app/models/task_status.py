@@ -5,7 +5,8 @@ from sqlalchemy import event
 
 class TaskStatus(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    task_id = db.Column(db.Integer)
+    task_id = db.Column(db.Integer, db.ForeignKey(
+        'task.id', ondelete='CASCADE'))
     task_name = db.Column(db.String(32), nullable=False)
     last_run = db.Column(db.DateTime, nullable=False, default=datetime.now)
     last_status = db.Column(db.String(64), nullable=False, default='创建任务成功')
