@@ -14,6 +14,7 @@ from app.model_views.user_view import UserView
 
 from flask_apscheduler import APScheduler
 from flask_bootstrap import Bootstrap
+from flask_babelex import Babel
 
 import psutil
 import os
@@ -29,6 +30,9 @@ bootstrap = Bootstrap()
 def create_app(config_name):
     from config import config
     app.config.from_object(config[config_name])
+
+    # 中文化
+    Babel(app)
 
     # 注册flask-login
     login.init_app(app)
@@ -49,9 +53,7 @@ def create_app(config_name):
 
     # 注册flask-admin
     admin.init_app(
-        app,
-        index_view=AdminIndexView(
-            name='导航栏', template='admin/index.html', url='/'))
+        app, index_view=AdminIndexView(template='admin/index.html', url='/'))
 
     # 注册APScheduler
     scheduler.init_app(app)

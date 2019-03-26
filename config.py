@@ -10,6 +10,7 @@ class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SECRET_KEY = 'chinano.1'
+    BABEL_DEFAULT_LOCALE = 'zh_CN'
 
 
 class DevelopmentConfig(BaseConfig):
