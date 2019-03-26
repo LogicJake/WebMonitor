@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-26 13:44:04
+@LastEditTime: 2019-03-26 15:50:04
 '''
 from .. import db
 from datetime import datetime
@@ -20,6 +20,7 @@ class Task(db.Model):
     frequency = db.Column(db.Integer, nullable=False, default='5')
     create_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
     regular_expression = db.Column(db.String(128))
+    rule = db.Column(db.String(128))
     # 通知方式
     mail = db.Column(db.String(32), nullable=False, default='yes')
     wechat = db.Column(db.String(32), nullable=False, default='no')
@@ -28,8 +29,7 @@ class Task(db.Model):
 def after_insert_listener(mapper, connection, target):
     from app.main.scheduler import add_job
 
-    add_job(target.id, target.url, target.selector_type, target.selector,
-            target.is_chrome, target.frequency, target.regular_expression)
+    add_job(target.id, target.frequency)
 
     from app.models.task_status import TaskStatus
     task_status = TaskStatus.__table__
@@ -42,8 +42,7 @@ def after_update_listener(mapper, connection, target):
 
     remove_job(target.id)
 
-    add_job(target.id, target.url, target.selector_type, target.selector,
-            target.is_chrome, target.frequency, target.regular_expression)
+    add_job(target.id, target.frequency)
 
 
 def after_delete_listener(mapper, connection, target):
@@ -55,6 +54,10 @@ def after_delete_listener(mapper, connection, target):
     task_status = TaskStatus.__table__
     connection.execute(
         task_status.delete().where(TaskStatus.task_id == target.id))
+
+    from app.models.content import Content
+    content = Content.__table__
+    connection.execute(content.delete().where(Content.task_id == target.id))
 
 
 event.listen(Task, 'after_insert', after_insert_listener)

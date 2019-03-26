@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 13:42:29
+@LastEditTime: 2019-03-26 15:51:46
 '''
 from datetime import datetime
 
@@ -12,8 +12,10 @@ from apscheduler.jobstores.base import JobLookupError
 from app import app, db, scheduler
 from app.models.notification import Notification
 from app.models.task import Task
+from app.models.content import Content
 from app.models.task_status import TaskStatus
 from app.main.extract_info import get_content
+from app.main.rule import is_changed
 
 
 def wraper_msg(title, content):
@@ -22,13 +24,8 @@ def wraper_msg(title, content):
     return header, content
 
 
-def send_message(id, content):
+def send_message(content, name, mail, wechat):
     from app.main.notification.notification_handler import new_handler
-
-    task = Task.query.filter_by(id=id).first()
-    mail = task.mail
-    wechat = task.wechat
-    name = task.name
 
     header, content = wraper_msg(name, content)
 
@@ -45,13 +42,35 @@ def send_message(id, content):
         handler.send(key, header, content)
 
 
-def monitor(id, url, selector_type, selector, is_chrome, regular_expression):
+def monitor(id):
     with app.app_context():
-        status = '成功'
+        status = '成功执行但未监测到变化'
         try:
+            task = Task.query.filter_by(id=id).first()
+            url = task.url
+            selector_type = task.selector_type
+            selector = task.selector
+            is_chrome = task.is_chrome
+            regular_expression = task.regular_expression
+            mail = task.mail
+            wechat = task.wechat
+            name = task.name
+            rule = task.rule
+
+            last = Content.query.filter_by(task_id=id).first()
+            if not last:
+                last = Content(id)
+
+            last_content = last.content
             content = get_content(url, is_chrome, selector_type, selector,
                                   regular_expression)
-            send_message(id, content)
+            print(rule, content, last_content)
+            if is_changed(rule, content, last_content):
+                send_message(content, name, mail, wechat)
+                last.content = content
+                db.session.add(last)
+                db.session.commit()
+                status = '监测到变化，最新值：' + content
         except Exception as e:
             status = repr(e)
 
@@ -62,18 +81,10 @@ def monitor(id, url, selector_type, selector, is_chrome, regular_expression):
         db.session.commit()
 
 
-def add_job(id, url, selector_type, selector, is_chrome, interval,
-            regular_expression):
+def add_job(id, interval):
     scheduler.add_job(
         func=monitor,
-        args=(
-            id,
-            url,
-            selector_type,
-            selector,
-            is_chrome,
-            regular_expression,
-        ),
+        args=(id, ),
         trigger='interval',
         minutes=interval,
         id='task_{}'.format(id),

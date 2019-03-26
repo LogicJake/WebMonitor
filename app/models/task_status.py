@@ -27,7 +27,7 @@ def after_update_listener(mapper, connection, target):
             task.select().where(Task.id == target.id))
 
         for t in select_res:
-            add_job(target.id, t[2], t[3], t[4], t[5], t[6])
+            add_job(target.id, t[6])
     else:
         remove_job(target.id)
 

@@ -94,6 +94,5 @@ def create_app(config_name):
                 if task_status.task_status == 'run':
                     task_id = task_status.task_id
                     task = Task.query.filter_by(id=task_id).first()
-                    add_job(task.id, task.url, task.selector_type,
-                            task.selector, task.is_chrome, task.frequency)
+                    add_job(task.id, task.frequency)
     return app
