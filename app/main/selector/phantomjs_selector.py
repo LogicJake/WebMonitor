@@ -3,12 +3,13 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-26 21:39:27
+@LastEditTime: 2019-03-27 09:56:26
 '''
 import warnings
 
 from scrapy.selector import Selector
 from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from app.main.selector.selector import Selector as FatherSelector
 
@@ -17,7 +18,11 @@ warnings.filterwarnings("ignore")
 
 class PhantomJSSelector(FatherSelector):
     def get_html(self, url):
-        driver = webdriver.PhantomJS()
+        dcap = dict(DesiredCapabilities.PHANTOMJS)
+        dcap['phantomjs.page.settings.userAgent'] = (
+            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+        )
+        driver = webdriver.PhantomJS(desired_capabilities=dcap)
         driver.get(url)
         html = driver.page_source
         driver.close()
