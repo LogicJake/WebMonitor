@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-26 21:28:58
+@LastEditTime: 2019-03-30 11:04:21
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -35,25 +35,19 @@ def check_selector(form, field):
         selector = form.selector.data
         url = form.url.data
         is_chrome = form.is_chrome.data
+        headers = form.headers.data
 
         if is_chrome == 'no':
             selector_handler = new_handler('request')
-
-            if selector_type == 'xpath':
-                selector_handler.get_by_xpath(url, selector)
-            elif selector_type == 'css':
-                selector_handler.get_by_css(url, selector)
-            else:
-                raise Exception('无效选择器')
         else:
             selector_handler = new_handler('phantomjs')
 
-            if selector_type == 'xpath':
-                selector_handler.get_by_xpath(url, selector)
-            elif selector_type == 'css':
-                selector_handler.get_by_css(url, selector)
-            else:
-                raise Exception('无效选择器')
+        if selector_type == 'xpath':
+            selector_handler.get_by_xpath(url, selector, headers)
+        elif selector_type == 'css':
+            selector_handler.get_by_css(url, selector, headers)
+        else:
+            raise Exception('无效选择器')
     except Exception as e:
         raise ValidationError(repr(e))
 
@@ -77,12 +71,14 @@ class TaskView(ModelView):
         'mail': '邮件提醒',
         'wechat': '微信提醒',
         'regular_expression': '正则表达式',
-        'rule': '监控规则'
+        'rule': '监控规则',
+        'headers': '自定义请求头'
     }
 
     column_descriptions = {
         'regular_expression': '使用正则表达式进一步提取信息，可以留空',
-        'rule': '规则写法参考<a href="www.github.com">文档</a>，留空则只简单监控内容变化'
+        'rule': '规则写法参考<a href="www.github.com">文档</a>，留空则只简单监控内容变化',
+        'headers': '自定义请求头，如可以设置cookie获取登录后才能查看的页面'
     }
 
     column_list = [

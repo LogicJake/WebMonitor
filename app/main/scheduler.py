@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-26 21:38:34
+@LastEditTime: 2019-03-30 10:41:42
 '''
 from datetime import datetime
 
@@ -58,6 +58,7 @@ def monitor(id):
             wechat = task.wechat
             name = task.name
             rule = task.rule
+            headers = task.headers
 
             last = Content.query.filter_by(task_id=id).first()
             if not last:
@@ -65,7 +66,7 @@ def monitor(id):
 
             last_content = last.content
             content = get_content(url, is_chrome, selector_type, selector,
-                                  regular_expression)
+                                  regular_expression, headers)
             if is_changed(rule, content, last_content):
                 send_message(content, name, mail, wechat)
                 last.content = content

@@ -3,13 +3,13 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-27 09:56:26
+@LastEditTime: 2019-03-30 11:10:24
 '''
+import ast
 import warnings
 
 from scrapy.selector import Selector
 from selenium import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from app.main.selector.selector import Selector as FatherSelector
 
@@ -17,19 +17,32 @@ warnings.filterwarnings("ignore")
 
 
 class PhantomJSSelector(FatherSelector):
-    def get_html(self, url):
-        dcap = dict(DesiredCapabilities.PHANTOMJS)
-        dcap['phantomjs.page.settings.userAgent'] = (
-            'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
-        )
-        driver = webdriver.PhantomJS(desired_capabilities=dcap)
+    def get_html(self, url, headers):
+        # 默认userAgent
+        webdriver.DesiredCapabilities.PHANTOMJS[
+            'phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+
+        if headers:
+            header_dict = ast.literal_eval(headers)
+            if type(header_dict) != dict:
+                raise Exception('必须是字典格式')
+
+            for key, value in header_dict.items():
+                if key.lower() == 'User-Agent':
+                    webdriver.DesiredCapabilities.PHANTOMJS[
+                        'phantomjs.page.settings.userAgent'] = value
+                else:
+                    webdriver.DesiredCapabilities.PHANTOMJS[
+                        'phantomjs.page.customHeaders.{}'.format(key)] = value
+
+        driver = webdriver.PhantomJS()
         driver.get(url)
         html = driver.page_source
         driver.close()
         return html
 
-    def get_by_xpath(self, url, xpath):
-        html = self.get_html(url)
+    def get_by_xpath(self, url, xpath, headers=None):
+        html = self.get_html(url, headers)
         res = Selector(text=html).xpath(xpath).extract()
 
         if len(res) != 0:
@@ -37,8 +50,8 @@ class PhantomJSSelector(FatherSelector):
         else:
             raise Exception('无法获取文本信息')
 
-    def get_by_css(self, url, xpath):
-        html = self.get_html(url)
+    def get_by_css(self, url, xpath, headers=None):
+        html = self.get_html(url, headers)
         res = Selector(text=html).css(xpath).extract()
 
         if len(res) != 0:
