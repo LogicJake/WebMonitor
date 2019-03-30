@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-30 11:04:21
+@LastEditTime: 2019-03-30 15:13:10
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -65,7 +65,7 @@ class TaskView(ModelView):
         'url': '监控网址',
         'create_time': '创建时间',
         'selector_type': '元素选择器类型',
-        'selector': '元素选择',
+        'selector': '元素选择器',
         'is_chrome': '是否使用无头浏览器',
         'frequency': '频率(分钟)',
         'mail': '邮件提醒',
@@ -76,8 +76,10 @@ class TaskView(ModelView):
     }
 
     column_descriptions = {
+        'selector': '可以到<a href="/test" target="_blank">测试页面</a>测试是否能够提取出所需信息',
         'regular_expression': '使用正则表达式进一步提取信息，可以留空',
-        'rule': '规则写法参考<a href="www.github.com">文档</a>，留空则只简单监控内容变化',
+        'rule':
+        '规则写法参考<a target="_blank" href="https://github.com/LogicJake/WebMonitor#%E7%9B%91%E6%8E%A7%E8%A7%84%E5%88%99">文档</a>，留空则只简单监控内容变化',
         'headers': '自定义请求头，如可以设置cookie获取登录后才能查看的页面'
     }
 

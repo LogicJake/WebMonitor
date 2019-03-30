@@ -1,0 +1,33 @@
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/flatly/bootstrap.min.css">
+</head>
+
+<body>
+    <h2 align="center">页面信息提取测试</h2>
+
+    {% import 'bootstrap/wtf.html' as wtf %}
+    <div align="center">
+        <form action="{{ url_for("main.test") }}" method="post" name="login">
+            {{ form.csrf_token }}
+            {{ wtf.form_field(form.url) }}
+            {{ wtf.form_field(form.selector_type) }}
+            {{ wtf.form_field(form.selector) }}
+            {{ wtf.form_field(form.is_chrome) }}
+            {{ wtf.form_field(form.regular_expression) }}
+            {{ wtf.form_field(form.headers) }}
+            {{ wtf.form_field(form.submit) }}
+        </form>
+    </div>
+    {% if error %}
+    <p class=error style="color:red" align="center"><strong>Error:</strong> {{ error }}</p>
+    {% if show %}
+    <div style="text-align:center">
+        <img src="{{ url_for('static', filename= './error/screenshot.png') }}" alt="你的图片被外星人劫持了～～" />
+    </div>
+    {% endif %}
+    {% endif %}
+    {% if content %}
+    <p class=content align="center"><strong>提取到信息:{{ content }}</strong> </p>
+    {% endif %}
+</body>

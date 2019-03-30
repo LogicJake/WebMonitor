@@ -19,11 +19,12 @@ def get_content(url,
                 selector_type,
                 selector,
                 regular_expression=None,
-                headers=None):
+                headers=None,
+                debug=False):
     if is_chrome == 'no':
-        selector_handler = new_handler('request')
+        selector_handler = new_handler('request', debug)
     else:
-        selector_handler = new_handler('phantomjs')
+        selector_handler = new_handler('phantomjs', debug)
 
     if selector_type == 'xpath':
         content = selector_handler.get_by_xpath(url, selector, headers)

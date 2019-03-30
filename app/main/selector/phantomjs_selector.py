@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 11:52:35
-@LastEditTime: 2019-03-30 11:10:24
+@LastEditTime: 2019-03-30 15:06:10
 '''
 import ast
 import warnings
@@ -17,6 +17,9 @@ warnings.filterwarnings("ignore")
 
 
 class PhantomJSSelector(FatherSelector):
+    def __init__(self, debug=False):
+        self.debug = debug
+
     def get_html(self, url, headers):
         # 默认userAgent
         webdriver.DesiredCapabilities.PHANTOMJS[
@@ -37,6 +40,12 @@ class PhantomJSSelector(FatherSelector):
 
         driver = webdriver.PhantomJS()
         driver.get(url)
+        if self.debug:
+            import os
+            basepath = os.path.dirname(os.path.dirname(__file__))
+            save_path = os.path.join(basepath, '..', 'static', 'error')
+            os.makedirs(save_path, exist_ok=True)
+            driver.save_screenshot(os.path.join(save_path, 'screenshot.png'))
         html = driver.page_source
         driver.close()
         return html

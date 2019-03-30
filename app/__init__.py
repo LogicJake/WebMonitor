@@ -2,21 +2,22 @@
 # @Author: LogicJake
 # @Date:   2019-02-15 19:33:23
 # @Last Modified time: 2019-03-13 17:06:37
+import psutil
+import os
+
 from flask import Flask
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
+from flask_apscheduler import APScheduler
+from flask_bootstrap import Bootstrap
+from flask_babelex import Babel
+
 from app.model_views.task_view import TaskView
 from app.model_views.notification_view import NotificationView
 from app.model_views.mail_setting_view import MailSettingView
 from app.model_views.task_status_view import TaskStatusView
 from app.model_views.user_view import UserView
-
-from flask_apscheduler import APScheduler
-from flask_bootstrap import Bootstrap
-from flask_babelex import Babel
-import psutil
-import os
 
 db = SQLAlchemy()
 login = LoginManager()

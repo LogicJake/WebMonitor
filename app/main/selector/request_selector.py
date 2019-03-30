@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-25 12:31:35
-@LastEditTime: 2019-03-30 11:05:03
+@LastEditTime: 2019-03-30 14:16:58
 '''
 import ast
 
@@ -14,6 +14,9 @@ from app.main.selector.selector import Selector as FatherSelector
 
 
 class RequestsSelector(FatherSelector):
+    def __init__(self, debug=False):
+        self.debug = debug
+
     def get_html(self, url, headers):
         if headers:
             header_dict = ast.literal_eval(headers)
@@ -27,7 +30,7 @@ class RequestsSelector(FatherSelector):
         return html
 
     def get_by_xpath(self, url, xpath, headers=None):
-        html = self.get_html(url)
+        html = self.get_html(url, headers)
         res = Selector(text=html).xpath(xpath).extract()
 
         if len(res) != 0:
@@ -36,7 +39,7 @@ class RequestsSelector(FatherSelector):
             raise Exception('无法获取文本信息')
 
     def get_by_css(self, url, xpath, headers=None):
-        html = self.get_html(url)
+        html = self.get_html(url, headers)
         res = Selector(text=html).css(xpath).extract()
 
         if len(res) != 0:
