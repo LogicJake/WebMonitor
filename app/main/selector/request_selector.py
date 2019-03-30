@@ -3,8 +3,10 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-25 12:31:35
-@LastEditTime: 2019-03-26 21:39:23
+@LastEditTime: 2019-03-30 11:05:03
 '''
+import ast
+
 import requests
 from scrapy.selector import Selector
 
@@ -12,12 +14,19 @@ from app.main.selector.selector import Selector as FatherSelector
 
 
 class RequestsSelector(FatherSelector):
-    def get_html(self, url):
-        r = requests.get(url, timeout=10)
+    def get_html(self, url, headers):
+        if headers:
+            header_dict = ast.literal_eval(headers)
+            if type(header_dict) != dict:
+                raise Exception('必须是字典格式')
+
+            r = requests.get(url, headers=header_dict, timeout=10)
+        else:
+            r = requests.get(url, timeout=10)
         html = r.text
         return html
 
-    def get_by_xpath(self, url, xpath):
+    def get_by_xpath(self, url, xpath, headers=None):
         html = self.get_html(url)
         res = Selector(text=html).xpath(xpath).extract()
 
@@ -26,7 +35,7 @@ class RequestsSelector(FatherSelector):
         else:
             raise Exception('无法获取文本信息')
 
-    def get_by_css(self, url, xpath):
+    def get_by_css(self, url, xpath, headers=None):
         html = self.get_html(url)
         res = Selector(text=html).css(xpath).extract()
 

@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-26 21:40:13
+@LastEditTime: 2019-03-30 10:40:31
 '''
 from datetime import datetime
 
@@ -23,11 +23,13 @@ class Task(db.Model):
     is_chrome = db.Column(db.String(32), nullable=False, default='no')
     frequency = db.Column(db.Integer, nullable=False, default='5')
     create_time = db.Column(db.DateTime, nullable=False, default=datetime.now)
-    regular_expression = db.Column(db.String(128))
-    rule = db.Column(db.String(128))
     # 通知方式
     mail = db.Column(db.String(32), nullable=False, default='no')
     wechat = db.Column(db.String(32), nullable=False, default='no')
+    # 高级设置
+    regular_expression = db.Column(db.String(128))
+    rule = db.Column(db.String(128))
+    headers = db.Column(db.String(1024))
 
 
 def after_insert_listener(mapper, connection, target):

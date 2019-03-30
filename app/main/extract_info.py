@@ -18,16 +18,17 @@ def get_content(url,
                 is_chrome,
                 selector_type,
                 selector,
-                regular_expression=None):
+                regular_expression=None,
+                headers=None):
     if is_chrome == 'no':
         selector_handler = new_handler('request')
     else:
         selector_handler = new_handler('phantomjs')
 
     if selector_type == 'xpath':
-        content = selector_handler.get_by_xpath(url, selector)
+        content = selector_handler.get_by_xpath(url, selector, headers)
     elif selector_type == 'css':
-        content = selector_handler.get_by_css(url, selector)
+        content = selector_handler.get_by_css(url, selector, headers)
     else:
         logger.error('无效选择器')
         raise Exception('无效选择器')
