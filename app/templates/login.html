@@ -4,19 +4,20 @@
 </head>
 
 <body>
-    <h1 align="center">登录</h1>
+    <h2 align="center">登录</h2>
     {% if error %}
-    <p class=error><strong>Error:</strong> {{ error }}
-        {% endif %}
-        {% import 'bootstrap/wtf.html' as wtf %}
-        <div align="center">
+    <p class=error style="color:red" align="center"><strong>Error:</strong> {{ error }}</p>
+    {% endif %}
+    {% import 'bootstrap/wtf.html' as wtf %}
+    <div align="center">
 
-            <form action="{{ url_for("main.login") }}" method="post" name="login">
-                {{ form.csrf_token }}
-                {{ wtf.form_field(form.username) }}
-                {{ wtf.form_field(form.password) }}
-                {{ wtf.form_field(form.remember_me) }}
-                {{ wtf.form_field(form.submit) }}
-            </form>
-        </div>
+        <form action="{{ url_for("main.login") }}" method="post" name="login">
+            {{ form.csrf_token }}
+            {{ wtf.form_field(form.username) }}
+            {{ wtf.form_field(form.password) }}
+            {{ wtf.form_field(form.remember_me) }}
+            {{ wtf.form_field(form.submit) }}
+        </form>
+    </div>
+
 </body>

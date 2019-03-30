@@ -1,7 +1,7 @@
 {% extends 'admin/master.html' %}            
 {% block body %}
 <link href="../../static/css/github.css" rel="stylesheet" type="text/css"/>
-<p>点击<a href="/login">此处</a>登录，如果你是刚初始化项目，则账户名为admin，密码在日志文件中，请登录之后及时修改密码！</p>
+<p>点击<a target="_blank" href="/login">此处</a>登录，如果你是刚初始化项目，则账户名为admin，密码在日志文件中，请登录之后及时修改密码！</p>
 <h1>I Am Watching You</h1>
 <p>监测网页变化，完成诸如新文章发布，商品价格变动，新动态提醒任务，通过设置xpath或css selector选择器，完成网页关键信息的提取。监测到更新后，发送通知到邮件或者微信。</p>
 <h2>特性</h2>
@@ -19,7 +19,7 @@ python -m flask run
 </code></pre>
 
 <h3>登录系统</h3>
-<p>首次初始化数据库，系统会自动新建用户，默认用户名为<code>admin</code>，密码随机生成，记录在log/log.txt中，登录之后可以在账号密码管理中修改。进入127.0.0.1/login，输入账号密码登录。<br>
+<p>首次初始化数据库，系统会自动新建用户，默认用户名为<code>admin</code>，密码随机生成，记录在log/log.txt中，登录之后可以在账号密码管理中修改。进入<code>/login</code>，输入账号密码登录。<br>
 登录之后显示如下栏目  </p>
 <p><img alt="展示" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/all.png"></p>
 <h3>设置通知方式</h3>
@@ -29,13 +29,16 @@ python -m flask run
 <p>如果采用邮件提醒，则必须设置系统邮箱设置，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。  </p>
 <p><img alt="系统邮件设置" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/mail_setting.png"></p>
 <h3>添加任务</h3>
-<p>在任务管理模块添加新任务  </p>
+<p>在任务管理模块添加新任务   </p>
+<ul>
+<li>必须选择一种通知方式  </li>
+<li>默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬  </li>
+</ul>
 <p><img alt="任务管理" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_manage.png"><br>
-<img alt="添加任务" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_setting.png">
-* 必须选择一种通知方式
-* 默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬</p>
+<img alt="添加任务" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_setting.png">  </p>
 <h4>选择器</h4>
-<p>元素选择器类型可以选择xpath或css selector，可以借助浏览器F12直接copy两种选择器，需要注意的是，往往浏览器copy得到是元素，而不是文本信息，需要做以下补充：  </p>
+<p>提供测试页面<code>/test</code>，测试是否能够从页面提取所需信息，方便确认xpath或css selector是否填写正确；在测试页面下，使用无头浏览器获取网页，提取信息错误会展示页面截图。<br>
+元素选择器类型可以选择xpath或css selector，可以借助浏览器F12直接copy两种选择器，需要注意的是，往往浏览器copy得到是元素，而不是文本信息，需要做以下补充：  </p>
 <h5>xpath</h5>
 <ul>
 <li>获取元素文本信息，在浏览器得到的选择器后加<code>/text()</code>，如<br>
@@ -73,9 +76,4 @@ python -m flask run
 <p><img alt="任务状态" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/status.png"><br>
 可以通过修改任务状态，暂停或重启任务  </p>
 <p><img alt="状态设置" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/status_setting.png"></p>
-<h3>todo</h3>
-<ul>
-<li>[x] 添加cookie设置，获取需要登录才能访问的页面  </li>
-<li>[ ] 单独设一个页面，测试选择器和正则</li>
-</ul>
 {% endblock %}

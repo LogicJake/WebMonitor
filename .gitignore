@@ -10,3 +10,5 @@ log/
 .vscode/
 
 ghostdriver\.log
+
+app/static/error/screenshot\.png

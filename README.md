@@ -13,7 +13,7 @@ pip install -r requirements.txt
 python -m flask run
 ```
 ### 登录系统   
-首次初始化数据库，系统会自动新建用户，默认用户名为```admin```，密码随机生成，记录在log/log.txt中，登录之后可以在账号密码管理中修改。进入127.0.0.1/login，输入账号密码登录。  
+首次初始化数据库，系统会自动新建用户，默认用户名为```admin```，密码随机生成，记录在log/log.txt中，登录之后可以在账号密码管理中修改。进入```/login```，输入账号密码登录。  
 登录之后显示如下栏目  
 
 ![展示](https://github.com/LogicJake/WebMonitor/raw/master/fig/all.png)
@@ -28,11 +28,14 @@ python -m flask run
 ### 添加任务
 在任务管理模块添加新任务  
 
+* 必须选择一种通知方式  
+* 默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬  
+
 ![任务管理](https://github.com/LogicJake/WebMonitor/raw/master/fig/task_manage.png)  
-![添加任务](https://github.com/LogicJake/WebMonitor/raw/master/fig/task_setting.png)
-* 必须选择一种通知方式
-* 默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬
+![添加任务](https://github.com/LogicJake/WebMonitor/raw/master/fig/task_setting.png)  
+
 #### 选择器
+提供测试页面```/test```，测试是否能够从页面提取所需信息，方便确认xpath或css selector是否填写正确；在测试页面下，使用无头浏览器获取网页，提取信息错误会展示页面截图。  
 元素选择器类型可以选择xpath或css selector，可以借助浏览器F12直接copy两种选择器，需要注意的是，往往浏览器copy得到是元素，而不是文本信息，需要做以下补充：  
 ##### xpath
 * 获取元素文本信息，在浏览器得到的选择器后加```/text()```，如  
@@ -71,7 +74,3 @@ python -m flask run
 可以通过修改任务状态，暂停或重启任务  
 
 ![状态设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/status_setting.png)
-
-### todo
-- [x] 添加cookie设置，获取需要登录才能访问的页面  
-- [ ] 单独设一个页面，测试选择器和正则
