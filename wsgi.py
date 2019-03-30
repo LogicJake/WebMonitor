@@ -12,11 +12,9 @@ if os.path.exists(dotenv_path):
     from dotenv import load_dotenv
     load_dotenv(dotenv_path)
 
-css_file = os.path.join(
-    os.path.dirname(__file__), 'app', 'static', 'css', 'github.css')
 index_html = os.path.join(
     os.path.dirname(__file__), 'app', 'templates', 'admin', 'index.html')
-m2h = Markdown2Html(css_file)
+m2h = Markdown2Html()
 m2h.convert('README.md', index_html)
 
 app = create_app(os.getenv("FLASK_ENV"))
