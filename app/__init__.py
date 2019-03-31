@@ -119,7 +119,8 @@ def create_app(config_name):
         # 加这一步判断主要是因为，
         # 在debug模式下，会启动另外一个线程来自动重载，
         # 这样会导致在两个线程中都启动任务，造成重复
-        if 'python' not in ppid_name:
+        if ('python' in ppid_name and
+                config_name == 'development') or config_name != 'development':
             # 在系统重启时重启任务
             from app.main.scheduler import add_job
             task_statuss = TaskStatus.query.all()
