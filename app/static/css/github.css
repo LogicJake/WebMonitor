@@ -83,7 +83,6 @@ h3:hover a.anchor,
 h4:hover a.anchor,
 h5:hover a.anchor,
 h6:hover a.anchor {
-    /*background: url("../../images/modules/styleguide/para.png") no-repeat 10px center;*/
     text-decoration: none;
 }
 h1 tt,
@@ -407,4 +406,9 @@ header, .context-menu, .megamenu-content, footer{
 
 .html-for-mac .context-menu {
     --item-hover-bg-color: #E6F0FE;
+}
+
+img {
+    width: 100%;
+    height: 100%;
 }
