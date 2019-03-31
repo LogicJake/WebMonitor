@@ -1,4 +1,5 @@
 import re
+import feedparser
 
 from app.main.selector.selector_handler import new_handler
 from config import logger
@@ -37,3 +38,15 @@ def get_content(url,
     if regular_expression:
         content = extract_by_re(content, regular_expression)
     return content
+
+
+def get_rss_content(url):
+    feeds = feedparser.parse(url)
+
+    single_post = feeds.entries[0]
+    item = {}
+    item['title'] = single_post.title
+    item['link'] = single_post.link
+    item['guid'] = single_post.id
+
+    return item
