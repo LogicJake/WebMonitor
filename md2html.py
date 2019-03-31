@@ -1,3 +1,5 @@
+import os
+
 import markdown
 
 
@@ -18,3 +20,10 @@ class Markdown2Html:
 
         with open(outfile, 'w', encoding='utf8') as f:
             f.write(template_html)
+
+
+if __name__ == "__main__":
+    index_html = os.path.join(
+        os.path.dirname(__file__), 'app', 'templates', 'admin', 'index.html')
+    m2h = Markdown2Html()
+    m2h.convert('HOW.md', index_html)

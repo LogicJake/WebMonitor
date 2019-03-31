@@ -2,34 +2,25 @@
 {% block body %}
 <link href="../../static/css/github.css" rel="stylesheet" type="text/css"/>
 <p>点击<a target="_blank" href="/login">此处</a>登录，如果你是刚初始化项目，则账户名为admin，密码在日志文件中，请登录之后及时修改密码！</p>
-<p>演示地址：https://monitor-example.herokuapp.com/ ，账号密码均为admin，作演示用，无法执行监测任务，无法使用无头浏览器。</p>
-<h1>I Am Watching You</h1>
-<p>监测网页变化，完成诸如新文章发布，商品价格变动，新动态提醒任务，通过设置xpath或css selector选择器，完成网页关键信息的提取。监测到更新后，发送通知到邮件或者微信。</p>
-<h2>特性</h2>
-<ul>
-<li>除支持常规requests网页请求外，还支持使用PhantomJS抓取异步加载的网页</li>
-<li>支持xpath和css selector选择器</li>
-<li>支持邮件和微信提醒（support by server酱）</li>
-<li>简洁的UI，可视化操作</li>
-</ul>
-<h2>使用方式</h2>
+<h1>使用方式</h1>
 <p>clone该项目，修改<code>.env</code>文件，指定DATABASE_URL值为你自己的数据库地址</p>
-<h3>运行</h3>
+<h2>运行</h2>
+<p>如果需要使用无头浏览器，请确认已经安装phantomjs，且phantomjs被添加到系统路径</p>
 <pre><code>pip install -r requirements.txt
 python -m flask run
 </code></pre>
 
-<h3>登录系统</h3>
+<h2>登录系统</h2>
 <p>首次初始化数据库，系统会自动新建用户，默认用户名为<code>admin</code>，密码随机生成，记录在log/log.txt中，登录之后可以在账号密码管理中修改。进入<code>/login</code>，输入账号密码登录。<br>
 登录之后显示如下栏目  </p>
 <p><img alt="展示" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/all.png"></p>
-<h3>设置通知方式</h3>
+<h2>设置通知方式</h2>
 <p>在通知方式管理中默认存在两种通知方式：邮件和Server酱的微信提醒。邮件提醒只需要设置接收邮箱，微信提醒需要申请SCKEY，自行搜索Server酱注册，简单免费。  </p>
 <p><img alt="通知方式" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/noti.png"></p>
-<h3>设置系统邮箱</h3>
+<h2>设置系统邮箱</h2>
 <p>如果采用邮件提醒，则必须设置系统邮箱设置，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。  </p>
 <p><img alt="系统邮件设置" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/mail_setting.png"></p>
-<h3>添加任务</h3>
+<h2>添加任务</h2>
 <p>在任务管理模块添加新任务  </p>
 <ul>
 <li>必须选择一种通知方式  </li>
@@ -37,37 +28,56 @@ python -m flask run
 </ul>
 <p><img alt="任务管理" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_manage.png"><br>
 <img alt="添加任务" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_setting.png">  </p>
-<h4>选择器</h4>
+<h3>选择器</h3>
 <p>提供测试页面<code>/test</code>，测试是否能够从页面提取所需信息，方便确认xpath或css selector是否填写正确；在测试页面下，使用无头浏览器获取网页，提取信息错误会展示页面截图。<br>
 元素选择器类型可以选择xpath或css selector，可以借助浏览器F12直接copy两种选择器，需要注意的是，往往浏览器copy得到是元素，而不是文本信息，需要做以下补充：  </p>
-<h5>xpath</h5>
+<h4>xpath</h4>
 <ul>
 <li>获取元素文本信息，在浏览器得到的选择器后加<code>/text()</code>，如<br>
 <code>//*[@id="id3"]/h3</code> =&gt; <code>//*[@id="id3"]/h3/text()</code></li>
 <li>获取元素属性信息，在浏览器得到的选择器后加<code>/@属性名</code>，如想获取元素href值<br>
 <code>//*[@id="id3"]/h3</code> =&gt; <code>//*[@id="id3"]/h3/@href</code></li>
 </ul>
-<h5>css selector</h5>
+<h4>css selector</h4>
 <ul>
 <li>获取元素文本信息，在浏览器得到的选择器后加<code>/::text</code>，如<br>
 <code>div#id3 &gt; h3</code> =&gt; <code>div#id3 &gt; h3/::text</code></li>
 <li>获取元素属性信息，在浏览器得到的选择器后加<code>/::attr(属性名)</code>，如想获取元素href值<br>
 <code>div#id3 &gt; h3</code> =&gt; <code>div#id3 &gt; h3/::attr(href)</code></li>
 </ul>
-<h4>是否选择无头浏览器</h4>
-<p>如果源网页没有异步加载，可以不使用无头浏览器获取网页。如果需要使用无头浏览器，请确认已经安装phantomjs，且phantomjs被添加到系统路径。</p>
+<h3>是否选择无头浏览器</h3>
+<p>如果源网页没有异步加载，可以不使用无头浏览器获取网页</p>
 <pre><code>建议先选择不使用，假如提交时提示获取不到文本信息，再使用无头浏览器尝试
 </code></pre>
 
-<h4>正则进一步提取</h4>
+<h3>正则表达式</h3>
 <p>如果获取到的文本信息有冗余，可以采用正则进一步筛选，如<br>
 <code>价格：1390</code>使用正则<code>([1-9]\d*)</code>提取到纯数字1390</p>
-<h4>监控规则</h4>
-<p>目前监控规则没有完善，默认不填即可，只要文本发生变化就通知，待日后完善完成更多复杂规则监控，如数字减少或增多</p>
-<h4>自定义请求头</h4>
+<h3>监控规则</h3>
+<p>默认不填则文本发生变化就发通知<br>
+命令格式：-命令 参数
+支持以下命令：</p>
+<h4>-contain</h4>
+<p>如：文本发生变化且文本内容包含<code>上架</code></p>
+<pre><code>-contain 上架
+</code></pre>
+
+<h4>-increase</h4>
+<p>如：文本发生变化且相较于旧值，数值增长超过<code>3</code><br>
+<code>如果文本内容不是纯数字，请用正则提取出纯数字，否则将会报错</code></p>
+<pre><code>-increase 3
+</code></pre>
+
+<h4>-decrease</h4>
+<p>如：文本发生变化且相较于旧值，数值减少超过<code>3</code><br>
+<code>如果文本内容不是纯数字，请用正则提取出纯数字，否则将会报错</code></p>
+<pre><code>-decrease 3
+</code></pre>
+
+<h3>自定义请求头</h3>
 <p>可以自定义请求时的请求头，主要用于设置Cookie，获取需要登录才能查看的页面，格式为字典，如<br>
 <code>{'Cookie':'自定义cookie值'}</code></p>
-<h3>任务状态查看</h3>
+<h2>任务状态查看</h2>
 <p>可以在任务状态栏目下查看所有任务，包括任务状态（run or stop），上次运行时间，上次运行结果，运行结果包括三类：  </p>
 <ul>
 <li>监测到变化，最新值：{最新值}  </li>
