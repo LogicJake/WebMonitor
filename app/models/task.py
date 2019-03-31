@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-30 10:40:31
+@LastEditTime: 2019-03-31 14:22:34
 '''
 from datetime import datetime
 
@@ -49,6 +49,11 @@ def after_update_listener(mapper, connection, target):
     from app.main.scheduler import add_job, remove_job
 
     remove_job(target.id)
+    from app.models.task_status import TaskStatus
+    task_status = TaskStatus.__table__
+    connection.execute(task_status.update().values(
+        last_status='更新任务成功',
+        task_status='run').where(TaskStatus.id == target.id))
 
     add_job(target.id, target.frequency)
     logger.info('task-{}更新'.format(target.id))
