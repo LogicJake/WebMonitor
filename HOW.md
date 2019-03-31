@@ -19,7 +19,7 @@ python -m flask run
 如果采用邮件提醒，则必须设置系统邮箱设置，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。  
 
 ![系统邮件设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/mail_setting.png)
-## 添加任务
+## 添加网页监控任务
 在网页监控任务管理模块添加新任务  
 
 * 必须选择一种通知方式  
@@ -87,10 +87,8 @@ python -m flask run
 
 ![状态设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/status_setting.png)
 
-## 监控RSS更新
+## 添加RSS监控任务
 可以在RSS监控任务管理模块添加新RSS监控任务  
 
 ![RSS](https://github.com/LogicJake/WebMonitor/raw/master/fig/rss.png)  
-可以通过修改任务状态，暂停或重启任务  
-
 ![RSS设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/rss_setting.png)
