@@ -18,6 +18,7 @@ from app.model_views.notification_view import NotificationView
 from app.model_views.mail_setting_view import MailSettingView
 from app.model_views.task_status_view import TaskStatusView
 from app.model_views.user_view import UserView
+from app.model_views.rss_task_view import RSSTaskView
 
 db = SQLAlchemy()
 login = LoginManager()
@@ -61,13 +62,15 @@ def create_app(config_name):
 
     # 视图
     from app.models.task import Task
+    from app.models.rss_task import RSSTask
     from app.models.mail_setting import MailSetting
     from app.models.notification import Notification
     from app.models.task_status import TaskStatus
     from app.models.user import User
 
     admin.add_view(TaskStatusView(TaskStatus, db.session, name='任务状态'))
-    admin.add_view(TaskView(Task, db.session, name='任务管理'))
+    admin.add_view(TaskView(Task, db.session, name='网页监控任务管理'))
+    admin.add_view(RSSTaskView(RSSTask, db.session, name='RSS监控任务管理'))
     admin.add_view(NotificationView(Notification, db.session, name='通知方式管理'))
     admin.add_view(MailSettingView(MailSetting, db.session, name='系统邮箱设置'))
     admin.add_view(UserView(User, db.session, name='账号密码管理'))
@@ -129,8 +132,13 @@ def create_app(config_name):
                 if task_status.task_status == 'run':
                     count += 1
                     task_id = task_status.task_id
-                    task = Task.query.filter_by(id=task_id).first()
-                    add_job(task.id, task.frequency)
-                    logger.info('重启任务-' + str(task_id))
+                    if task_status.task_type == 'html':
+                        task = Task.query.filter_by(id=task_id).first()
+                        add_job(task.id, task.frequency)
+                        logger.info('重启task_' + str(task_id))
+                    elif task_status.task_type == 'rss':
+                        task = RSSTask.query.filter_by(id=task_id).first()
+                        add_job(task_id, task.frequency, 'rss')
+                        logger.info('重启task_rss' + str(task_id))
             logger.info('重启{}个任务'.format(count))
     return app

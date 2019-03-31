@@ -20,7 +20,7 @@ python -m flask run
 
 ![系统邮件设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/mail_setting.png)
 ## 添加任务
-在任务管理模块添加新任务  
+在网页监控任务管理模块添加新任务  
 
 * 必须选择一种通知方式  
 * 默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬  
@@ -86,3 +86,11 @@ python -m flask run
 可以通过修改任务状态，暂停或重启任务  
 
 ![状态设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/status_setting.png)
+
+## 监控RSS更新
+可以在RSS监控任务管理模块添加新RSS监控任务  
+
+![RSS](https://github.com/LogicJake/WebMonitor/raw/master/fig/rss.png)  
+可以通过修改任务状态，暂停或重启任务  
+
+![RSS设置](https://github.com/LogicJake/WebMonitor/raw/master/fig/rss_setting.png)

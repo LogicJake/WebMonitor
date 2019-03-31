@@ -18,7 +18,8 @@ class TaskStatusView(ModelView):
         'task_name': '任务名称',
         'last_run': '上次运行时间',
         'last_status': '上次运行结果',
-        'task_status': '任务状态'
+        'task_status': '任务状态',
+        'task_type': '监控任务类型'
     }
 
     form_choices = {'work_status': [('run', 'run'), ('stop', 'stop')]}
@@ -28,6 +29,9 @@ class TaskStatusView(ModelView):
             'readonly': True
         },
         'task_name': {
+            'readonly': True
+        },
+        'task_type': {
             'readonly': True
         }
     }
