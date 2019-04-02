@@ -22,6 +22,10 @@ class TaskStatusView(ModelView):
         'task_type': '监控任务类型'
     }
 
+    column_list = [
+        'task_name', 'last_run', 'last_status', 'task_status', 'task_type'
+    ]
+
     form_choices = {'work_status': [('run', 'run'), ('stop', 'stop')]}
 
     form_widget_args = {
