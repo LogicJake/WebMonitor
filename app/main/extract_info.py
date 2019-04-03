@@ -43,6 +43,9 @@ def get_content(url,
 def get_rss_content(url):
     feeds = feedparser.parse(url)
 
+    if len(feeds.entries) == 0:
+        raise Exception('无内容')
+
     single_post = feeds.entries[0]
     item = {}
     item['title'] = single_post.title
