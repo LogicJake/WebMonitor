@@ -1,5 +1,7 @@
 import re
+
 import feedparser
+from func_timeout import func_set_timeout
 
 from app.main.selector.selector_handler import new_handler
 from config import logger
@@ -40,6 +42,7 @@ def get_content(url,
     return content
 
 
+@func_set_timeout(5)
 def get_rss_content(url):
     feeds = feedparser.parse(url)
 

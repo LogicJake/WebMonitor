@@ -3,12 +3,14 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-03-31 22:19:40
+@LastEditTime: 2019-04-08 09:59:18
 '''
 import traceback
 from datetime import datetime
 
+import markdown
 from apscheduler.jobstores.base import JobLookupError
+from func_timeout.exceptions import FunctionTimedOut
 
 from app import app, db, scheduler
 from app.main.extract_info import get_content, get_rss_content
@@ -19,7 +21,6 @@ from app.models.rss_task import RSSTask
 from app.models.task import Task
 from app.models.task_status import TaskStatus
 from config import logger
-import markdown
 
 
 def wraper_rss_msg(item):
@@ -110,6 +111,9 @@ def monitor(id, type):
                     db.session.commit()
                     status = '监测到变化，最新值：' + item['title']
 
+        except FunctionTimedOut:
+            logger.error(traceback.format_exc())
+            status = '解析RSS超时'
         except Exception as e:
             logger.error(traceback.format_exc())
             status = repr(e)
