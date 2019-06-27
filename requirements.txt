@@ -18,6 +18,6 @@ selenium==3.141.0
 Flask-WTF==0.14.2
 html5lib==1.0.1
 PyMySQL==0.9.3
-Twisted==18.9.0
+Twisted==19.2.1
 feedparser==5.2.1
 func_timeout==4.3.0
