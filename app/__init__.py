@@ -4,6 +4,8 @@
 # @Last Modified time: 2019-03-13 17:06:37
 import psutil
 import os
+import pymysql
+pymysql.install_as_MySQLdb()
 
 from flask import Flask
 from flask_login import LoginManager

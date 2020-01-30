@@ -26,6 +26,7 @@ class RequestsSelector(FatherSelector):
             r = requests.get(url, headers=header_dict, timeout=10)
         else:
             r = requests.get(url, timeout=10)
+        r.encoding = r.apparent_encoding
         html = r.text
         return html
 
