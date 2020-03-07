@@ -8,7 +8,7 @@ from config import logger
 
 
 def extract_by_re(conetnt, regular_expression):
-    m = re.match(regular_expression, conetnt)
+    m = re.search(regular_expression, conetnt)
 
     if m:
         return m.groups()[0]

@@ -2,25 +2,26 @@
 # @Author: LogicJake
 # @Date:   2019-02-15 19:33:23
 # @Last Modified time: 2019-03-13 17:06:37
-import psutil
 import os
-import pymysql
-pymysql.install_as_MySQLdb()
 
+import psutil
+import pymysql
 from flask import Flask
-from flask_login import LoginManager
-from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin, AdminIndexView
 from flask_apscheduler import APScheduler
-from flask_bootstrap import Bootstrap
 from flask_babelex import Babel
+from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
+from flask_sqlalchemy import SQLAlchemy
 
-from app.model_views.task_view import TaskView
-from app.model_views.notification_view import NotificationView
 from app.model_views.mail_setting_view import MailSettingView
-from app.model_views.task_status_view import TaskStatusView
-from app.model_views.user_view import UserView
+from app.model_views.notification_view import NotificationView
 from app.model_views.rss_task_view import RSSTaskView
+from app.model_views.task_status_view import TaskStatusView
+from app.model_views.task_view import TaskView
+from app.model_views.user_view import UserView
+
+pymysql.install_as_MySQLdb()
 
 db = SQLAlchemy()
 login = LoginManager()
@@ -55,8 +56,9 @@ def create_app(config_name):
     db.init_app(app)
 
     # 注册flask-admin
-    admin.init_app(
-        app, index_view=AdminIndexView(template='admin/index.html', url='/'))
+    admin.init_app(app,
+                   index_view=AdminIndexView(template='admin/index.html',
+                                             url='/'))
 
     # 注册APScheduler
     scheduler.init_app(app)
