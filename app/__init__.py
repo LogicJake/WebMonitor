@@ -89,12 +89,7 @@ def create_app(config_name):
         # 初始化账号密码
         user = User.query.first()
         if user is None:
-            import random
-            import string
-            random_password = ''.join(
-                random.sample(string.ascii_letters + string.digits, 10))
-            logger.info('数据库初始化成功，初始密码为' + random_password)
-            user = User('admin', random_password)
+            user = User('admin', 'admin')
             db.session.add(user)
             db.session.commit()
 

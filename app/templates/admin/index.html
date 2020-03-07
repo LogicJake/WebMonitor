@@ -1,94 +1,17 @@
-{% extends 'admin/master.html' %}            
+{% extends 'admin/master.html' %}
 {% block body %}
-<link href="../../static/css/github.css" rel="stylesheet" type="text/css"/>
-<p>点击<a target="_blank" href="/login">此处</a>登录，如果你是刚初始化项目，则账户名为admin，密码在日志文件中，请登录之后及时修改密码！</p>
-<h1>使用方式</h1>
-<p>clone该项目，修改<code>.env</code>文件，指定DATABASE_URL值为你自己的数据库地址</p>
-<h2>运行</h2>
-<p>如果需要使用无头浏览器，请确认已经安装phantomjs，且phantomjs被添加到系统路径</p>
-<pre><code>pip install -r requirements.txt
-python -m flask run
-</code></pre>
-
-<h2>登录系统</h2>
-<p>首次初始化数据库，系统会自动新建用户，默认用户名为<code>admin</code>，密码随机生成，记录在log/log.txt中，登录之后可以在账号密码管理中修改。进入<code>/login</code>，输入账号密码登录。<br>
-登录之后显示如下栏目  </p>
-<p><img alt="展示" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/all.png"></p>
-<h2>设置通知方式</h2>
-<p>在通知方式管理中默认存在两种通知方式：邮件和Server酱的微信提醒。邮件提醒只需要设置接收邮箱，微信提醒需要申请SCKEY，自行搜索Server酱注册，简单免费。  </p>
-<p><img alt="通知方式" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/noti.png"></p>
-<h2>设置系统邮箱</h2>
-<p>如果采用邮件提醒，则必须设置系统邮箱设置，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。  </p>
-<p><img alt="系统邮件设置" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/mail_setting.png"></p>
-<h2>添加网页监控任务</h2>
-<p>在网页监控任务管理模块添加新任务  </p>
+<link href="../../static/css/github.css" rel="stylesheet" type="text/css" />
+<h1>I Am Watching You</h1>
+<h2>特性</h2>
 <ul>
-<li>必须选择一种通知方式  </li>
-<li>默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬  </li>
+    <li>支持requests请求网页，支持使用PhantomJS抓取异步加载的网页</li>
+    <li>支持xpath和css selector选择器</li>
+    <li>支持邮件和微信提醒（support by server酱）</li>
+    <li>简洁的UI，可视化操作</li>
+    <li>支持自定义请求头，抓取需要登录的网页</li>
+    <li>支持设置监控规则</li>
+    <li>监控RSS更新</li>
 </ul>
-<p><img alt="任务管理" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_manage.png"><br>
-<img alt="添加任务" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/task_setting.png">  </p>
-<h3>选择器</h3>
-<p>提供测试页面<code>/test</code>，测试是否能够从页面提取所需信息，方便确认xpath或css selector是否填写正确；在测试页面下，使用无头浏览器获取网页，提取信息错误会展示页面截图。<br>
-元素选择器类型可以选择xpath或css selector，可以借助浏览器F12直接copy两种选择器，需要注意的是，往往浏览器copy得到是元素，而不是文本信息，需要做以下补充：  </p>
-<h4>xpath</h4>
-<ul>
-<li>获取元素文本信息，在浏览器得到的选择器后加<code>/text()</code>，如<br>
-<code>//*[@id="id3"]/h3</code> =&gt; <code>//*[@id="id3"]/h3/text()</code></li>
-<li>获取元素属性信息，在浏览器得到的选择器后加<code>/@属性名</code>，如想获取元素href值<br>
-<code>//*[@id="id3"]/h3</code> =&gt; <code>//*[@id="id3"]/h3/@href</code></li>
-</ul>
-<h4>css selector</h4>
-<ul>
-<li>获取元素文本信息，在浏览器得到的选择器后加<code>/::text</code>，如<br>
-<code>div#id3 &gt; h3</code> =&gt; <code>div#id3 &gt; h3/::text</code></li>
-<li>获取元素属性信息，在浏览器得到的选择器后加<code>/::attr(属性名)</code>，如想获取元素href值<br>
-<code>div#id3 &gt; h3</code> =&gt; <code>div#id3 &gt; h3/::attr(href)</code></li>
-</ul>
-<h3>是否选择无头浏览器</h3>
-<p>如果源网页没有异步加载，可以不使用无头浏览器获取网页</p>
-<pre><code>建议先选择不使用，假如提交时提示获取不到文本信息，再使用无头浏览器尝试
-</code></pre>
-
-<h3>正则表达式</h3>
-<p>如果获取到的文本信息有冗余，可以采用正则进一步筛选，如<br>
-<code>价格：1390</code>使用正则<code>([1-9]\d*)</code>提取到纯数字1390</p>
-<h3>监控规则</h3>
-<p>默认不填则文本发生变化就发通知<br>
-命令格式：-命令 参数
-支持以下命令：</p>
-<h4>-contain</h4>
-<p>如：文本发生变化且文本内容包含<code>上架</code></p>
-<pre><code>-contain 上架
-</code></pre>
-
-<h4>-increase</h4>
-<p>如：文本发生变化且相较于旧值，数值增长超过<code>3</code><br>
-<code>如果文本内容不是纯数字，请用正则提取出纯数字，否则将会报错</code></p>
-<pre><code>-increase 3
-</code></pre>
-
-<h4>-decrease</h4>
-<p>如：文本发生变化且相较于旧值，数值减少超过<code>3</code><br>
-<code>如果文本内容不是纯数字，请用正则提取出纯数字，否则将会报错</code></p>
-<pre><code>-decrease 3
-</code></pre>
-
-<h3>自定义请求头</h3>
-<p>可以自定义请求时的请求头，主要用于设置Cookie，获取需要登录才能查看的页面，格式为字典，如<br>
-<code>{'Cookie':'自定义cookie值'}</code></p>
-<h2>任务状态查看</h2>
-<p>可以在任务状态栏目下查看所有任务，包括任务状态（run or stop），上次运行时间，上次运行结果，运行结果包括三类：  </p>
-<ul>
-<li>监测到变化，最新值：{最新值}  </li>
-<li>成功执行但未监测到变化  </li>
-<li>出错显示异常信息  </li>
-</ul>
-<p><img alt="任务状态" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/status.png"><br>
-可以通过修改任务状态，暂停或重启任务  </p>
-<p><img alt="状态设置" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/status_setting.png"></p>
-<h2>添加RSS监控任务</h2>
-<p>可以在RSS监控任务管理模块添加新RSS监控任务  </p>
-<p><img alt="RSS" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/rss.png"><br>
-<img alt="RSS设置" src="https://github.com/LogicJake/WebMonitor/raw/master/fig/rss_setting.png"></p>
+<h2>使用指南</h2>
+<a target="_blank" href="https://www.logicjake.xyz/WebMonitor">请点击这里</a>
 {% endblock %}
