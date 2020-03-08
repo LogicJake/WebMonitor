@@ -11,4 +11,5 @@ if os.path.exists(dotenv_path):
     from dotenv import load_dotenv
     load_dotenv(dotenv_path)
 
-app = create_app(os.getenv("FLASK_ENV"))
+env = os.getenv('FLASK_ENV') or 'production'
+app = create_app(env)

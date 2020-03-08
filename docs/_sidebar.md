@@ -1,5 +1,5 @@
 * [项目介绍](/)
-* [安装](install.md)  
+* [部署](install.md)  
 * [使用方式](how.md)
 * **Links**
 * [![Github](https://icongram.jgog.in/devicon/github-original.svg?color=808080&size=16)Github](https://github.com/LogicJake/WebMonitor)

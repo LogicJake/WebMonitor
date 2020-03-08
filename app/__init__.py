@@ -2,9 +2,6 @@
 # @Author: LogicJake
 # @Date:   2019-02-15 19:33:23
 # @Last Modified time: 2019-03-13 17:06:37
-import os
-
-import psutil
 import pymysql
 from flask import Flask
 from flask_admin import Admin, AdminIndexView
@@ -116,28 +113,21 @@ def create_app(config_name):
             db.session.add(wechat_noti)
             db.session.commit()
 
-        ppid = psutil.Process(os.getppid())
-        ppid_name = ppid.name()
-        # 加这一步判断主要是因为，
-        # 在debug模式下，会启动另外一个线程来自动重载，
-        # 这样会导致在两个线程中都启动任务，造成重复
-        if ('python' in ppid_name and
-                config_name == 'development') or config_name != 'development':
-            # 在系统重启时重启任务
-            from app.main.scheduler import add_job
-            task_statuss = TaskStatus.query.all()
-            count = 0
-            for task_status in task_statuss:
-                if task_status.task_status == 'run':
-                    count += 1
-                    task_id = task_status.task_id
-                    if task_status.task_type == 'html':
-                        task = Task.query.filter_by(id=task_id).first()
-                        add_job(task.id, task.frequency)
-                        logger.info('重启task_' + str(task_id))
-                    elif task_status.task_type == 'rss':
-                        task = RSSTask.query.filter_by(id=task_id).first()
-                        add_job(task_id, task.frequency, 'rss')
-                        logger.info('重启task_rss' + str(task_id))
-            logger.info('重启{}个任务'.format(count))
+        # 在系统重启时重启任务
+        from app.main.scheduler import add_job
+        task_statuss = TaskStatus.query.all()
+        count = 0
+        for task_status in task_statuss:
+            if task_status.task_status == 'run':
+                count += 1
+                task_id = task_status.task_id
+                if task_status.task_type == 'html':
+                    task = Task.query.filter_by(id=task_id).first()
+                    add_job(task.id, task.frequency)
+                    logger.info('重启task_' + str(task_id))
+                elif task_status.task_type == 'rss':
+                    task = RSSTask.query.filter_by(id=task_id).first()
+                    add_job(task_id, task.frequency, 'rss')
+                    logger.info('重启task_rss' + str(task_id))
+        logger.info('重启{}个任务'.format(count))
     return app
