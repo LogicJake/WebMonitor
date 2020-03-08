@@ -1,5 +1,4 @@
-![[docker] CI for releases](https://github.com/LogicJake/WebMonitor/workflows/%5Bdocker%5D%20CI%20for%20releases/badge.svg?branch=master&event=push)  
-
+![[docker] CI for releases](https://github.com/LogicJake/WebMonitor/workflows/%5Bdocker%5D%20CI%20for%20releases/badge.svg?branch=master&event=push)  ![Tests](https://github.com/LogicJake/WebMonitor/workflows/Tests/badge.svg?branch=master&event=push)
 ## 特性
 * 支持requests请求网页，支持使用PhantomJS抓取异步加载的网页
 * 支持xpath和css selector选择器
