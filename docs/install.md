@@ -23,7 +23,7 @@ python -m flask run -h 0.0.0.0 -p 5000
 ```
 
 ### 添加配置
-可以通过设置环境变量来配置 WebMonitor。在项目根目录新建 ```.env``` 文件，每行以 ```NAME=VALUE``` 格式添加环境变量，DATABASE_URL 必填，举例如下:
+可以通过设置环境变量来配置 WebMonitor。在项目根目录新建 ```.env``` 文件，每行以 ```NAME=VALUE``` 格式添加环境变量，DATABASE_URL 必填，数据库字符集需设置为 ```utf8```，举例如下:
 ```
 DATABASE_URL=mysql+pymysql://username:password@hostname/database
 ```
@@ -51,7 +51,7 @@ docker stop webmonitor
 ```
 
 ### 添加配置
-在运行时增加参数: -e NAME=VALUE，DATABASE_URL 必须添加
+在运行时增加参数: -e NAME=VALUE，DATABASE_URL 必须添加，数据库字符集需设置为 ```utf8```
 ```
 -e DATABASE_URL=mysql+pymysql://username:password@hostname/database
 ```
