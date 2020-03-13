@@ -37,7 +37,7 @@ class MailNotification(Notification):
         message['From'] = Header('WebMonitor', 'utf-8')
         message['Subject'] = Header(header, 'utf-8')
 
-        smtpObj = smtplib.SMTP()
+        smtpObj = smtplib.SMTP_SSL(self.mail_server, self.mail_port)
         smtpObj.connect(self.mail_server, self.mail_port)
         smtpObj.login(self.mail_username, self.mail_password)
         smtpObj.sendmail(self.mail_sender, to, message.as_string())

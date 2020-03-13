@@ -44,9 +44,14 @@ def send_message(content, header, mail, wechat):
             handler = new_handler('mail')
             mail_info = Notification.query.filter_by(type='mail').first()
             mail_address = mail_info.number
-            content = markdown.markdown(
-                content, output_format='html5', extensions=['extra'])
+            content = markdown.markdown(content,
+                                        output_format='html5',
+                                        extensions=['extra'])
             handler.send(mail_address, header, content)
+    except Exception as e:
+        raise e
+
+    try:
 
         if wechat == 'yes':
             handler = new_handler('wechat')
@@ -74,8 +79,8 @@ def monitor(id, type):
                 rule = task.rule
                 headers = task.headers
 
-                last = Content.query.filter_by(
-                    task_id=id, task_type=type).first()
+                last = Content.query.filter_by(task_id=id,
+                                               task_type=type).first()
                 if not last:
                     last = Content(id)
 
@@ -96,8 +101,8 @@ def monitor(id, type):
                 mail = rss_task.mail
                 wechat = rss_task.wechat
 
-                last = Content.query.filter_by(
-                    task_id=id, task_type=type).first()
+                last = Content.query.filter_by(task_id=id,
+                                               task_type=type).first()
                 if not last:
                     last = Content(id, 'rss')
 
@@ -118,8 +123,8 @@ def monitor(id, type):
             logger.error(traceback.format_exc())
             status = repr(e)
 
-        task_status = TaskStatus.query.filter_by(
-            task_id=id, task_type=type).first()
+        task_status = TaskStatus.query.filter_by(task_id=id,
+                                                 task_type=type).first()
         task_status.last_run = datetime.now()
         task_status.last_status = status
         db.session.add(task_status)
@@ -132,16 +137,15 @@ def add_job(id, interval, type='html'):
     elif type == 'rss':
         task_id = 'rss{}'.format(id)
 
-    scheduler.add_job(
-        func=monitor,
-        args=(
-            id,
-            type,
-        ),
-        trigger='interval',
-        minutes=interval,
-        id='task_{}'.format(task_id),
-        replace_existing=True)
+    scheduler.add_job(func=monitor,
+                      args=(
+                          id,
+                          type,
+                      ),
+                      trigger='interval',
+                      minutes=interval,
+                      id='task_{}'.format(task_id),
+                      replace_existing=True)
     logger.info('添加task_{}'.format(task_id))
 
 
