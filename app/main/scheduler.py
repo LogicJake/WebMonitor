@@ -39,6 +39,7 @@ def wraper_msg(content, link):
 def send_message(content, header, mail, wechat):
     from app.main.notification.notification_handler import new_handler
 
+    mail_exception = None
     try:
         if mail == 'yes':
             handler = new_handler('mail')
@@ -49,22 +50,42 @@ def send_message(content, header, mail, wechat):
                                         extensions=['extra'])
             handler.send(mail_address, header, content)
     except Exception as e:
-        raise e
+        mail_exception = e
 
+    wechat_exception = None
     try:
-
         if wechat == 'yes':
             handler = new_handler('wechat')
             wechat_info = Notification.query.filter_by(type='wechat').first()
             key = wechat_info.number
             handler.send(key, header, content)
     except Exception as e:
-        raise e
+        wechat_exception = e
+
+    if mail_exception is not None and wechat_exception is not None:
+        raise Exception('Mail Exception: {}, Wechat Exception: {}'.format(
+            repr(mail_exception), repr(wechat_exception)))
+
+    if mail_exception is not None:
+        if wechat == 'yes':
+            raise Exception('其中一种通知方式失败, Mail Exception: {}'.format(
+                repr(mail_exception)))
+        else:
+            raise Exception('Mail Exception: {}'.format(repr(mail_exception)))
+
+    if wechat_exception is not None:
+        if mail == 'yes':
+            raise Exception('其中一种通知方式失败, Wechat Exception: {}'.format(
+                repr(wechat_exception)))
+        else:
+            raise Exception('Wechat Exception: {}'.format(
+                repr(wechat_exception)))
 
 
 def monitor(id, type):
     with app.app_context():
         status = '成功执行但未监测到变化'
+        global_content = None
         try:
             if type == 'html':
                 task = Task.query.filter_by(id=id).first()
@@ -87,13 +108,30 @@ def monitor(id, type):
                 last_content = last.content
                 content = get_content(url, is_chrome, selector_type, selector,
                                       regular_expression, headers)
-                if is_changed(rule, content, last_content):
+                global_content = content
+                status_code = is_changed(rule, content, last_content)
+                logger.info(
+                    'rule: {}, content: {}, last_content: {}, status_code: {}'.
+                    format(rule, content, last_content, status_code))
+                if status_code == 1:
+                    status = '监测到变化，但未命中规则，最新值为{}'.format(content)
+                    last.content = content
+                    db.session.add(last)
+                    db.session.commit()
+                elif status_code == 2:
+                    status = '监测到变化，且命中规则，最新值为{}'.format(content)
                     msg = wraper_msg(content, url)
                     send_message(msg, name, mail, wechat)
                     last.content = content
                     db.session.add(last)
                     db.session.commit()
-                    status = '监测到变化，最新值：' + content
+                elif status_code == 3:
+                    status = '监测到变化，最新值为{}'.format(content)
+                    msg = wraper_msg(content, url)
+                    send_message(msg, name, mail, wechat)
+                    last.content = content
+                    db.session.add(last)
+                    db.session.commit()
             elif type == 'rss':
                 rss_task = RSSTask.query.filter_by(id=id).first()
                 url = rss_task.url
@@ -109,6 +147,7 @@ def monitor(id, type):
                 last_guid = last.content
                 item = get_rss_content(url)
                 if item['guid'] != last_guid:
+                    global_content = content
                     content = wraper_rss_msg(item)
                     send_message(content, name, mail, wechat)
                     last.content = item['guid']
@@ -122,6 +161,10 @@ def monitor(id, type):
         except Exception as e:
             logger.error(traceback.format_exc())
             status = repr(e)
+            if '其中一种' in status:
+                last.content = global_content
+                db.session.add(last)
+                db.session.commit()
 
         task_status = TaskStatus.query.filter_by(task_id=id,
                                                  task_type=type).first()

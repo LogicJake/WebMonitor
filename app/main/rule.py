@@ -6,7 +6,7 @@ def parse_contain(args, content, last_content):
     try:
         key_index = args.index('-contain')
     except ValueError:
-        return True
+        return False
 
     value_index = key_index + 1
     value = args[value_index]
@@ -25,7 +25,7 @@ def parse_increase(args, content, last_content):
     try:
         key_index = args.index('-increase')
     except ValueError:
-        return True
+        return False
 
     value_index = key_index + 1
     value = args[value_index]
@@ -48,7 +48,7 @@ def parse_decrease(args, content, last_content):
     try:
         key_index = args.index('-decrease')
     except ValueError:
-        return True
+        return False
 
     value_index = key_index + 1
     value = args[value_index]
@@ -65,14 +65,19 @@ def parse_decrease(args, content, last_content):
 rule_funs = [parse_contain, parse_increase, parse_decrease]
 
 
+# 0 无变化(不发送)
+# 1 有变化但没有触发规则(更新content 但不发送)
+# 2 有变化且触发规则(更新content 发送)
+# 3 有变化没有设置规则(更新content 发送)
 def is_changed(rule, content, last_content):
-    if last_content:
-        if last_content == content:
-            return False
+    if last_content is not None and last_content == content:
+        return 0
+    else:
+        if rule:
+            args = rule.split(' ')
+            for rule_fun in rule_funs:
+                if rule_fun(args, content, last_content):
+                    return 2
+            return 1
         else:
-            if rule:
-                args = rule.split(' ')
-                for rule_fun in rule_funs:
-                    if not rule_fun(args, content, last_content):
-                        return False
-    return True
+            return 3
