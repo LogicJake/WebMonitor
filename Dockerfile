@@ -47,4 +47,4 @@ RUN apt-get update\
 
 EXPOSE $PORT
 
-CMD ["python", "-m", "flask", "run", "-h", "0.0.0.0", "-p", $PORT]
+CMD python -m flask run -h 0.0.0.0 -p $PORT
