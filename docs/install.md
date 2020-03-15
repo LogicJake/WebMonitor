@@ -41,7 +41,7 @@ docker pull logicjake/webmonitor
 然后运行 webmonitor 即可
 
 ```
-docker run -d --name webmonitor -p 5000:5000 -e DATABASE_URL=mysql+pymysql://username:password@hostname/database logicjake/webmonitor
+docker run -d --name webmonitor -p 5000:5000 -e PORT=5000 -e DATABASE_URL=mysql+pymysql://username:password@hostname/database logicjake/webmonitor
 ```
 
 您可以使用下面的命令来关闭 webmonitor

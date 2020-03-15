@@ -2,6 +2,7 @@ FROM ubuntu:16.04
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
+ENV PORT 5000
 
 ADD . /app
 
@@ -44,6 +45,6 @@ RUN apt-get update\
 && ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin\
 && rm /tmp/$PHANTOM_JS.tar.bz2
 
-EXPOSE 5000
+EXPOSE $PORT
 
-CMD ["python", "-m", "flask", "run", "-h", "0.0.0.0", "-p", "5000"]
+CMD ["python", "-m", "flask", "run", "-h", "0.0.0.0", "-p", $PORT]
