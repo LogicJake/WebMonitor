@@ -2,7 +2,6 @@
 # @Author: LogicJake, Jacob
 # @Date:   2019-02-15 19:33:23
 # @Last Modified time: 2020-03-01 14:59:53
-import psutil
 import os
 import pymysql
 from flask import Flask

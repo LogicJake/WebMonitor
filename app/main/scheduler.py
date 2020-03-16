@@ -106,6 +106,7 @@ def monitor(id, type):
                 regular_expression = task.regular_expression
                 mail = task.mail
                 wechat = task.wechat
+                pushover = task.pushover
                 name = task.name
                 rule = task.rule
                 headers = task.headers
@@ -131,14 +132,14 @@ def monitor(id, type):
                 elif status_code == 2:
                     status = '监测到变化，且命中规则，最新值为{}'.format(content)
                     msg = wraper_msg(content, url)
-                    send_message(msg, name, mail, wechat)
+                    send_message(msg, name, mail, wechat, pushover)
                     last.content = content
                     db.session.add(last)
                     db.session.commit()
                 elif status_code == 3:
                     status = '监测到变化，最新值为{}'.format(content)
                     msg = wraper_msg(content, url)
-                    send_message(msg, name, mail, wechat)
+                    send_message(msg, name, mail, wechat, pushover)
                     last.content = content
                     db.session.add(last)
                     db.session.commit()
@@ -148,6 +149,7 @@ def monitor(id, type):
                 name = rss_task.name
                 mail = rss_task.mail
                 wechat = rss_task.wechat
+                pushover = rss_task.pushover
 
                 last = Content.query.filter_by(task_id=id,
                                                task_type=type).first()
