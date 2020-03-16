@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=UTF-8
 '''
-@Author: LogicJake
+@Author: LogicJake, Jacob
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-31 20:50:38
+@LastEditTime: 2020-03-01 15:01:39
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -23,8 +23,9 @@ def check_url(form, field):
 def check_noti(form, field):
     is_wechat = form.wechat.data
     is_mail = form.mail.data
+    is_pushover = form.pushover.data
 
-    if is_wechat == 'no' and is_mail == 'no':
+    if is_wechat == 'no' and is_mail == 'no' and is_pushover == 'no':
         raise ValidationError('必须选择一个通知方式')
 
 
@@ -43,10 +44,11 @@ class RSSTaskView(ModelView):
         'frequency': '频率(分钟)',
         'mail': '邮件提醒',
         'wechat': '微信提醒',
+        'pushover': '推送提醒',
     }
 
     column_list = [
-        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat'
+        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat', 'pushover'
     ]
 
     form_args = {
@@ -55,12 +57,16 @@ class RSSTaskView(ModelView):
         },
         'wechat': {
             'validators': [check_noti]
+        },
+        'pushover': {
+            'validators': [check_noti]
         }
     }
 
     form_choices = {
         'mail': [('no', 'no'), ('yes', 'yes')],
         'wechat': [('no', 'no'), ('yes', 'yes')],
+        'pushover': [('no', 'no'), ('yes', 'yes')],
     }
 
     form_excluded_columns = ('create_time')

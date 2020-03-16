@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-# @Author: LogicJake
+# @Author: LogicJake, Jacob
 # @Date:   2019-02-15 19:33:23
-# @Last Modified time: 2019-03-13 17:06:37
+# @Last Modified time: 2020-03-01 14:59:53
+import psutil
+import os
 import pymysql
 from flask import Flask
 from flask_admin import Admin, AdminIndexView
@@ -18,12 +20,15 @@ from app.model_views.task_status_view import TaskStatusView
 from app.model_views.task_view import TaskView
 from app.model_views.user_view import UserView
 
+# 修复时区问题
+from apscheduler.schedulers.background import BackgroundScheduler
 pymysql.install_as_MySQLdb()
 
 db = SQLAlchemy()
 login = LoginManager()
 admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')
-scheduler = APScheduler()
+# scheduler = APScheduler()
+scheduler = APScheduler(BackgroundScheduler(timezone="Asia/Shanghai")) #修复时区问题
 app = Flask(__name__)
 bootstrap = Bootstrap()
 
@@ -96,6 +101,7 @@ def create_app(config_name):
         notis = Notification.query.all()
         mail_exist = False
         wechat_exist = False
+        pushover_exist = False
 
         if len(notis) != 0:
             for noti in notis:
@@ -103,6 +109,8 @@ def create_app(config_name):
                     mail_exist = True
                 if noti.type == 'wechat':
                     wechat_exist = True
+                if noti.type == 'pushover':
+                    pushover_exist = True
 
         if not mail_exist:
             mail_noti = Notification('mail')
@@ -111,6 +119,10 @@ def create_app(config_name):
         if not wechat_exist:
             wechat_noti = Notification('wechat')
             db.session.add(wechat_noti)
+            db.session.commit()
+        if not pushover_exist:
+            pushover_noti = Notification('pushover')
+            db.session.add(pushover_noti)
             db.session.commit()
 
         # 在系统重启时重启任务

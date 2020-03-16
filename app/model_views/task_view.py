@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=UTF-8
 '''
-@Author: LogicJake
+@Author: LogicJake, Jacob
 @Date: 2019-03-24 11:01:56
-@LastEditTime: 2019-03-30 15:13:10
+@LastEditTime: 2020-03-01 15:02:02
 '''
 import requests
 from flask_admin.contrib.sqla import ModelView
@@ -24,8 +24,9 @@ def check_url(form, field):
 def check_noti(form, field):
     is_wechat = form.wechat.data
     is_mail = form.mail.data
+    is_pushover = form.pushover.data
 
-    if is_wechat == 'no' and is_mail == 'no':
+    if is_wechat == 'no' and is_mail == 'no' and is_pushover == 'no':
         raise ValidationError('必须选择一个通知方式')
 
 
@@ -46,6 +47,8 @@ def check_selector(form, field):
             selector_handler.get_by_xpath(url, selector, headers)
         elif selector_type == 'css':
             selector_handler.get_by_css(url, selector, headers)
+        elif selector_type == 'json':
+            selector_handler.get_by_json(url, selector, headers)
         else:
             raise Exception('无效选择器')
     except Exception as e:
@@ -70,6 +73,7 @@ class TaskView(ModelView):
         'frequency': '频率(分钟)',
         'mail': '邮件提醒',
         'wechat': '微信提醒',
+        'pushover': '推送提醒',
         'regular_expression': '正则表达式',
         'rule': '监控规则',
         'headers': '自定义请求头'
@@ -84,7 +88,7 @@ class TaskView(ModelView):
     }
 
     column_list = [
-        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat'
+        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat' , 'pushover'
     ]
 
     form_args = {
@@ -96,14 +100,18 @@ class TaskView(ModelView):
         },
         'wechat': {
             'validators': [check_noti]
+        },
+        'pushover': {
+            'validators': [check_noti]
         }
     }
 
     form_choices = {
-        'selector_type': [('xpath', 'xpath'), ('css', 'css selector')],
+        'selector_type': [('xpath', 'xpath'), ('css', 'css selector'), ('json', 'Jsonpath')],
         'is_chrome': [('no', 'no'), ('yes', 'yes')],
         'mail': [('no', 'no'), ('yes', 'yes')],
         'wechat': [('no', 'no'), ('yes', 'yes')],
+        'pushover': [('no', 'no'), ('yes', 'yes')],
     }
 
     form_excluded_columns = ('create_time')
