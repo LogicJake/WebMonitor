@@ -25,7 +25,8 @@ pymysql.install_as_MySQLdb()
 
 db = SQLAlchemy()
 login = LoginManager()
-admin = Admin(name='I AM WATCHING YOU', template_mode='bootstrap3')
+siteName = os.getenv('NAME')
+admin = Admin(name=siteName, template_mode='bootstrap3')
 # scheduler = APScheduler()
 scheduler = APScheduler(BackgroundScheduler(timezone="Asia/Shanghai")) #修复时区问题
 app = Flask(__name__)

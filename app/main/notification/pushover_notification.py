@@ -5,8 +5,8 @@
 @Date: 2020-03-01 15:01:07
 @LastEditTime: 2020-03-01 15:01:10
 '''
+import os
 import json
-
 import requests
 
 from app.main.notification.notification import Notification
