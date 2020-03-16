@@ -23,6 +23,11 @@ from app.models.task_status import TaskStatus
 from config import logger
 
 
+# 部分通知方式出错异常
+class PartNotificationError(Exception):
+    pass
+
+
 def wraper_rss_msg(item):
     title = item['title']
     link = item['link']
@@ -39,9 +44,13 @@ def wraper_msg(content, link):
 def send_message(content, header, mail, wechat):
     from app.main.notification.notification_handler import new_handler
 
-    mail_exception = None
+    total = 0
+    fail = 0
+
+    exception_content = ''
     try:
         if mail == 'yes':
+            total += 1
             handler = new_handler('mail')
             mail_info = Notification.query.filter_by(type='mail').first()
             mail_address = mail_info.number
@@ -50,36 +59,25 @@ def send_message(content, header, mail, wechat):
                                         extensions=['extra'])
             handler.send(mail_address, header, content)
     except Exception as e:
-        mail_exception = e
+        fail += 1
+        exception_content += 'Mail Exception: {};'.format(repr(e))
 
-    wechat_exception = None
     try:
         if wechat == 'yes':
+            total += 1
             handler = new_handler('wechat')
             wechat_info = Notification.query.filter_by(type='wechat').first()
             key = wechat_info.number
             handler.send(key, header, content)
     except Exception as e:
-        wechat_exception = e
+        fail += 1
+        exception_content += 'Wechat Exception: {};'.format(repr(e))
 
-    if mail_exception is not None and wechat_exception is not None:
-        raise Exception('Mail Exception: {}, Wechat Exception: {}'.format(
-            repr(mail_exception), repr(wechat_exception)))
-
-    if mail_exception is not None:
-        if wechat == 'yes':
-            raise Exception('其中一种通知方式失败, Mail Exception: {}'.format(
-                repr(mail_exception)))
+    if fail > 0:
+        if fail < total:
+            raise PartNotificationError(exception_content)
         else:
-            raise Exception('Mail Exception: {}'.format(repr(mail_exception)))
-
-    if wechat_exception is not None:
-        if mail == 'yes':
-            raise Exception('其中一种通知方式失败, Wechat Exception: {}'.format(
-                repr(wechat_exception)))
-        else:
-            raise Exception('Wechat Exception: {}'.format(
-                repr(wechat_exception)))
+            raise Exception(exception_content)
 
 
 def monitor(id, type):
@@ -158,13 +156,15 @@ def monitor(id, type):
         except FunctionTimedOut:
             logger.error(traceback.format_exc())
             status = '解析RSS超时'
+        except PartNotificationError as e:
+            logger.error(traceback.format_exc())
+            status = repr(e)
+            last.content = global_content
+            db.session.add(last)
+            db.session.commit()
         except Exception as e:
             logger.error(traceback.format_exc())
             status = repr(e)
-            if '其中一种' in status:
-                last.content = global_content
-                db.session.add(last)
-                db.session.commit()
 
         task_status = TaskStatus.query.filter_by(task_id=id,
                                                  task_type=type).first()
