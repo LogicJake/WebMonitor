@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding=UTF-8
 '''
-@Author: LogicJake
+@Author: LogicJake, Jacob
 @Date: 2019-03-24 16:35:24
-@LastEditTime: 2019-03-31 21:25:03
+@LastEditTime: 2020-03-01 15:02:16
 '''
 from datetime import datetime
 
@@ -23,6 +23,7 @@ class RSSTask(db.Model):
     # 通知方式
     mail = db.Column(db.String(32), nullable=False, default='no')
     wechat = db.Column(db.String(32), nullable=False, default='no')
+    pushover = db.Column(db.String(32), nullable=False, default='no')
 
 
 def after_insert_listener(mapper, connection, target):

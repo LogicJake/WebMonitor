@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# @Author: LogicJake
+# @Author: LogicJake, Jacob
 # @Date:   2019-02-15 19:35:17
-# @Last Modified time: 2019-03-13 17:09:23
+# @Last Modified time: 2020-03-01 14:51:01
 import os
 import logging
 import logging.config
@@ -19,6 +19,7 @@ class BaseConfig:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     SECRET_KEY = 'chinano.1'
     BABEL_DEFAULT_LOCALE = 'zh_CN'
+    SCHEDULER_TIMEZONE = 'Asia/Shanghai'
 
 
 class DevelopmentConfig(BaseConfig):

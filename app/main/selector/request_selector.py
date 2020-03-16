@@ -1,13 +1,16 @@
 #!/usr/bin/env python
 # coding=UTF-8
 '''
-@Author: LogicJake
+@Author: LogicJake, Jacob
 @Date: 2019-03-25 12:31:35
-@LastEditTime: 2019-03-30 14:16:58
+@LastEditTime: 2020-03-01 14:53:38
 '''
 import ast
 
 import requests
+import json
+import jsonpath
+
 from scrapy.selector import Selector
 
 from app.main.selector.selector import Selector as FatherSelector
@@ -29,6 +32,15 @@ class RequestsSelector(FatherSelector):
         r.encoding = r.apparent_encoding
         html = r.text
         return html
+    
+    # 判断json #############################
+    def isJson(self, input_str):
+        try:
+            json.loads(input_str)
+            return True
+        except:
+            raise Exception('返回数据不是Json')
+    # 判断json #############################
 
     def get_by_xpath(self, url, xpath, headers=None):
         html = self.get_html(url, headers)
@@ -45,5 +57,23 @@ class RequestsSelector(FatherSelector):
 
         if len(res) != 0:
             return res[0]
+        else:
+            raise Exception('无法获取文本信息')
+
+    def get_by_json(self, url, xpath, headers=None):
+        html = self.get_html(url, headers)
+        
+        if self.isJson(html):
+            resJson = json.loads(html) #把返回数据转成JSON
+        else :
+            raise Exception('Json转换错误')
+        
+        res = jsonpath.jsonpath(resJson,xpath)
+        
+        resStr = json.dumps(res) # 将json转为str
+
+        if len(resStr) != 0:
+            # return res[0]
+            return resStr
         else:
             raise Exception('无法获取文本信息')

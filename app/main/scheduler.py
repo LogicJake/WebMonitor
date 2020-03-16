@@ -3,7 +3,7 @@
 '''
 @Author: LogicJake
 @Date: 2019-03-24 14:32:34
-@LastEditTime: 2019-04-08 09:59:18
+@LastEditTime: 2020-03-16 13:41:46
 '''
 import traceback
 from datetime import datetime
@@ -32,16 +32,16 @@ def wraper_rss_msg(item):
     title = item['title']
     link = item['link']
 
-    res = '''####[{}]({})'''.format(title, link)
+    res = '''[{}]({})'''.format(title, link)
     return res
 
 
 def wraper_msg(content, link):
-    res = '''####[{}]({})'''.format(content, link)
+    res = '''[{}]({})'''.format(content, link)
     return res
 
 
-def send_message(content, header, mail, wechat):
+def send_message(content, header, mail, wechat, pushover):
     from app.main.notification.notification_handler import new_handler
 
     total = 0
@@ -73,6 +73,18 @@ def send_message(content, header, mail, wechat):
         fail += 1
         exception_content += 'Wechat Exception: {};'.format(repr(e))
 
+
+    try:
+        if pushover == 'yes':
+            total += 1
+            handler = new_handler('pushover')
+            pushover_info = Notification.query.filter_by(type='pushover').first()
+            key = pushover_info.number
+            handler.send(key, header, content)
+    except Exception as e:
+        fail += 1
+        exception_content += 'Pushover Exception: {};'.format(repr(e))
+
     if fail > 0:
         if fail < total:
             raise PartNotificationError(exception_content)
@@ -94,6 +106,7 @@ def monitor(id, type):
                 regular_expression = task.regular_expression
                 mail = task.mail
                 wechat = task.wechat
+                pushover = task.pushover
                 name = task.name
                 rule = task.rule
                 headers = task.headers
@@ -119,14 +132,14 @@ def monitor(id, type):
                 elif status_code == 2:
                     status = '监测到变化，且命中规则，最新值为{}'.format(content)
                     msg = wraper_msg(content, url)
-                    send_message(msg, name, mail, wechat)
+                    send_message(msg, name, mail, wechat, pushover)
                     last.content = content
                     db.session.add(last)
                     db.session.commit()
                 elif status_code == 3:
                     status = '监测到变化，最新值为{}'.format(content)
                     msg = wraper_msg(content, url)
-                    send_message(msg, name, mail, wechat)
+                    send_message(msg, name, mail, wechat, pushover)
                     last.content = content
                     db.session.add(last)
                     db.session.commit()
@@ -136,6 +149,7 @@ def monitor(id, type):
                 name = rss_task.name
                 mail = rss_task.mail
                 wechat = rss_task.wechat
+                pushover = rss_task.pushover
 
                 last = Content.query.filter_by(task_id=id,
                                                task_type=type).first()
@@ -147,7 +161,7 @@ def monitor(id, type):
                 if item['guid'] != last_guid:
                     global_content = content
                     content = wraper_rss_msg(item)
-                    send_message(content, name, mail, wechat)
+                    send_message(content, name, mail, wechat, pushover)
                     last.content = item['guid']
                     db.session.add(last)
                     db.session.commit()

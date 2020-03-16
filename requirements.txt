@@ -21,3 +21,4 @@ Twisted==19.7.0
 feedparser==5.2.1
 func_timeout==4.3.0
 werkzeug==0.16.1
+jsonpath==0.82

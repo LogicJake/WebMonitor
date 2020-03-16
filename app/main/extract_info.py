@@ -33,6 +33,8 @@ def get_content(url,
         content = selector_handler.get_by_xpath(url, selector, headers)
     elif selector_type == 'css':
         content = selector_handler.get_by_css(url, selector, headers)
+    elif selector_type == 'json':
+        content = selector_handler.get_by_json(url, selector, headers)
     else:
         logger.error('无效选择器')
         raise Exception('无效选择器')
