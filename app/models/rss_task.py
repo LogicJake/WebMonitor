@@ -33,8 +33,9 @@ def after_insert_listener(mapper, connection, target):
 
     from app.models.task_status import TaskStatus
     task_status = TaskStatus.__table__
-    connection.execute(task_status.insert().values(
-        task_id=target.id, task_name=target.name, task_type='rss'))
+    connection.execute(task_status.insert().values(task_id=target.id,
+                                                   task_name=target.name,
+                                                   task_type='rss'))
 
 
 def after_update_listener(mapper, connection, target):

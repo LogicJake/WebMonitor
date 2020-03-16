@@ -73,12 +73,12 @@ def send_message(content, header, mail, wechat, pushover):
         fail += 1
         exception_content += 'Wechat Exception: {};'.format(repr(e))
 
-
     try:
         if pushover == 'yes':
             total += 1
             handler = new_handler('pushover')
-            pushover_info = Notification.query.filter_by(type='pushover').first()
+            pushover_info = Notification.query.filter_by(
+                type='pushover').first()
             key = pushover_info.number
             handler.send(key, header, content)
     except Exception as e:

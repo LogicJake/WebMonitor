@@ -27,8 +27,7 @@ db = SQLAlchemy()
 login = LoginManager()
 siteName = os.getenv('NAME')
 admin = Admin(name=siteName, template_mode='bootstrap3')
-# scheduler = APScheduler()
-scheduler = APScheduler(BackgroundScheduler(timezone="Asia/Shanghai")) #修复时区问题
+scheduler = APScheduler(BackgroundScheduler(timezone="Asia/Shanghai"))
 app = Flask(__name__)
 bootstrap = Bootstrap()
 

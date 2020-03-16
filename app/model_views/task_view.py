@@ -88,7 +88,8 @@ class TaskView(ModelView):
     }
 
     column_list = [
-        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat' , 'pushover'
+        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat',
+        'pushover'
     ]
 
     form_args = {
@@ -107,7 +108,8 @@ class TaskView(ModelView):
     }
 
     form_choices = {
-        'selector_type': [('xpath', 'xpath'), ('css', 'css selector'), ('json', 'Jsonpath')],
+        'selector_type': [('xpath', 'xpath'), ('css', 'css selector'),
+                          ('json', 'Jsonpath')],
         'is_chrome': [('no', 'no'), ('yes', 'yes')],
         'mail': [('no', 'no'), ('yes', 'yes')],
         'wechat': [('no', 'no'), ('yes', 'yes')],
