@@ -94,7 +94,7 @@ def send_message(content, header, mail, wechat, pushover):
 
 def monitor(id, type):
     with app.app_context():
-        status = '成功执行但未监测到变化'
+        status = ''
         global_content = None
         try:
             if type == 'html':
@@ -143,6 +143,8 @@ def monitor(id, type):
                     last.content = content
                     db.session.add(last)
                     db.session.commit()
+                elif status_code == 0:
+                    status = '成功执行但未监测到变化，当前值为{}'.format(content)
             elif type == 'rss':
                 rss_task = RSSTask.query.filter_by(id=id).first()
                 url = rss_task.url
@@ -166,6 +168,7 @@ def monitor(id, type):
                     db.session.add(last)
                     db.session.commit()
                     status = '监测到变化，最新值：' + item['title']
+                status = '成功执行但未监测到变化'
 
         except FunctionTimedOut:
             logger.error(traceback.format_exc())
