@@ -48,7 +48,8 @@ class RSSTaskView(ModelView):
     }
 
     column_list = [
-        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat', 'pushover'
+        'id', 'name', 'url', 'frequency', 'create_time', 'mail', 'wechat',
+        'pushover'
     ]
 
     form_args = {

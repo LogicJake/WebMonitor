@@ -62,3 +62,7 @@ docker stop webmonitor
 ```
 DATABASE_URL=sqlite:///test.db
 ```
+### PUSHOVER_API_TOKEN
+新建 pushover application 得到的 API Token
+### NAME
+自定义网站名称

@@ -20,6 +20,9 @@ class NotificationView(ModelView):
     can_create = False
     can_delete = False
 
-    column_labels = {'type': '通知方式', 'number': '邮箱地址/Server酱 SCKEY/Pushover User Key'}
+    column_labels = {
+        'type': '通知方式',
+        'number': '邮箱地址/Server酱 SCKEY/Pushover User Key'
+    }
 
     form_widget_args = {'type': {'readonly': True}}

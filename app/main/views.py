@@ -53,18 +53,20 @@ def test():
 
             if is_chrome == 'yes':
                 show = True
-            content = get_content(
-                url,
-                is_chrome,
-                selector_type,
-                selector,
-                regular_expression,
-                headers,
-                debug=True)
+            content = get_content(url,
+                                  is_chrome,
+                                  selector_type,
+                                  selector,
+                                  regular_expression,
+                                  headers,
+                                  debug=True)
         except ValidationError:
             pass
         except Exception as e:
             error = repr(e)
 
-    return render_template(
-        'test.html', error=error, form=form, content=content, show=show)
+    return render_template('test.html',
+                           error=error,
+                           form=form,
+                           content=content,
+                           show=show)

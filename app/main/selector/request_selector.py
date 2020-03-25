@@ -32,15 +32,6 @@ class RequestsSelector(FatherSelector):
         r.encoding = r.apparent_encoding
         html = r.text
         return html
-    
-    # 判断json #############################
-    def isJson(self, input_str):
-        try:
-            json.loads(input_str)
-            return True
-        except:
-            raise Exception('返回数据不是Json')
-    # 判断json #############################
 
     def get_by_xpath(self, url, xpath, headers=None):
         html = self.get_html(url, headers)
@@ -62,18 +53,15 @@ class RequestsSelector(FatherSelector):
 
     def get_by_json(self, url, xpath, headers=None):
         html = self.get_html(url, headers)
-        
-        if self.isJson(html):
-            resJson = json.loads(html) #把返回数据转成JSON
-        else :
-            raise Exception('Json转换错误')
-        
-        res = jsonpath.jsonpath(resJson,xpath)
-        
-        resStr = json.dumps(res) # 将json转为str
 
-        if len(resStr) != 0:
-            # return res[0]
-            return resStr
+        try:
+            resJson = json.loads(html)
+        except Exception:
+            raise Exception('Json转换错误')
+        res = jsonpath.jsonpath(resJson, xpath)
+
+        if res:
+            if len(res) != 0:
+                return res[0]
         else:
             raise Exception('无法获取文本信息')

@@ -6,7 +6,7 @@
 ![展示](https://github.com/LogicJake/WebMonitor/raw/master/fig/all.png)
 
 ## 设置通知方式
-在通知方式管理中默认存在两种通知方式：邮件和Server酱的微信提醒。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。  
+在通知方式管理中默认存在两种通知方式：邮件，pushover 和Server酱的微信提醒。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。pushover 需要填写注册就得到的 User Key。  
 
 ![通知方式](https://github.com/LogicJake/WebMonitor/raw/master/fig/noti.png)
 
@@ -41,6 +41,9 @@
 
 * 获取元素属性信息，在浏览器得到的选择器后加```::attr(属性名)```，如想获取元素href值  
 ```div#id3 > h3``` => ```div#id3 > h3::attr(href)```
+
+#### JsonPath
+针对返回 json 数据的接口, 可以使用 JsonPath 提取数据, 具体教程参考 https://goessner.net/articles/JsonPath/
 
 ### 是否选择无头浏览器
 如果源网页没有异步加载，可以不使用无头浏览器获取网页
