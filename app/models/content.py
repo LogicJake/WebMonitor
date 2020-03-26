@@ -12,7 +12,7 @@ from .. import db
 class Content(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     task_id = db.Column(db.Integer, nullable=False)
-    content = db.Column(db.String(128), nullable=False)
+    content = db.Column(db.String(512), nullable=False)
     task_type = db.Column(db.String(32), nullable=False, default='html')
 
     def __init__(self, task_id, task_type='html'):
