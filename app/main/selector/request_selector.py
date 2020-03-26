@@ -58,7 +58,7 @@ class RequestsSelector(FatherSelector):
             resJson = json.loads(html)
         except Exception:
             raise Exception('Json转换错误')
-        res = json.dumps(jsonpath.jsonpath(resJson, xpath))
+        res = json.dumps(jsonpath.jsonpath(resJson, xpath),ensure_ascii=False)
 
         if len(res) != 0:
             return res

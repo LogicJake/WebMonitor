@@ -51,7 +51,7 @@ def after_update_listener(mapper, connection, target):
     from app.models.task_status import TaskStatus
     task_status = TaskStatus.__table__
     connection.execute(task_status.update().values(
-        last_status='更新任务成功', last_run=datetime.now(),
+        task_name=target.name, last_status='更新任务成功', last_run=datetime.now(),
         task_status='run').where(TaskStatus.task_id == target.id
                                  and TaskStatus.task_type == 'html'))
 
