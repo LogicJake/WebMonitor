@@ -9,6 +9,9 @@
 * 监控RSS更新
 
 ## changelog
+### 2019.3.28
+* xpath 支持非正式函数 string() 以获取元素及其子元素的所有文本信息
+
 ### 2019.3.16
 * 支持 JsonPath 提取 json 数据
 * 支持 pushover 通知

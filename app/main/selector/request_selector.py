@@ -35,7 +35,13 @@ class RequestsSelector(FatherSelector):
 
     def get_by_xpath(self, url, xpath, headers=None):
         html = self.get_html(url, headers)
-        res = Selector(text=html).xpath(xpath).extract()
+        if 'string()' in xpath:
+            xpath = xpath.split('/')
+            xpath = '/'.join(xpath[:-1])
+            res = Selector(
+                text=html).xpath(xpath)[0].xpath('string(.)').extract()
+        else:
+            res = Selector(text=html).xpath(xpath).extract()
 
         if len(res) != 0:
             return res[0]
@@ -58,7 +64,7 @@ class RequestsSelector(FatherSelector):
             resJson = json.loads(html)
         except Exception:
             raise Exception('Json转换错误')
-        res = json.dumps(jsonpath.jsonpath(resJson, xpath),ensure_ascii=False)
+        res = json.dumps(jsonpath.jsonpath(resJson, xpath), ensure_ascii=False)
 
         if len(res) != 0:
             return res
