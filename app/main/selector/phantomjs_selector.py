@@ -47,7 +47,7 @@ class PhantomJSSelector(FatherSelector):
             os.makedirs(save_path, exist_ok=True)
             driver.save_screenshot(os.path.join(save_path, 'screenshot.png'))
         html = driver.page_source
-        driver.close()
+        driver.quit()
         return html
 
     def get_by_xpath(self, url, xpath, headers=None):
