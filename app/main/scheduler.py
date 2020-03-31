@@ -160,15 +160,15 @@ def monitor(id, type):
 
                 last_guid = last.content
                 item = get_rss_content(url)
+                global_content = item['guid']
                 if item['guid'] != last_guid:
-                    global_content = content
                     content = wraper_rss_msg(item)
                     send_message(content, name, mail, wechat, pushover)
                     last.content = item['guid']
                     db.session.add(last)
                     db.session.commit()
-                    status = '监测到变化，最新值：' + item['title']
-                status = '成功执行但未监测到变化'
+                    status = '监测到变化，最新值：' + item['guid']
+                status = '成功执行但未监测到变化，当前值为{}'.format(last_guid)
 
         except FunctionTimedOut:
             logger.error(traceback.format_exc())

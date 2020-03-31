@@ -9,6 +9,10 @@
 * 监控RSS更新
 
 ## changelog
+### 2019.3.31
+* 修复 RSS 监控无法正常运行 bug
+* 添加规则：equal, less, more
+
 ### 2019.3.28
 * xpath 支持非正式函数 string() 以获取元素及其子元素的所有文本信息
 

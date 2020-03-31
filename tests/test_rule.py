@@ -93,6 +93,63 @@ class TestRule(unittest.TestCase):
         res = is_changed(rule, content, last_content)
         self.assertEqual(res, 2)
 
+    def test_equal(self):
+        rule = '-equal 3'
+        content = '3.1'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 1)
+
+        rule = '-equal 3'
+        content = '3'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-equal 3'
+        content = '3'
+        last_content = '3'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 0)
+
+    def test_less(self):
+        rule = '-less 3'
+        content = '3'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 1)
+
+        rule = '-less 3'
+        content = '2.9'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-less 3.1'
+        content = '3'
+        last_content = '3'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 0)
+
+    def test_more(self):
+        rule = '-more 3'
+        content = '3'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 1)
+
+        rule = '-more 3'
+        content = '3.1'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-more 2.9'
+        content = '3'
+        last_content = '3'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 0)
+
 
 if __name__ == '__main__':
     unittest.main()

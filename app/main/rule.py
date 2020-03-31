@@ -62,7 +62,76 @@ def parse_decrease(args, content, last_content):
     return False
 
 
-rule_funs = [parse_contain, parse_increase, parse_decrease]
+def parse_equal(args, content, last_content):
+    '''
+    数值等于某个值
+    -equal 3
+    content和参数值都应该为数值型，否则会抛出异常
+    '''
+    try:
+        key_index = args.index('-equal')
+    except ValueError:
+        return False
+
+    value_index = key_index + 1
+    value = args[value_index]
+
+    content = float(content)
+    value = float(value)
+
+    if content == value:
+        return True
+    return False
+
+
+def parse_less(args, content, last_content):
+    '''
+    数值小于某个值
+    -less 3
+    content和参数值都应该为数值型，否则会抛出异常
+    '''
+    try:
+        key_index = args.index('-less')
+    except ValueError:
+        return False
+
+    value_index = key_index + 1
+    value = args[value_index]
+
+    content = float(content)
+    value = float(value)
+
+    if content < value:
+        return True
+    return False
+
+
+def parse_more(args, content, last_content):
+    '''
+    数值大于某个值
+    -less 3
+    content和参数值都应该为数值型，否则会抛出异常
+    '''
+    try:
+        key_index = args.index('-more')
+    except ValueError:
+        return False
+
+    value_index = key_index + 1
+    value = args[value_index]
+
+    content = float(content)
+    value = float(value)
+
+    if content > value:
+        return True
+    return False
+
+
+rule_funs = [
+    parse_contain, parse_increase, parse_decrease, parse_equal, parse_less,
+    parse_more
+]
 
 
 # 0 无变化(不发送)
