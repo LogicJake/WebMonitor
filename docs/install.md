@@ -17,12 +17,6 @@ pip install -r requirements.txt
 
 如果需要使用无头浏览器，请确认已经安装 phantomjs，且 phantomjs 被添加到系统路径
 
-赋予运行脚本执行权限
-
-```
-chmod +x run.sh
-```
-
 首次运行需要迁移数据库且设置管理账号，假设账号为 admin，密码为 password，运行端口为 8000
 
 ```
