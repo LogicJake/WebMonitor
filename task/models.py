@@ -123,12 +123,9 @@ class Task(models.Model):
                                        auto_now_add=True,
                                        verbose_name='创建时间')
 
-    notification = models.ForeignKey(Notification,
-                                     to_field='id',
-                                     on_delete=models.CASCADE,
-                                     blank=False,
-                                     null=True,
-                                     verbose_name='通知方式')
+    notification = models.ManyToManyField(Notification,
+                                          blank=False,
+                                          verbose_name='通知方式')
 
     regular_expression = models.CharField(max_length=128,
                                           verbose_name='正则表达式',
@@ -202,13 +199,10 @@ class RSSTask(models.Model):
     create_time = models.DateTimeField(null=False,
                                        auto_now_add=True,
                                        verbose_name='创建时间')
-    # 通知方式
-    notification = models.ForeignKey(Notification,
-                                     to_field='id',
-                                     on_delete=models.CASCADE,
-                                     blank=False,
-                                     null=True,
-                                     verbose_name='通知方式')
+
+    notification = models.ManyToManyField(Notification,
+                                          blank=False,
+                                          verbose_name='通知方式')
 
     class Meta:
         verbose_name = "RSS监控"

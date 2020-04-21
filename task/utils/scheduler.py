@@ -33,43 +33,43 @@ def wraper_msg(content, link):
     return res
 
 
-def send_message(content, header, notification):
+def send_message(content, header, notifications):
     total = 0
     fail = 0
 
-    type = notification.type
-    notification_detail = notification.content
+    exception_content = '监测到变化，部分通知方式发送错误：'
+    for notification in notifications:
+        total += 1
 
-    exception_content = ''
-    try:
-        if type == 0:
-            total += 1
-            handler = new_handler('mail')
-            content = markdown.markdown(content,
-                                        output_format='html5',
-                                        extensions=['extra'])
-            handler.send(notification_detail, header, content)
-    except Exception as e:
-        fail += 1
-        exception_content += 'Mail Exception: {};'.format(repr(e))
+        type = notification.type
+        notification_detail = notification.content
 
-    try:
-        if type == 1:
-            total += 1
-            handler = new_handler('wechat')
-            handler.send(notification_detail, header, content)
-    except Exception as e:
-        fail += 1
-        exception_content += 'Wechat Exception: {};'.format(repr(e))
+        try:
+            if type == 0:
+                handler = new_handler('mail')
+                content = markdown.markdown(content,
+                                            output_format='html5',
+                                            extensions=['extra'])
+                handler.send(notification_detail, header, content)
+        except Exception as e:
+            fail += 1
+            exception_content += 'Mail Exception: {};'.format(repr(e))
 
-    try:
-        if type == 2:
-            total += 1
-            handler = new_handler('pushover')
-            handler.send(notification_detail, header, content)
-    except Exception as e:
-        fail += 1
-        exception_content += 'Pushover Exception: {};'.format(repr(e))
+        try:
+            if type == 1:
+                handler = new_handler('wechat')
+                handler.send(notification_detail, header, content)
+        except Exception as e:
+            fail += 1
+            exception_content += 'Wechat Exception: {};'.format(repr(e))
+
+        try:
+            if type == 2:
+                handler = new_handler('pushover')
+                handler.send(notification_detail, header, content)
+        except Exception as e:
+            fail += 1
+            exception_content += 'Pushover Exception: {};'.format(repr(e))
 
     if fail > 0:
         if fail < total:
@@ -90,7 +90,7 @@ def monitor(id, type):
             selector = task.selector
             is_chrome = task.is_chrome
 
-            notification = task.notification
+            notifications = [i for i in task.notification.iterator()]
 
             regular_expression = task.regular_expression
             rule = task.rule
@@ -116,13 +116,13 @@ def monitor(id, type):
             elif status_code == 2:
                 status = '监测到变化，且命中规则，最新值为{}'.format(content)
                 msg = wraper_msg(content, url)
-                send_message(msg, name, notification)
+                send_message(msg, name, notifications)
                 last.content = content
                 last.save()
             elif status_code == 3:
                 status = '监测到变化，最新值为{}'.format(content)
                 msg = wraper_msg(content, url)
-                send_message(msg, name, notification)
+                send_message(msg, name, notifications)
                 last.content = content
                 last.save()
             elif status_code == 0:
@@ -132,7 +132,7 @@ def monitor(id, type):
             url = rss_task.url
             name = rss_task.name
 
-            notification = rss_task.notification
+            notifications = [i for i in rss_task.notification.iterator()]
 
             try:
                 last = Content.objects.get(task_id=id, task_type=type)
@@ -144,7 +144,7 @@ def monitor(id, type):
             global_content = item['guid']
             if item['guid'] != last_guid:
                 content = wraper_rss_msg(item)
-                send_message(content, name, notification)
+                send_message(content, name, notifications)
                 last.content = item['guid']
                 last.save()
                 status = '监测到变化，最新值：' + item['guid']

@@ -1,8 +1,10 @@
 import logging
 
-from django.contrib import admin
-from django.contrib import messages
+from django import forms
+from django.contrib import admin, messages
+from django.forms import CheckboxSelectMultiple
 
+from setting.models import Notification
 from task.models import Content, RSSTask, Task, TaskStatus
 from task.utils.scheduler import remove_job
 
@@ -27,8 +29,21 @@ class TaskStatusAdmin(admin.ModelAdmin):
         return False
 
 
+class TaskNotificationForm(forms.ModelForm):
+    notification = forms.ModelMultipleChoiceField(
+        required=True,
+        widget=CheckboxSelectMultiple,
+        queryset=Notification.objects.all())
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
+    form = TaskNotificationForm
+
     list_display = [
         'id', 'name', 'url', 'frequency', 'create_time', 'is_chrome',
         'regular_expression', 'rule', 'headers'
@@ -61,12 +76,23 @@ class TaskAdmin(admin.ModelAdmin):
     actions = ['redefine_delete_selected']
 
 
+class RSSTaskNotificationForm(forms.ModelForm):
+    notification = forms.ModelMultipleChoiceField(
+        required=True,
+        widget=CheckboxSelectMultiple,
+        queryset=Notification.objects.all())
+
+    class Meta:
+        model = RSSTask
+        fields = '__all__'
+
+
 @admin.register(RSSTask)
 class RSSTaskAdmin(admin.ModelAdmin):
-    list_display = [
-        'id', 'name', 'url', 'frequency', 'create_time', 'notification'
-    ]
-    list_editable = ('name', 'url', 'frequency', 'notification')
+    form = RSSTaskNotificationForm
+
+    list_display = ['id', 'name', 'url', 'frequency', 'create_time']
+    list_editable = ('name', 'url', 'frequency')
     list_per_page = 10
 
     def has_delete_permission(self, request, obj=None):
