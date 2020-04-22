@@ -29,27 +29,16 @@ class TaskStatusAdmin(admin.ModelAdmin):
         return False
 
 
-class TaskNotificationForm(forms.ModelForm):
-    notification = forms.ModelMultipleChoiceField(
-        required=True,
-        widget=CheckboxSelectMultiple,
-        queryset=Notification.objects.all())
-
-    class Meta:
-        model = Task
-        fields = '__all__'
-
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    form = TaskNotificationForm
-
     list_display = [
         'id', 'name', 'url', 'frequency', 'create_time', 'is_chrome',
         'regular_expression', 'rule', 'headers'
     ]
     list_editable = ('name', 'url', 'frequency', 'is_chrome',
                      'regular_expression', 'rule', 'headers')
+    filter_horizontal = ('notification', )
 
     list_per_page = 10
 
@@ -76,23 +65,12 @@ class TaskAdmin(admin.ModelAdmin):
     actions = ['redefine_delete_selected']
 
 
-class RSSTaskNotificationForm(forms.ModelForm):
-    notification = forms.ModelMultipleChoiceField(
-        required=True,
-        widget=CheckboxSelectMultiple,
-        queryset=Notification.objects.all())
-
-    class Meta:
-        model = RSSTask
-        fields = '__all__'
-
-
 @admin.register(RSSTask)
 class RSSTaskAdmin(admin.ModelAdmin):
-    form = RSSTaskNotificationForm
-
     list_display = ['id', 'name', 'url', 'frequency', 'create_time']
     list_editable = ('name', 'url', 'frequency')
+    filter_horizontal = ('notification', )
+
     list_per_page = 10
 
     def has_delete_permission(self, request, obj=None):
