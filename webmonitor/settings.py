@@ -34,10 +34,11 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
-    'setting.apps.SettingConfig', 'task.apps.TaskConfig', 'simpleui',
-    'django_apscheduler', 'django.contrib.admin', 'django.contrib.auth',
-    'django.contrib.contenttypes', 'django.contrib.sessions',
-    'django.contrib.messages', 'django.contrib.staticfiles'
+    'import_export', 'setting.apps.SettingConfig', 'task.apps.TaskConfig',
+    'simpleui', 'django_apscheduler', 'django.contrib.admin',
+    'django.contrib.auth', 'django.contrib.contenttypes',
+    'django.contrib.sessions', 'django.contrib.messages',
+    'django.contrib.staticfiles'
 ]
 
 STATICFILES_DIRS = [
