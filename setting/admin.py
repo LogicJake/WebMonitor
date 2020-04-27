@@ -1,9 +1,21 @@
 from django.contrib import admin
-from .models import SystemMailSetting, Notification, PushoverSetting
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+from .models import Notification, PushoverSetting, SystemMailSetting
+
+
+class SystemMailSettingResource(resources.ModelResource):
+    class Meta:
+        model = SystemMailSetting
+        skip_unchanged = True
+        report_skipped = True
 
 
 @admin.register(SystemMailSetting)
-class SystemMailSettingAdmin(admin.ModelAdmin):
+class SystemMailSettingAdmin(ImportExportModelAdmin):
+    resource_class = SystemMailSettingResource
+
     list_display = [
         'mail_server', 'mail_port', 'mail_username', 'mail_sender',
         'mail_password'
@@ -16,8 +28,17 @@ class SystemMailSettingAdmin(admin.ModelAdmin):
     actions_on_top = True
 
 
+class PushoverSettingResource(resources.ModelResource):
+    class Meta:
+        model = PushoverSetting
+        skip_unchanged = True
+        report_skipped = True
+
+
 @admin.register(PushoverSetting)
-class PushoverSettingAdmin(admin.ModelAdmin):
+class PushoverSettingAdmin(ImportExportModelAdmin):
+    resource_class = PushoverSettingResource
+
     list_display = ['api_token']
     list_editable = ('api_token', )
 
@@ -35,10 +56,20 @@ class PushoverSettingAdmin(admin.ModelAdmin):
     custom_button.action_url = 'https://pushover.net/'
 
 
-@admin.register(Notification)
-class NotificationAdmin(admin.ModelAdmin):
-    list_display = ['name', 'type', 'content']
+class NotificatioResource(resources.ModelResource):
+    class Meta:
+        model = Notification
+        import_id_fields = ('name', )
+        exclude = ('id', )
+        skip_unchanged = True
+        report_skipped = True
 
+
+@admin.register(Notification)
+class NotificationAdmin(ImportExportModelAdmin):
+    resource_class = NotificatioResource
+
+    list_display = ['name', 'type', 'content']
     list_editable = ('name', 'type', 'content')
 
     list_display_links = None

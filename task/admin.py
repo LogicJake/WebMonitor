@@ -1,10 +1,9 @@
 import logging
 
-from django import forms
 from django.contrib import admin, messages
-from django.forms import CheckboxSelectMultiple
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
 
-from setting.models import Notification
 from task.models import Content, RSSTask, Task, TaskStatus
 from task.utils.scheduler import remove_job
 
@@ -29,9 +28,19 @@ class TaskStatusAdmin(admin.ModelAdmin):
         return False
 
 
+class TaskResource(resources.ModelResource):
+    class Meta:
+        model = Task
+        import_id_fields = ('name', )
+        exclude = ('id', )
+        skip_unchanged = True
+        report_skipped = True
+
 
 @admin.register(Task)
-class TaskAdmin(admin.ModelAdmin):
+class TaskAdmin(ImportExportModelAdmin):
+    resource_class = TaskResource
+
     list_display = [
         'id', 'name', 'url', 'frequency', 'create_time', 'is_chrome',
         'regular_expression', 'rule', 'headers'
@@ -65,8 +74,19 @@ class TaskAdmin(admin.ModelAdmin):
     actions = ['redefine_delete_selected']
 
 
+class RSSTaskResource(resources.ModelResource):
+    class Meta:
+        model = RSSTask
+        import_id_fields = ('name', )
+        exclude = ('id', )
+        skip_unchanged = True
+        report_skipped = True
+
+
 @admin.register(RSSTask)
-class RSSTaskAdmin(admin.ModelAdmin):
+class RSSTaskAdmin(ImportExportModelAdmin):
+    resource_class = RSSTaskResource
+
     list_display = ['id', 'name', 'url', 'frequency', 'create_time']
     list_editable = ('name', 'url', 'frequency')
     filter_horizontal = ('notification', )

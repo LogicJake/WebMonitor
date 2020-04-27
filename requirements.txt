@@ -10,3 +10,4 @@ jsonpath==0.82
 django==2.2.10
 django-simpleui==3.9.1
 django-apscheduler==0.3.0
+django-import-export==2.0.2

@@ -3,6 +3,7 @@ from datetime import datetime
 
 import requests
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 
 from setting.models import Notification
@@ -118,7 +119,8 @@ class Task(models.Model):
                                     choices=is_chrome_choices)
     frequency = models.IntegerField(null=False,
                                     default=5,
-                                    verbose_name='频率(分钟)  ')
+                                    verbose_name='频率(分钟)',
+                                    validators=[MinValueValidator(1)])
     create_time = models.DateTimeField(null=False,
                                        auto_now_add=True,
                                        verbose_name='创建时间')
@@ -149,6 +151,8 @@ class Task(models.Model):
 
     def clean(self):
         check_url(self.url)
+        check_selector(self.selector_type, self.selector, self.url,
+                       self.is_chrome, self.headers)
 
     def save(self, *args, **kwargs):
         from task.utils.scheduler import add_job
@@ -195,7 +199,8 @@ class RSSTask(models.Model):
     url = models.CharField(max_length=500, null=False, verbose_name='RSS地址')
     frequency = models.IntegerField(null=False,
                                     default=5,
-                                    verbose_name='频率(分钟)')
+                                    verbose_name='频率(分钟)',
+                                    validators=[MinValueValidator(1)])
     create_time = models.DateTimeField(null=False,
                                        auto_now_add=True,
                                        verbose_name='创建时间')

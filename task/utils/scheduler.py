@@ -34,6 +34,9 @@ def wraper_msg(content, link):
 
 
 def send_message(content, header, notifications):
+    if len(notifications) == 0:
+        raise Exception('通知方式为空')
+
     total = 0
     fail = 0
 
