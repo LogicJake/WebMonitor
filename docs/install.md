@@ -40,10 +40,11 @@ python manage.py runserver 0.0.0.0:8000 --noreload
 docker pull logicjake/webmonitor
 ```
 
-然后运行 webmonitor 即可，假设账号为 admin，密码为 password，运行端口为 8000
+然后运行 webmonitor 即可，假设账号为 admin，密码为 password，运行端口为 8000  
+***强烈建议通过 docker 文件夹映射参数 -v，将数据库文件保存到主机，否则在容器重建之后会丢失数据库文件，假设映射的主机目录为 /etc/webmonitor***
 
 ```
-docker run -d --name webmonitor -p 8000:8000 -e PORT=8000 -e USERNAME=admin -e PASSWORD=password logicjake/webmonitor
+docker run -d --name webmonitor -v /etc/webmonitor:/app/db -p 8000:8000 -e PORT=8000 -e USERNAME=admin -e PASSWORD=password logicjake/webmonitor
 ```
 
 您可以使用下面的命令来关闭 webmonitor
