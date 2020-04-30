@@ -40,7 +40,7 @@ def send_message(content, header, notifications):
     total = 0
     fail = 0
 
-    exception_content = '监测到变化，部分通知方式发送错误：'
+    exception_content = ''
     for notification in notifications:
         total += 1
 
@@ -76,9 +76,10 @@ def send_message(content, header, notifications):
 
     if fail > 0:
         if fail < total:
-            raise PartNotificationError(exception_content)
+            raise PartNotificationError('监测到变化，部分通知方式发送错误：' +
+                                        exception_content)
         else:
-            raise Exception(exception_content)
+            raise Exception('监测到变化，但发送通知错误：' + exception_content)
 
 
 def monitor(id, type):
