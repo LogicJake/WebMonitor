@@ -1,41 +1,36 @@
 import logging
 from datetime import datetime
 
-import requests
-from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, URLValidator
 from django.db import models
 
 from setting.models import Notification
-from task.utils.selector.selector_handler import new_handler
 
 logger = logging.getLogger('main')
 
+# def check_url(url):
+#     try:
+#         requests.get(url, timeout=10)
+#     except Exception as e:
+#         raise ValidationError({'url': e})
 
-def check_url(url):
-    try:
-        requests.get(url, timeout=10)
-    except Exception as e:
-        raise ValidationError({'url': e})
+# def check_selector(selector_type, selector, url, is_chrome, headers):
+#     try:
+#         if is_chrome == 0:
+#             selector_handler = new_handler('request')
+#         else:
+#             selector_handler = new_handler('phantomjs')
 
-
-def check_selector(selector_type, selector, url, is_chrome, headers):
-    try:
-        if is_chrome == 0:
-            selector_handler = new_handler('request')
-        else:
-            selector_handler = new_handler('phantomjs')
-
-        if selector_type == 0:
-            selector_handler.get_by_xpath(url, selector, headers)
-        elif selector_type == 1:
-            selector_handler.get_by_css(url, selector, headers)
-        elif selector_type == 2:
-            selector_handler.get_by_json(url, selector, headers)
-        else:
-            raise Exception('无效选择器')
-    except Exception as e:
-        raise ValidationError({'selector': e})
+#         if selector_type == 0:
+#             selector_handler.get_by_xpath(url, selector, headers)
+#         elif selector_type == 1:
+#             selector_handler.get_by_css(url, selector, headers)
+#         elif selector_type == 2:
+#             selector_handler.get_by_json(url, selector, headers)
+#         else:
+#             raise Exception('无效选择器')
+#     except Exception as e:
+#         raise ValidationError({'selector': e})
 
 
 class Content(models.Model):
@@ -93,10 +88,22 @@ class TaskStatus(models.Model):
             elif self.task_type == 'rss':
                 remove_job(task_id, 'rss')
 
+    def short_last_status(self):
+        if len(str(self.last_status)) > 100:
+            return '{}......'.format(str(self.last_status)[:100])
+        else:
+            return str(self.last_status)
+
+    short_last_status.allow_tags = True
+    short_last_status.short_description = '上次运行结果'
+
 
 class Task(models.Model):
     name = models.CharField(max_length=100, verbose_name='任务名称', null=False)
-    url = models.CharField(max_length=500, verbose_name='监控网址', null=False)
+    url = models.CharField(max_length=500,
+                           verbose_name='监控网址',
+                           null=False,
+                           validators=[URLValidator()])
 
     selector_choices = (
         (0, 'Xpath'),
@@ -149,11 +156,6 @@ class Task(models.Model):
     def __str__(self):
         return self.name
 
-    def clean(self):
-        check_url(self.url)
-        check_selector(self.selector_type, self.selector, self.url,
-                       self.is_chrome, self.headers)
-
     def save(self, *args, **kwargs):
         from task.utils.scheduler import add_job
 
@@ -196,7 +198,10 @@ class Task(models.Model):
 
 class RSSTask(models.Model):
     name = models.CharField(max_length=32, null=False, verbose_name='任务名称')
-    url = models.CharField(max_length=500, null=False, verbose_name='RSS地址')
+    url = models.CharField(max_length=500,
+                           null=False,
+                           verbose_name='RSS地址',
+                           validators=[URLValidator()])
     frequency = models.IntegerField(null=False,
                                     default=5,
                                     verbose_name='频率(分钟)',
@@ -215,9 +220,6 @@ class RSSTask(models.Model):
 
     def __str__(self):
         return self.name
-
-    def clean(self):
-        check_url(self.url)
 
     def save(self, *args, **kwargs):
         from task.utils.scheduler import add_job

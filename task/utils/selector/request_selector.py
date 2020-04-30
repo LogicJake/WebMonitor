@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-# coding=UTF-8
-'''
-@Author: LogicJake, Jacob
-@Date: 2019-03-25 12:31:35
-@LastEditTime: 2020-03-01 14:53:38
-'''
 import ast
 
 import requests
