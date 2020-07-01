@@ -12,7 +12,9 @@ def extract_by_re(conetnt, regular_expression):
     m = re.search(regular_expression, conetnt)
 
     if m:
-        return m.groups()[0]
+        return m.group()
+    elif m == None:
+        return "未检测到相关内容"
     else:
         logger.error('{} 无法使用正则提取'.format(regular_expression))
         raise Exception('无法使用正则提取')
