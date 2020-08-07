@@ -124,10 +124,10 @@ class Task(models.Model):
                                     default='no',
                                     verbose_name='是否使用无头浏览器',
                                     choices=is_chrome_choices)
-    frequency = models.IntegerField(null=False,
-                                    default=5,
-                                    verbose_name='频率(分钟)',
-                                    validators=[MinValueValidator(1)])
+    frequency = models.FloatField(null=False,
+                                  default=5,
+                                  verbose_name='频率(分钟)',
+                                  validators=[MinValueValidator(0)])
     create_time = models.DateTimeField(null=False,
                                        auto_now_add=True,
                                        verbose_name='创建时间')
@@ -144,8 +144,7 @@ class Task(models.Model):
                             verbose_name='监控规则',
                             blank=True,
                             help_text='规则写法参考文档，留空则只简单监控内容变化')
-    headers = models.CharField(max_length=1024,
-                               verbose_name='自定义请求头',
+    headers = models.TextField(verbose_name='自定义请求头',
                                blank=True,
                                help_text='自定义请求头，如可以设置cookie获取登录后才能查看的页面')
 
@@ -202,10 +201,10 @@ class RSSTask(models.Model):
                            null=False,
                            verbose_name='RSS地址',
                            validators=[URLValidator()])
-    frequency = models.IntegerField(null=False,
-                                    default=5,
-                                    verbose_name='频率(分钟)',
-                                    validators=[MinValueValidator(1)])
+    frequency = models.FloatField(null=False,
+                                  default=5,
+                                  verbose_name='频率(分钟)',
+                                  validators=[MinValueValidator(0)])
     create_time = models.DateTimeField(null=False,
                                        auto_now_add=True,
                                        verbose_name='创建时间')
