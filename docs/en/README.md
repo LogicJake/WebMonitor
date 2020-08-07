@@ -2,7 +2,7 @@
 ![Tests](https://github.com/LogicJake/WebMonitor/workflows/Tests/badge.svg?branch=master&event=push)
 [![telegram](https://img.shields.io/badge/chat-telegram-brightgreen.svg?style=flat-square)](https://t.me/webmonitor_github)
 
-[中文文档](https://www.logicjake.xyz/WebMonitor) | [English Document](https://www.logicjake.xyz/WebMonitor/en) | [Telegram Group](https://t.me/webmonitor_github)
+[中文文档](https://www.logicjake.xyz/WebMonitor) | [English Document](https://www.logicjake.xyz/WebMonitor/#/en/) | [Telegram Group](https://t.me/webmonitor_github)
 
 
 ## Features
