@@ -115,7 +115,7 @@ class Task(models.Model):
                                         null=False,
                                         default='Xpath',
                                         choices=selector_choices)
-    selector = models.CharField(max_length=128,
+    selector = models.CharField(max_length=500,
                                 verbose_name='元素选择器',
                                 null=False)
     is_chrome_choices = ((0, 'no'), (1, 'yes'))
@@ -136,11 +136,11 @@ class Task(models.Model):
                                           blank=False,
                                           verbose_name='通知方式')
 
-    regular_expression = models.CharField(max_length=128,
+    regular_expression = models.CharField(max_length=500,
                                           verbose_name='正则表达式',
                                           blank=True,
                                           help_text='使用正则表达式进一步提取信息，可以留空')
-    rule = models.CharField(max_length=128,
+    rule = models.CharField(max_length=500,
                             verbose_name='监控规则',
                             blank=True,
                             help_text='规则写法参考文档，留空则只简单监控内容变化')

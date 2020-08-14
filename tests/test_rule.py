@@ -143,6 +143,49 @@ class TestRule(unittest.TestCase):
         res = is_changed(rule, content, last_content)
         self.assertEqual(res, 0)
 
+    def test_multi_rules(self):
+        rule = '-contain 3;-contain 4'
+        content = '3'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-contain 3;-contain 4'
+        content = '4'
+        last_content = '2'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-contain 3;-contain 4'
+        content = '2'
+        last_content = '1'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 1)
+
+        rule = '-contain 3;-contain 4'
+        content = '3'
+        last_content = '3'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 0)
+
+        rule = '-contain 3;-contain 4'
+        content = '4'
+        last_content = '4'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 0)
+
+        rule = '-contain 2;-more 4'
+        content = '5'
+        last_content = '1'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-contain 2;-more 4'
+        content = '2'
+        last_content = '1'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
 
 if __name__ == '__main__':
     unittest.main()
