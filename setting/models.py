@@ -52,7 +52,10 @@ class Notification(models.Model):
                                choices=type_choice,
                                default='邮箱',
                                verbose_name='通知方式类型')
-    content = models.CharField(max_length=100, null=False, verbose_name='通知方式')
+    content = models.CharField(
+        max_length=100,
+        null=False,
+        verbose_name='邮箱地址 / Server 酱 SCKEY / Pushover User Key')
 
     class Meta:
         verbose_name = "通知方式"

@@ -1,10 +1,9 @@
 import json
 import logging
-import os
 import traceback
 
 import requests
-
+from requests.exceptions import RequestException
 from setting.models import PushoverSetting
 from task.utils.notification.notification import Notification
 
@@ -20,7 +19,7 @@ class PushoverNotification(Notification):
             logger.error(traceback.format_exc())
             raise Exception('没有设置Pushover API Token，无法发送通知')
 
-        self.token = setting.token
+        self.token = setting.api_token
 
     def send(self, to, header, content):
         if to == '默认':
@@ -28,7 +27,7 @@ class PushoverNotification(Notification):
             raise Exception('没有设置Prushover User Key，无法发送推送通知')
         token = self.token
         sendData = {
-            'token': token,  # 监控猫 Api Token
+            'token': token,
             'user': to,
             'message': '【' + header + '】有更新！\n>>>新内容为：\n' + content,
         }
@@ -36,11 +35,13 @@ class PushoverNotification(Notification):
 
         try:
             response = requests.post(pushoverApi, sendData, timeout=5)
-        except requests.exceptions.RequestException as e:
-            logger.error('请求错误')
+        except RequestException as e:
+            logger.error('请求错误', traceback.format_exc())
             raise Exception('Error: {}'.format(e))
 
         res = json.loads(response.text)
 
         if res['status'] != 1:
             raise Exception(res['errors'])
+        elif 'no active devices to send to' in res['info']:
+            raise Exception('User key 对应的账户无激活设备，需要先行到官网购买 License')

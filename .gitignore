@@ -10,3 +10,4 @@ task/utils/__pycache__/*
 task/utils/selector/__pycache__/*
 */__pycache__
 .env
+ghostdriver.log
