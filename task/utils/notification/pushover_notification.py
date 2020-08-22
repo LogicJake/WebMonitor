@@ -43,5 +43,8 @@ class PushoverNotification(Notification):
 
         if res['status'] != 1:
             raise Exception(res['errors'])
-        elif 'no active devices to send to' in res['info']:
-            raise Exception('User key 对应的账户无激活设备，需要先行到官网购买 License')
+        elif 'info' in res:
+            if 'no active devices to send to' in res['info']:
+                raise Exception('User key 对应的账户无激活设备，需要先行到官网购买 License')
+            else:
+                logger.debug(res['info'])
