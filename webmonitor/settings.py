@@ -136,18 +136,20 @@ SIMPLEUI_CONFIG = {
     'system_keep':
     True,
     'menus': [{
-        'name': '文档',
+        'name': '使用文档',
         'icon': 'fa fa-file',
-        'url': 'https://www.logicjake.xyz/WebMonitor/'
+        'url': 'https://www.logicjake.xyz/WebMonitor/#/how'
     }],
-    'menu_display': ['Simpleui', '任务管理', '设置', '文档'],
+    'menu_display': ['Simpleui', '任务管理', '系统管理', '使用文档'],
 }
 
 SIMPLEUI_ICON = {
+    '系统管理': 'fas fa-cog',
     '系统邮箱': 'fas fa-mail-bulk',
     'RSS监控管理': 'fas fa-rss',
     '网页监控管理': 'far fa-file-code',
     '任务状态': 'far fa-calendar-check',
+    '日志查看': 'fas fa-book-reader',
 }
 
 SIMPLEUI_ANALYSIS = False

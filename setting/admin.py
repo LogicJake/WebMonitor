@@ -1,8 +1,9 @@
+from setting.views import log_view
 from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Notification, PushoverSetting, SystemMailSetting
+from .models import Notification, PushoverSetting, SystemMailSetting, Log
 
 
 class SystemMailSettingResource(resources.ModelResource):
@@ -74,3 +75,9 @@ class NotificationAdmin(ImportExportModelAdmin):
 
     list_display_links = None
     actions_on_top = True
+
+
+@admin.register(Log)
+class FeedbackStatsAdmin(admin.ModelAdmin):
+    def changelist_view(self, request, extra_content=None):
+        return log_view(request)

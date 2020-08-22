@@ -63,3 +63,9 @@ class Notification(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Log(models.Model):
+    class Meta:
+        verbose_name = "日志查看"
+        verbose_name_plural = "日志查看"

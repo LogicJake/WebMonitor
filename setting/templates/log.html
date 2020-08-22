@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/log.css' %}" type="text/css" />
+<script src="{% static 'js/log.js' %}"></script>
+
+<div class="log">
+    <p>{{ content }}</p>
+    <span id="msg_end" style="height: 0px;"></span>
+</div>
+
+{% endblock %}
