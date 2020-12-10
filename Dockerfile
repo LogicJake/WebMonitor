@@ -5,6 +5,7 @@ ENV LANG C.UTF-8
 ENV PORT 5000
 ENV USERNAME admin
 ENV PASSWORD admin
+ENV OPENSSL_CONF /etc/ssl/
 
 ADD . /app
 
