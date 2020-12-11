@@ -30,7 +30,7 @@ jobs:
                 DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
             run: |
                 docker buildx build \
-                --platform=linux/amd64 \
+                --platform linux/amd64,linux/arm64 \
                 --output "type=image,push=true" \
                 --file ./Dockerfile . \
                 --tag $(echo "${DOCKER_USERNAME}" | tr '[:upper:]' '[:lower:]')/webmonitor:latest
