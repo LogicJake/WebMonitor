@@ -7,24 +7,20 @@ ENV USERNAME admin
 ENV PASSWORD admin
 ENV OPENSSL_CONF /etc/ssl/
 
-ADD . /app
+COPY . /app
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-wget \
-build-essential chrpath libssl-dev libxft-dev \
-libfreetype6 libfreetype6-dev \
-libfontconfig1 libfontconfig1-dev \
-&& rm -rf /var/lib/apt/lists/*
-
-RUN export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64" \
-&& wget https://github.com/Medium/phantomjs/releases/download/v2.1.1/$PHANTOM_JS.tar.bz2 -O /tmp/$PHANTOM_JS.tar.bz2 \
-&& tar xvjf /tmp/$PHANTOM_JS.tar.bz2 -C /usr/local/share \
-&& ln -sf /usr/local/share/$PHANTOM_JS/bin/phantomjs /usr/local/bin \
-&& rm /tmp/$PHANTOM_JS.tar.bz2
-
-RUN pip install -r requirements.txt && pip cache purge
+RUN set -x; buildDeps='wget build-essential' \
+&& apt-get update && apt-get install -y ${buildDeps} \ 
+chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev \
+&& rm -rf /var/lib/apt/lists/* \
+&& export OS_ARCH=$(uname -m) \
+&& wget https://github.com/mjysci/phantomjs/releases/download/v2.1.1/phantomjs-2.1.1-linux_${OS_ARCH}.tar.gz -O /tmp/phantomjs-2.1.1-linux_${OS_ARCH}.tar.gz \
+&& tar -xzvf /tmp/phantomjs-2.1.1-linux_${OS_ARCH}.tar.gz -C /usr/local/bin \
+&& rm /tmp/phantomjs-2.1.1-linux_${OS_ARCH}.tar.gz \
+&& pip install -r requirements.txt && pip cache purge \
+&& apt-get purge -y --auto-remove $buildDeps
 
 EXPOSE $PORT
 
