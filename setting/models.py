@@ -42,7 +42,7 @@ class PushoverSetting(models.Model):
 
 
 class Notification(models.Model):
-    type_choice = ((0, '邮箱'), (1, '微信'), (2, 'pushover'))
+    type_choice = ((0, '邮箱'), (1, '微信'), (2, 'pushover'), (3, 'Bark'))
     name = models.CharField(max_length=32,
                             null=False,
                             verbose_name='通知方式名称',
@@ -55,7 +55,7 @@ class Notification(models.Model):
     content = models.CharField(
         max_length=100,
         null=False,
-        verbose_name='邮箱地址 / Server 酱 SCKEY / Pushover User Key')
+        verbose_name='邮箱地址 / Server 酱 SCKEY / Pushover User Key / Bark key')
 
     class Meta:
         verbose_name = "通知方式"

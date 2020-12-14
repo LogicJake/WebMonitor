@@ -1,5 +1,5 @@
 ## 设置通知方式  
-支持三种通知方式：邮件，pushover 和 Server 酱的微信提醒。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。  
+支持四种通知方式：邮件，pushover， Server 酱的微信提醒和Bark。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。Bark需要安装[客户端](https://github.com/Finb/Bark)取得对应设备Key。  
 
 ### 设置系统邮箱
 如果采用邮件提醒，则必须设置系统邮箱，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。
