@@ -10,6 +10,9 @@ logger = logging.getLogger('main')
 
 
 def getUrlQuery(content):
+    """
+    Extract the first URL in the content with format of '?url=URL', return '' if none URL found.
+    """
     regex = r"(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))"
     urls = re.findall(regex, content)
     if len(urls):
