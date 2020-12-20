@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(default='默认名称', max_length=32, unique=True, verbose_name='通知方式名称')),
-                ('type', models.IntegerField(choices=[(0, '邮箱'), (1, '微信'), (2, 'pushover'), (3, 'Bark')], default='邮箱', verbose_name='通知方式类型')),
+                ('type', models.IntegerField(choices=[(0, '邮箱'), (1, '微信'), (2, 'pushover'), (3, 'Bark'), (4, '自定义通知')], default='邮箱', verbose_name='通知方式类型')),
                 ('content', models.CharField(max_length=100, verbose_name='通知方式')),
             ],
             options={
