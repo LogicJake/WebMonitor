@@ -1,5 +1,5 @@
 ## 设置通知方式  
-支持四种通知方式：邮件，pushover， Server 酱的微信提醒和Bark。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。Bark需要安装[客户端](https://github.com/Finb/Bark)取得对应设备Key。  
+支持五种通知方式：邮件，pushover， Server 酱的微信提醒，Bark以及自定义POST通知。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。Bark需要安装[客户端](https://github.com/Finb/Bark)取得对应设备Key。  
 
 ### 设置系统邮箱
 如果采用邮件提醒，则必须设置系统邮箱，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。
@@ -8,6 +8,13 @@
 
 ### 设置 Pushover Application
 如果采用 Pushover 提醒，则必须设置 Pushover api token。
+
+### 设置自定义POST通知
+如果采用自定义通知，则必须设置 自定义网址。用`{header}`和`{content}`替换掉标题和内容的位置。以Bark为例，格式如下：  
+```
+https://api.day.app/yourkey/{header}/{content}
+```
+若自定义通知没有标题位置就把`{header}`和`{content}`都放在内容位置，不能缺失。
 
 ## 添加网页监控任务
 在 任务管理 > 网页监控管理 添加新任务  
