@@ -22,6 +22,9 @@ def parse_increase(args, content, last_content):
     if args[0] != '-increase':
         return False
 
+    if last_content == '':
+        return False
+
     value = args[1]
 
     last_content = float(last_content)
@@ -40,6 +43,9 @@ def parse_decrease(args, content, last_content):
     content, last_content和参数值都应该为数值型，否则会抛出异常
     '''
     if args[0] != '-decrease':
+        return False
+
+    if last_content == '':
         return False
 
     value = args[1]
