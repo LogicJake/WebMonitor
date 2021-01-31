@@ -36,6 +36,19 @@ class TestRule(unittest.TestCase):
         res = is_changed(rule, content, last_content)
         self.assertEqual(res, 1)
 
+    def test_without(self):
+        rule = '-without 变化'
+        content = 'abcdas'
+        last_content = '不变化'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 2)
+
+        rule = '-without 变化'
+        content = '我发生变化了'
+        last_content = '不变化'
+        res = is_changed(rule, content, last_content)
+        self.assertEqual(res, 1)
+
     def test_increase(self):
         rule = '-increase 3'
         content = '1888.1'

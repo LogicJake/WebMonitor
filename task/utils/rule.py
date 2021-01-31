@@ -1,3 +1,18 @@
+def parse_without(args, content, last_content):
+    '''
+    新内容中是否不包含某个字符串
+    -without 上架
+    '''
+    if args[0] != '-without':
+        return False
+
+    value = args[1]
+
+    if value not in content:
+        return True
+    return False
+
+
 def parse_contain(args, content, last_content):
     '''
     新内容中是否包含某个字符串
@@ -117,8 +132,8 @@ def parse_more(args, content, last_content):
 
 
 rule_funs = [
-    parse_contain, parse_increase, parse_decrease, parse_equal, parse_less,
-    parse_more
+    parse_without, parse_contain, parse_increase, parse_decrease, parse_equal,
+    parse_less, parse_more
 ]
 
 

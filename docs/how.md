@@ -76,6 +76,11 @@ http://wxpusher.zjiecode.com/api/send/message{data={
 规则格式：-规则 参数  
 支持以下规则：
 
+#### -without
+如：文本发生变化且文本内容不包含```上架```
+```
+-without 上架
+```
 #### -contain
 如：文本发生变化且文本内容包含```上架```
 ```
