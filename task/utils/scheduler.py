@@ -109,6 +109,7 @@ def monitor(id, type):
             selector_type = task.selector_type
             selector = task.selector
             is_chrome = task.is_chrome
+            content_template = task.template
 
             notifications = [i for i in task.notification.iterator()]
 
@@ -123,7 +124,8 @@ def monitor(id, type):
 
             last_content = last.content
             content = get_content(url, is_chrome, selector_type, selector,
-                                  regular_expression, headers)
+                                  content_template, regular_expression,
+                                  headers)
             global_content = content
             status_code = is_changed(rule, content, last_content)
             logger.info(

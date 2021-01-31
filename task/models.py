@@ -115,11 +115,17 @@ class Task(models.Model):
                                         null=False,
                                         default='Xpath',
                                         choices=selector_choices)
-    selector = models.CharField(max_length=500,
-                                verbose_name='元素选择器',
-                                null=False)
+    selector = models.TextField(
+        verbose_name='元素选择器',
+        blank=False,
+        help_text=
+        '''一行一个元素选择器，每一行的格式为：选择器名称{选择器内容}，例如：title{//*[@id="id3"]/h3/text()}'''
+    )
+    template = models.TextField(
+        verbose_name='消息体模板',
+        blank=True,
+        help_text='可为空，自定义发送的通知内容格式，按照选择器名称进行替换，具体示例见文档')
     is_chrome_choices = ((0, 'no'), (1, 'yes'))
-
     is_chrome = models.IntegerField(null=False,
                                     default='no',
                                     verbose_name='是否使用无头浏览器',

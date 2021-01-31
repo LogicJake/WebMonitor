@@ -1,8 +1,9 @@
+import logging
 import re
+from collections import OrderedDict
 
 import feedparser
 from func_timeout import func_set_timeout
-import logging
 from task.utils.selector.selector_handler import new_handler
 
 logger = logging.getLogger('main')
@@ -13,7 +14,7 @@ def extract_by_re(conetnt, regular_expression):
 
     if m:
         return m.group()
-    elif m == None:
+    elif not m:
         return "未检测到相关内容"
     else:
         logger.error('{} 无法使用正则提取'.format(regular_expression))
@@ -24,6 +25,7 @@ def get_content(url,
                 is_chrome,
                 selector_type,
                 selector,
+                content_template,
                 regular_expression=None,
                 headers=None,
                 debug=False):
@@ -32,15 +34,34 @@ def get_content(url,
     else:
         selector_handler = new_handler('phantomjs', debug)
 
+    selector_split_list = selector.split('\n')
+    selector_dict = OrderedDict()
+    for selector_split in selector_split_list:
+        selector_split = selector_split.strip()
+        key, value = selector_split.split('{')
+        value = value.split('}')[0]
+        selector_dict[key] = value
+
     if selector_type == 0:
-        content = selector_handler.get_by_xpath(url, selector, headers)
+        content_dict = selector_handler.get_by_xpath(url, selector_dict,
+                                                     headers)
     elif selector_type == 1:
-        content = selector_handler.get_by_css(url, selector, headers)
+        content_dict = selector_handler.get_by_css(url, selector_dict, headers)
     elif selector_type == 2:
-        content = selector_handler.get_by_json(url, selector, headers)
+        content_dict = selector_handler.get_by_json(url, selector_dict,
+                                                    headers)
     else:
         logger.error('无效选择器')
         raise Exception('无效选择器')
+
+    if content_template == '':
+        content_template = '\t'.join(
+            ['{' + k + '}' for k in content_dict.keys()])
+
+    for k, v in content_dict.items():
+        content_template = content_template.replace('{' + k + '}', v)
+
+    content = content_template
 
     if regular_expression:
         content = extract_by_re(content, regular_expression)

@@ -2,15 +2,15 @@
 支持五种通知方式：邮件，pushover， Server 酱的微信提醒，Bark以及自定义GET/POST通知。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。Bark需要安装[客户端](https://github.com/Finb/Bark)取得对应设备Key。  
 
 ### 设置系统邮箱
-如果采用邮件提醒，则必须设置系统邮箱，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。
+如果采用邮件提醒，则必须设置“系统管理/系统邮箱”，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。
 
 系统邮箱配置只需设置一个，多于一个默认只生效第一条。
 
 ### 设置 Pushover Application
-如果采用 Pushover 提醒，则必须设置 Pushover api token。
+如果采用 Pushover 提醒，则必须设置“系统管理/Pushover 设置”中的 Pushover api token。
 
 ### 设置自定义GET/POST通知
-如果采用自定义通知，则必须设置 自定义网址。
+如果采用自定义通知，则必须设置自定义网址。
 #### GET
 用`{header}`和`{content}`替换掉标题和内容的位置。以Bark为例，格式如下：  
 ```
@@ -35,11 +35,17 @@ http://wxpusher.zjiecode.com/api/send/message{data={
 * 必须选择一种通知方式  
 * 默认抓取频率为5分钟，自行根据需要调整，单位分钟，不建议调太快，以防反爬  
 
-![任务管理](./fig/task_manage.png)  
-![添加任务](./fig/task_setting.png)  
 
 ### 选择器
-元素选择器类型可以选择 Xpath， Css selector 或 JsonPath，可以借助浏览器 F12 直接 copy 前两种选择器，需要注意的是，往往浏览器 copy 得到是元素，而不是文本信息，需要做以下补充：  
+元素选择器类型可以选择 Xpath， Css selector 或 JsonPath。  
+
+一行一个元素选择器，每一行的格式为：选择器名称{选择器内容}，例如：
+```
+title{//*[@id="id3"]/h3/text()}
+url{//*[@id="id3"]/h3/text()}
+```  
+
+可以借助浏览器 F12 直接 copy 前两种选择器，需要注意的是，往往浏览器 copy 得到是元素，而不是文本信息，需要做以下补充：  
 
 #### xpath
 * 获取元素文本信息，在浏览器得到的选择器后加```/text()```，如  
@@ -60,6 +66,18 @@ http://wxpusher.zjiecode.com/api/send/message{data={
 
 #### JsonPath
 针对返回 json 数据的接口, 可以使用 JsonPath 提取数据, 具体教程参考 https://goessner.net/articles/JsonPath/
+
+### 消息体模板
+消息体模板可为空，如果为空，则按照元素选择器的定义顺序以制表符为间隔拼接为字符串。下面介绍消息体模板的使用方式，如果元素选择器的设置为：
+```
+title{//*[@id="id3"]/h3/text()}
+url{//*[@id="id3"]/h3/text()}
+```  
+则消息体模板可以设置为：
+```
+{title}的网址是{url}
+```
+如果title对应的元素选择器提取的内容为“WebMonitor真棒”，url对应的元素选择器提取的内容为“https://www.logicjake.xyz/WebMonitor”，则得到的消息内容为“WebMonitor真棒的网址是https://www.logicjake.xyz/WebMonitor”。
 
 ### 是否选择无头浏览器
 如果源网页没有异步加载，可以不使用无头浏览器获取网页
@@ -129,9 +147,6 @@ http://wxpusher.zjiecode.com/api/send/message{data={
 ## 添加RSS监控任务
 可以在 任务管理 > RSS监控任务管理 添加新RSS监控任务  
 
-![RSS](./fig/rss.png)    
-
-![RSS设置](./fig/rss_setting.png)
 
 ## 任务状态查看
 可以在任务状态栏目下查看所有任务，包括任务状态（run or stop），上次运行时间，上次运行结果，运行结果包括三类：  
@@ -140,7 +155,6 @@ http://wxpusher.zjiecode.com/api/send/message{data={
 * 成功执行但未监测到变化  
 * 出错显示异常信息  
 
-![任务状态](./fig/status.png)  
 
 可以通过修改任务状态，暂停或重启任务  
 

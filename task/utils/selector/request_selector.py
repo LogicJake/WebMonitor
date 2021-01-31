@@ -1,12 +1,8 @@
 import ast
+from collections import OrderedDict
 
 import requests
-import json
-import jsonpath
-
-from scrapy.selector import Selector
-
-from task.utils.selector.selector import Selector as FatherSelector
+from task.utils.selector.selector import SelectorABC as FatherSelector
 
 
 class RequestsSelector(FatherSelector):
@@ -26,40 +22,29 @@ class RequestsSelector(FatherSelector):
         html = r.text
         return html
 
-    def get_by_xpath(self, url, xpath, headers=None):
-        html = self.get_html(url, headers)
-        if 'string()' in xpath:
-            xpath = xpath.split('/')
-            xpath = '/'.join(xpath[:-1])
-            res = Selector(
-                text=html).xpath(xpath)[0].xpath('string(.)').extract()
-        else:
-            res = Selector(text=html).xpath(xpath).extract()
-
-        if len(res) != 0:
-            return res[0]
-        else:
-            raise Exception('无法获取文本信息')
-
-    def get_by_css(self, url, xpath, headers=None):
-        html = self.get_html(url, headers)
-        res = Selector(text=html).css(xpath).extract()
-
-        if len(res) != 0:
-            return res[0]
-        else:
-            raise Exception('无法获取文本信息')
-
-    def get_by_json(self, url, xpath, headers=None):
+    def get_by_xpath(self, url, selector_dict, headers=None):
         html = self.get_html(url, headers)
 
-        try:
-            resJson = json.loads(html)
-        except Exception:
-            raise Exception('Json转换错误')
-        res = json.dumps(jsonpath.jsonpath(resJson, xpath), ensure_ascii=False)
+        result = OrderedDict()
+        for key, xpath_ext in selector_dict.items():
+            result[key] = self.xpath_parse(html, xpath_ext)
 
-        if len(res) != 0:
-            return res
-        else:
-            raise Exception('无法获取文本信息')
+        return result
+
+    def get_by_css(self, url, selector_dict, headers=None):
+        html = self.get_html(url, headers)
+
+        result = OrderedDict()
+        for key, css_ext in selector_dict.items():
+            result[key] = self.css_parse(html, css_ext)
+
+        return result
+
+    def get_by_json(self, url, selector_dict, headers=None):
+        html = self.get_html(url, headers)
+
+        result = OrderedDict()
+        for key, json_ext in selector_dict.items():
+            result[key] = self.json_parse()(html, json_ext)
+
+        return result

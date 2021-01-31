@@ -1,12 +1,13 @@
 import ast
 import warnings
+from collections import OrderedDict
 
-from scrapy.selector import Selector
 from selenium import webdriver
-
-from task.utils.selector.selector import Selector as FatherSelector
+from task.utils.selector.selector import SelectorABC as FatherSelector
 
 warnings.filterwarnings("ignore")
+
+USERAGENT = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
 
 
 class PhantomJSSelector(FatherSelector):
@@ -16,7 +17,7 @@ class PhantomJSSelector(FatherSelector):
     def get_html(self, url, headers):
         # 默认userAgent
         webdriver.DesiredCapabilities.PHANTOMJS[
-            'phantomjs.page.settings.userAgent'] = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
+            'phantomjs.page.settings.userAgent'] = USERAGENT
 
         if headers:
             header_dict = ast.literal_eval(headers)
@@ -43,26 +44,20 @@ class PhantomJSSelector(FatherSelector):
         driver.quit()
         return html
 
-    def get_by_xpath(self, url, xpath, headers=None):
+    def get_by_xpath(self, url, selector_dict, headers=None):
         html = self.get_html(url, headers)
-        if 'string()' in xpath:
-            xpath = xpath.split('/')
-            xpath = '/'.join(xpath[:-1])
-            res = Selector(
-                text=html).xpath(xpath)[0].xpath('string(.)').extract()
-        else:
-            res = Selector(text=html).xpath(xpath).extract()
 
-        if len(res) != 0:
-            return res[0]
-        else:
-            raise Exception('无法获取文本信息')
+        result = OrderedDict()
+        for key, xpath_ext in selector_dict.items():
+            result[key] = self.xpath_parse(html, xpath_ext)
 
-    def get_by_css(self, url, xpath, headers=None):
+        return result
+
+    def get_by_css(self, url, selector_dict, headers=None):
         html = self.get_html(url, headers)
-        res = Selector(text=html).css(xpath).extract()
 
-        if len(res) != 0:
-            return res[0]
-        else:
-            raise Exception('无法获取文本信息')
+        result = OrderedDict()
+        for key, css_ext in selector_dict.items():
+            result[key] = self.css_parse(html, css_ext)
+
+        return result
