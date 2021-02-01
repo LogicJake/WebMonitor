@@ -27,7 +27,8 @@ class BarkNotification(Notification):
         if to == '默认':
             logger.error('没有设置Bark KEY，无法发送Bark通知')
             raise Exception('没有设置Bark KEY，无法发送Bark通知')
-        url = 'https://api.day.app/{}/{}/{}{}'.format(to, header, urllib.parse.quote_plus(content), getUrlQuery(content))
+        url = 'https://api.day.app/{}/{}/{}{}'.format(
+            to, header, urllib.parse.quote_plus(content), getUrlQuery(content))
         r = requests.post(url)
 
         res = json.loads(r.text)

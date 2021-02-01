@@ -28,11 +28,6 @@ def wraper_rss_msg(item):
     return res
 
 
-def wraper_msg(content, link):
-    res = '''[{}]({})'''.format(content, link)
-    return res
-
-
 def send_message(content, header, notifications):
     if len(notifications) == 0:
         raise Exception('通知方式为空')
@@ -101,6 +96,7 @@ def send_message(content, header, notifications):
 def monitor(id, type):
     status = ''
     global_content = None
+    last = None
     try:
         if type == 'html':
             task = Task.objects.get(pk=id)
@@ -137,14 +133,12 @@ def monitor(id, type):
                 last.save()
             elif status_code == 2:
                 status = '监测到变化，且命中规则，最新值为{}'.format(content)
-                msg = wraper_msg(content, url)
-                send_message(msg, name, notifications)
+                send_message(content, name, notifications)
                 last.content = content
                 last.save()
             elif status_code == 3:
                 status = '监测到变化，最新值为{}'.format(content)
-                msg = wraper_msg(content, url)
-                send_message(msg, name, notifications)
+                send_message(content, name, notifications)
                 last.content = content
                 last.save()
             elif status_code == 0:
@@ -192,6 +186,7 @@ def monitor(id, type):
 
 
 def add_job(id, interval, type='html'):
+    task_id = ''
     if type == 'html':
         task_id = id
     elif type == 'rss':
@@ -213,6 +208,8 @@ def add_job(id, interval, type='html'):
 
 
 def remove_job(id, type='html'):
+    task_id = ''
+
     if type == 'html':
         task_id = id
     elif type == 'rss':

@@ -21,6 +21,18 @@ def extract_by_re(conetnt, regular_expression):
         raise Exception('无法使用正则提取')
 
 
+def wrap_template_content(content_dict, content_template):
+    if content_template == '':
+        content_template = '\t'.join(
+            ['{' + k + '}' for k in content_dict.keys()])
+
+    for k, v in content_dict.items():
+        content_template = content_template.replace('{' + k + '}', v)
+
+    content = content_template
+    return content
+
+
 def get_content(url,
                 is_chrome,
                 selector_type,
@@ -54,14 +66,9 @@ def get_content(url,
         logger.error('无效选择器')
         raise Exception('无效选择器')
 
-    if content_template == '':
-        content_template = '\t'.join(
-            ['{' + k + '}' for k in content_dict.keys()])
-
-    for k, v in content_dict.items():
-        content_template = content_template.replace('{' + k + '}', v)
-
-    content = content_template
+    # 添加或替换保留字段：{url}
+    content_dict['url'] = url
+    content = wrap_template_content(content_dict, content_template)
 
     if regular_expression:
         content = extract_by_re(content, regular_expression)

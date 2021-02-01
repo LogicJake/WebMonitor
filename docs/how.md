@@ -42,8 +42,11 @@ http://wxpusher.zjiecode.com/api/send/message{data={
 一行一个元素选择器，每一行的格式为：选择器名称{选择器内容}，例如：
 ```
 title{//*[@id="id3"]/h3/text()}
-url{//*[@id="id3"]/h3/text()}
+myurl{//*[@id="id3"]/h3/text()}
 ```  
+
+```以下字段为系统默认保留字段，请不要使用且无法被覆盖：```
+* url：该任务对应的监控网址
 
 可以借助浏览器 F12 直接 copy 前两种选择器，需要注意的是，往往浏览器 copy 得到是元素，而不是文本信息，需要做以下补充：  
 
@@ -71,13 +74,13 @@ url{//*[@id="id3"]/h3/text()}
 消息体模板可为空，如果为空，则按照元素选择器的定义顺序以制表符为间隔拼接为字符串。下面介绍消息体模板的使用方式，如果元素选择器的设置为：
 ```
 title{//*[@id="id3"]/h3/text()}
-url{//*[@id="id3"]/h3/text()}
+myurl{//*[@id="id3"]/h3/text()}
 ```  
 则消息体模板可以设置为：
 ```
-{title}的网址是{url}
+{title}的网址是{myurl}
 ```
-如果title对应的元素选择器提取的内容为“WebMonitor真棒”，url对应的元素选择器提取的内容为“https://www.logicjake.xyz/WebMonitor”，则得到的消息内容为“WebMonitor真棒的网址是https://www.logicjake.xyz/WebMonitor”。
+如果title对应的元素选择器提取的内容为“WebMonitor真棒”，myurl对应的元素选择器提取的内容为“https://www.logicjake.xyz/WebMonitor”，则得到的消息内容为“WebMonitor真棒的网址是https://www.logicjake.xyz/WebMonitor”。
 
 ### 是否选择无头浏览器
 如果源网页没有异步加载，可以不使用无头浏览器获取网页

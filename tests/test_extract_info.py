@@ -13,7 +13,6 @@ class TestExtract(unittest.TestCase):
         regular_expression = r'([1-9]\d*)'
         content = '1391好贵'
         res = extract_by_re(content, regular_expression)
-        print(res)
         self.assertEqual(res, '1391')
 
 
