@@ -42,7 +42,8 @@ class PushoverSetting(models.Model):
 
 
 class Notification(models.Model):
-    type_choice = ((0, '邮箱'), (1, '微信'), (2, 'pushover'), (3, 'Bark'), (4, '自定义通知'))
+    type_choice = ((0, '邮箱'), (1, '微信'), (2, 'pushover'), (3, 'Bark'),
+                   (4, '自定义通知'), (5, 'Slack'))
     name = models.CharField(max_length=32,
                             null=False,
                             verbose_name='通知方式名称',
@@ -52,10 +53,10 @@ class Notification(models.Model):
                                choices=type_choice,
                                default='邮箱',
                                verbose_name='通知方式类型')
-    content = models.CharField(
-        max_length=512,
-        null=False,
-        verbose_name='邮箱地址 / Server 酱 SCKEY / Pushover User Key / Bark key / 自定义网址')
+    content = models.CharField(max_length=512,
+                               null=False,
+                               verbose_name='邮箱地址 / Server 酱 SCKEY / \
+            Pushover User Key / Bark key / 自定义网址 / Slack channel')
 
     class Meta:
         verbose_name = "通知方式"
@@ -69,3 +70,16 @@ class Log(models.Model):
     class Meta:
         verbose_name = "日志查看"
         verbose_name_plural = "日志查看"
+
+
+class SlackSetting(models.Model):
+    token = models.CharField(max_length=100,
+                             null=False,
+                             verbose_name='Slack OAuth Access Token')
+
+    class Meta:
+        verbose_name = "Slack 设置"
+        verbose_name_plural = "Slack 设置"
+
+    def __str__(self):
+        return 'Slack ' + self.token

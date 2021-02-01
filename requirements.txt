@@ -11,3 +11,4 @@ django==2.2.13
 django-simpleui==3.9.1
 django-apscheduler==0.3.0
 django-import-export==2.0.2
+slack-sdk==3.2.1
