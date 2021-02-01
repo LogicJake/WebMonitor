@@ -46,13 +46,17 @@ def get_content(url,
     else:
         selector_handler = new_handler('phantomjs', debug)
 
-    selector_split_list = selector.split('\n')
+    # 兼容旧版本，默认转为{content}
     selector_dict = OrderedDict()
-    for selector_split in selector_split_list:
-        selector_split = selector_split.strip()
-        key, value = selector_split.split('{')
-        value = value.split('}')[0]
-        selector_dict[key] = value
+    if '{' not in selector:
+        selector_dict['content'] = selector
+    else:
+        selector_split_list = selector.split('\n')
+        for selector_split in selector_split_list:
+            selector_split = selector_split.strip()
+            key, value = selector_split.split('{')
+            value = value.split('}')[0]
+            selector_dict[key] = value
 
     if selector_type == 0:
         content_dict = selector_handler.get_by_xpath(url, selector_dict,
@@ -67,7 +71,8 @@ def get_content(url,
         raise Exception('无效选择器')
 
     # 添加或替换保留字段：{url}
-    content_dict['url'] = url
+    if 'url' in content_dict:
+        content_dict['url'] = url
     content = wrap_template_content(content_dict, content_template)
 
     if regular_expression:
