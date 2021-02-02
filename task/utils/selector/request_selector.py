@@ -45,6 +45,6 @@ class RequestsSelector(FatherSelector):
 
         result = OrderedDict()
         for key, json_ext in selector_dict.items():
-            result[key] = self.json_parse()(html, json_ext)
+            result[key] = self.json_parse(html, json_ext)
 
         return result
