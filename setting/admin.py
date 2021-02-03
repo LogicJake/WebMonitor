@@ -3,7 +3,7 @@ from django.contrib import admin
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-from .models import Notification, PushoverSetting, SystemMailSetting, Log, SlackSetting
+from .models import Notification, PushoverSetting, SystemMailSetting, Log, SlackSetting, TelegramSetting
 
 
 class SystemMailSettingResource(resources.ModelResource):
@@ -93,6 +93,23 @@ class SlackSettingResource(resources.ModelResource):
 @admin.register(SlackSetting)
 class SlackSettingAdmin(admin.ModelAdmin):
     resource_class = SlackSettingResource
+
+    list_display = ['token']
+    list_editable = ('token', )
+
+    list_display_links = None
+
+
+class TelegramSettingResource(resources.ModelResource):
+    class Meta:
+        model = TelegramSetting
+        skip_unchanged = True
+        report_skipped = True
+
+
+@admin.register(TelegramSetting)
+class TelegramSettingAdmin(admin.ModelAdmin):
+    resource_class = TelegramSettingResource
 
     list_display = ['token']
     list_editable = ('token', )

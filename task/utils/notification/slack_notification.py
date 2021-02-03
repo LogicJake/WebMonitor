@@ -22,8 +22,8 @@ class SlackNotification(Notification):
 
     def send(self, to, header, content):
         if to == '默认':
-            logger.error('没有设置 channel 名称，无法发送自定义通知')
-            raise Exception('没有设置 channel 名称，无法发送自定义通知')
+            logger.error('没有设置 channel 名称，无法发送 Slack 通知')
+            raise Exception('没有设置 channel 名称，无法发送 Slack 通知')
         client = WebClient(token=self.token)
 
         try:

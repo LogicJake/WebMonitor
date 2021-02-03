@@ -43,7 +43,7 @@ class PushoverSetting(models.Model):
 
 class Notification(models.Model):
     type_choice = ((0, '邮箱'), (1, '微信'), (2, 'pushover'), (3, 'Bark'),
-                   (4, '自定义通知'), (5, 'Slack'))
+                   (4, '自定义通知'), (5, 'Slack'), (6, 'Telegram'))
     name = models.CharField(max_length=32,
                             null=False,
                             verbose_name='通知方式名称',
@@ -56,7 +56,8 @@ class Notification(models.Model):
     content = models.CharField(max_length=512,
                                null=False,
                                verbose_name='邮箱地址 / Server 酱 SCKEY / \
-            Pushover User Key / Bark key / 自定义网址 / Slack channel')
+            Pushover User Key / Bark key / 自定义网址 / Slack channel / Telegram chat_id'
+                               )
 
     class Meta:
         verbose_name = "通知方式"
@@ -83,3 +84,16 @@ class SlackSetting(models.Model):
 
     def __str__(self):
         return 'Slack ' + self.token
+
+
+class TelegramSetting(models.Model):
+    token = models.CharField(max_length=100,
+                             null=False,
+                             verbose_name='Telegram Bot Token')
+
+    class Meta:
+        verbose_name = "Telegram Bot 设置"
+        verbose_name_plural = "Telegram Bot 设置"
+
+    def __str__(self):
+        return 'Telegram Bot ' + self.token

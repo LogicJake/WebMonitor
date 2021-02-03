@@ -115,12 +115,10 @@ class Task(models.Model):
                                         null=False,
                                         default='Xpath',
                                         choices=selector_choices)
-    selector = models.TextField(
-        verbose_name='元素选择器',
-        blank=False,
-        help_text=
-        '''一行一个元素选择器，每一行的格式为：选择器名称{选择器内容}，例如：title{//*[@id="id3"]/h3/text()}。其中 url 为系统保留选择器名称，请不要使用且无法被覆盖'''
-    )
+    selector = models.TextField(verbose_name='元素选择器',
+                                blank=False,
+                                help_text='一行一个元素选择器，每一行的格式为：选择器名称{选择器内容}，\
+            例如：title{//*[@id="id3"]/h3/text()}。其中 url 为系统保留选择器名称，请不要使用且无法被覆盖')
     template = models.TextField(
         verbose_name='消息体模板',
         blank=True,

@@ -1,5 +1,5 @@
 ## 设置通知方式  
-支持五种通知方式：邮件，pushover， Server 酱的微信提醒，Bark，自定义GET/POST通知以及 Slack 通知。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。Bark需要安装[客户端](https://github.com/Finb/Bark)取得对应设备Key。Slack 需要填写“#”开头的 channel 名称，且需要保证 Slack app 已在该 channel 中。  
+支持7种通知方式：邮件，pushover， Server 酱的微信提醒，Bark，自定义GET/POST通知, Slack 通知以及 Telegram 通知。邮件提醒只需要设置接收邮箱，微信提醒需要申请 SCKEY，自行搜索 Server 酱注册，简单免费。Pushover 需要填写注册就得到的 User Key。Bark需要安装[客户端](https://github.com/Finb/Bark)取得对应设备Key。Slack 需要填写“#”开头的 channel 名称，且需要保证 Slack app 已在该 channel 中。  
 
 ### 设置系统邮箱
 如果采用邮件提醒，则必须设置“系统管理/系统邮箱”，该邮箱为提醒邮件的发信人。自行根据需要使用的邮箱查找相关设置，密码一般指授权码。
@@ -11,6 +11,9 @@
 
 ### 设置 Slack
 如果采用 Slack 提醒，则必须设置“系统管理/Slack 设置”中的 Slack OAuth Access Token。具体教程见：https://github.com/slackapi/python-slack-sdk/blob/main/tutorial/01-creating-the-slack-app.md  
+
+### 设置 Telegram Bot
+如果采用 Telegram 提醒，则必须设置“系统管理/Telegram Bot 设置”中的 Telegram Bot Token。  
 
 ### 设置自定义GET/POST通知
 如果采用自定义通知，则必须设置自定义网址。
