@@ -26,9 +26,9 @@ class TelegramNotification(Notification):
             raise Exception('没有设置 chat_id，无法发送 Telegram 通知')
 
         r = requests.get(
-            'https://api.telegram.org/bot{}/sendMessage?chat_id=610598926&text={}'
-            .format(self.token,
-                    urllib.parse.quote_plus('{}: {}'.format(header, content))))
+            'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'.
+            format(self.token, to,
+                   urllib.parse.quote_plus('{}: {}'.format(header, content))))
         result = r.json()
         if not result['ok']:
             raise Exception(result['description'])
