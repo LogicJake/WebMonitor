@@ -13,7 +13,7 @@ def extract_by_re(conetnt, regular_expression):
     m = re.search(regular_expression, conetnt)
 
     if m:
-        return m.group()
+        return m.group(1)
     elif not m:
         return "未检测到相关内容"
     else:
