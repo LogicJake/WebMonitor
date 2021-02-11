@@ -100,7 +100,7 @@ class TaskStatus(models.Model):
 
 class Task(models.Model):
     name = models.CharField(max_length=100, verbose_name='任务名称', null=False)
-    url = models.CharField(max_length=500,
+    url = models.CharField(max_length=1024,
                            verbose_name='监控网址',
                            null=False,
                            validators=[URLValidator()])
@@ -201,7 +201,7 @@ class Task(models.Model):
 
 class RSSTask(models.Model):
     name = models.CharField(max_length=32, null=False, verbose_name='任务名称')
-    url = models.CharField(max_length=500,
+    url = models.CharField(max_length=1024,
                            null=False,
                            verbose_name='RSS地址',
                            validators=[URLValidator()])
