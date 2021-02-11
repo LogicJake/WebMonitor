@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, verbose_name='任务名称')),
-                ('url', models.CharField(max_length=500, verbose_name='监控网址')),
+                ('url', models.CharField(max_length=1024, verbose_name='监控网址')),
                 ('selector_type', models.IntegerField(choices=[(0, 'Xpath'), (1, 'Css selector'), (2, 'JsonPath')], default='Xpath', verbose_name='元素选择器类型')),
                 ('selector', models.CharField(max_length=128, verbose_name='元素选择器')),
                 ('is_chrome', models.IntegerField(choices=[(0, 'no'), (1, 'yes')], default='no', verbose_name='是否使用无头浏览器')),
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=32, verbose_name='任务名称')),
-                ('url', models.CharField(max_length=500, verbose_name='RSS地址')),
+                ('url', models.CharField(max_length=1024, verbose_name='RSS地址')),
                 ('frequency', models.IntegerField(default=5, verbose_name='频率(分钟)')),
                 ('create_time', models.DateTimeField(auto_now_add=True, verbose_name='创建时间')),
                 ('notification', models.ManyToManyField(to='setting.Notification', verbose_name='通知方式')),
