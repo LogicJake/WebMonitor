@@ -61,3 +61,12 @@ class PhantomJSSelector(FatherSelector):
             result[key] = self.css_parse(html, css_ext)
 
         return result
+    
+    def get_by_json(self, url, selector_dict, headers=None):
+        html = self.get_html(url, headers)
+
+        result = OrderedDict()
+        for key, json_ext in selector_dict.items():
+            result[key] = self.json_parse(html, json_ext)
+
+        return result
