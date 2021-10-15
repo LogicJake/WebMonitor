@@ -75,6 +75,7 @@ myurl{//*[@id="id3"]/h3/text()}
 
 #### JsonPath
 针对返回 json 数据的接口, 可以使用 JsonPath 提取数据, 具体教程参考 https://goessner.net/articles/JsonPath/
+在Chrome F12开发者工具中，也可以找到对应元素，然后右键该元素，选择“Copy Property Path”。
 
 ### 消息体模板
 消息体模板可为空，如果为空，则按照元素选择器的定义顺序以制表符为间隔拼接为字符串。下面介绍消息体模板的使用方式，如果元素选择器的设置为：
