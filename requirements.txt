@@ -3,7 +3,7 @@ Markdown==3.1
 Scrapy==1.6.0
 selenium==3.141.0
 html5lib==1.0.1
-Twisted==19.7.0
+Twisted==22.2.0
 feedparser==5.2.1
 func_timeout==4.3.0
 jsonpath==0.82
