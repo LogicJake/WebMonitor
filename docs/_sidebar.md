@@ -4,4 +4,4 @@
 * [更新日志](changelog.md)
 * **Links**
 * [Github](https://github.com/LogicJake/WebMonitor)
-* [Blog](https://www.logicjake.xyz)
+* [Blog](https://logicjake.github.io)
