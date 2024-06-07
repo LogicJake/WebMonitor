@@ -18,6 +18,8 @@ class RequestsSelector(FatherSelector):
             r = requests.get(url, headers=header_dict, timeout=10)
         else:
             r = requests.get(url, timeout=10)
+        if r.status_code != 200:
+            raise Exception('访问错误: ', r.status_code)
         r.encoding = r.apparent_encoding
         html = r.text
         return html
