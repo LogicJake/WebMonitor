@@ -1,23 +1,58 @@
-.DS_Store
+# Dependencies
 node_modules
+.venv
+__pycache__/
+*.py[cod]
+
+# Build output
 /dist
+/build
+*.egg-info/
 
-
-# local env files
+# Environment files
+.env
 .env.local
 .env.*.local
+instance/
+*.cfg
+
+# IDE and editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# System files
+.DS_Store
+Thumbs.db
 
 # Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
-# Editor directories and files
-.idea
-.vscode
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# Database files
+*.sqlite
+*.db
+
+# Test coverage
+coverage/
+.coverage
+htmlcov/
+
+# Cache
+.pytest_cache/
+.mypy_cache/
+.eslintcache
+.npm
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*~
