@@ -76,7 +76,7 @@
 
         <!-- 邮箱配置 -->
         <template v-if="form.type === 'email'">
-          <el-form-item label="邮箱地址" prop="config.email">
+          <el-form-item label="接收邮箱地址" prop="config.email">
             <el-input v-model="form.config.email" placeholder="请输入邮箱地址" />
           </el-form-item>
           <el-form-item label="SMTP服务器" prop="config.smtp_server">

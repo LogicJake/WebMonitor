@@ -13,6 +13,7 @@ from flask import current_app
 from api.services.selector_factory import SelectorParserFactory
 from api.services.notification_factory import NotificationSenderFactory
 from api.services.log_service import log_monitor_info, log_monitor_warning, log_monitor_error, log_monitor_debug
+from typing import List, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -50,14 +51,12 @@ class MonitorService:
     def start(self):
         """启动监控服务"""
         if self.running:
-            logger.warning("监控服务已在运行中")
             log_monitor_warning("监控服务已在运行中")
             return False
             
         self.running = True
         self.monitor_thread = threading.Thread(target=self._monitor_loop, daemon=True)
         self.monitor_thread.start()
-        logger.info("网页监控服务已启动")
         log_monitor_info("网页监控服务已启动")
         return True
         
@@ -69,7 +68,6 @@ class MonitorService:
         self.running = False
         if self.monitor_thread and self.monitor_thread.is_alive():
             self.monitor_thread.join(timeout=5)
-        logger.info("网页监控服务已停止")
         log_monitor_info("网页监控服务已停止")
         return True
         
@@ -95,7 +93,6 @@ class MonitorService:
         
     def _monitor_loop(self):
         """主监控循环"""
-        logger.info("监控循环已启动")
         log_monitor_info("监控循环已启动")
         
         while self.running:
@@ -112,11 +109,9 @@ class MonitorService:
                     
             except Exception as e:
                 self.error_count += 1
-                logger.error(f"监控循环出错: {e}")
                 log_monitor_error(f"监控循环出错: {e}")
                 time.sleep(30)  # 出错时等待更长时间
                 
-        logger.info("监控循环已退出")
         log_monitor_info("监控循环已退出")
         
     def _check_all_tasks(self):
@@ -138,7 +133,7 @@ class MonitorService:
                         thread.start()
                     
         except Exception as e:
-            logger.error(f"检查任务列表时出错: {e}")
+            log_monitor_error(f"检查任务列表时出错: {e}")
             
     def _should_check_task(self, task):
         """判断是否需要检查任务"""
@@ -169,7 +164,6 @@ class MonitorService:
                 }
         """
         try:
-            logger.info(f"请求网页: {task.name} - {task.url}")
             log_monitor_info(f"开始检查任务: {task.url}", task_id=task.id, task_name=task.name)
             
             start_time = time.time()
@@ -257,21 +251,20 @@ class MonitorService:
                 results['formatted_message'] = self._replace_template_placeholders(task, results['elements'])
                     
                 # 检查变化
-                has_changed = self._check_content_change(task, results)
+                # has_changed = self._check_content_change(task, results)
+                has_changed = True
                 
                 # 更新任务状态
                 self._update_task_status(task, True, fetch_result['response_time'], None)
                 
                 if has_changed:
-                    logger.info(f"任务 {task.name} 检测到变化")
                     log_monitor_info(f"检测到内容变化", task_id=task.id, task_name=task.name)
                     self._send_notifications(task, results)
                 else:
-                    logger.debug(f"任务 {task.name} 无变化")
                     log_monitor_debug(f"内容无变化", task_id=task.id, task_name=task.name)
                 
         except Exception as e:
-            logger.error(f"检查任务时出错: {e}")
+            log_monitor_error(f"检查任务时出错: {e}")
             try:
                 with self.app.app_context():
                     task = Task.query.get(task_id)
@@ -334,14 +327,14 @@ class MonitorService:
             # 检查消息是否有变化
             has_changed = False
             if not last_content:
-                logger.info(f"任务 {task.name} 首次检查，建立基准")
+                log_monitor_info(f"任务 {task.name} 首次检查，建立基准")
                 has_changed = False
             else:
                 has_changed = current_message != last_message
                 if has_changed:
-                    logger.info(f"任务 {task.name} 消息模板内容发生变化")
-                    logger.debug(f"旧消息: {last_message}")
-                    logger.debug(f"新消息: {current_message}")
+                    log_monitor_info(f"任务 {task.name} 消息模板内容发生变化")
+                    log_monitor_debug(f"旧消息: {last_message}")
+                    log_monitor_debug(f"新消息: {current_message}")
             
             # 更新数据库中的内容
             full_content = {
@@ -353,7 +346,7 @@ class MonitorService:
             return has_changed
             
         except Exception as e:
-            logger.error(f"检查变化时出错: {e}")
+            log_monitor_error(f"检查变化时出错: {e}")
             return False
 
     def _check_change_with_conditions(self, task, current_results):
@@ -367,15 +360,15 @@ class MonitorService:
             # 按顺序检查每个条件，有一个符合就返回True
             for condition in task.change_conditions:
                 if self._evaluate_condition(condition, current_elements, last_elements):
-                    logger.info(f"任务 {task.name} 变化条件 {condition.element_name} {condition.operator} 触发")
+                    log_monitor_info(f"任务 {task.name} 变化条件 {condition.element_name} {condition.operator} 触发")
                     return True
             
             # 没有条件触发，检查是否首次运行
             if not last_content:
-                logger.info(f"任务 {task.name} 首次检查，建立基准")
+                log_monitor_info(f"任务 {task.name} 首次检查，建立基准")
                 return False
             
-            logger.debug(f"任务 {task.name} 所有变化条件均未触发")
+            log_monitor_debug(f"任务 {task.name} 所有变化条件均未触发")
             return False
             
         finally:
@@ -466,11 +459,11 @@ class MonitorService:
                     return False
             
             else:
-                logger.warning(f"未知的变化条件操作符: {operator}")
+                log_monitor_warning(f"未知的变化条件操作符: {operator}")
                 return False
                 
         except Exception as e:
-            logger.error(f"评估变化条件时出错: {e}")
+            log_monitor_error(f"评估变化条件时出错: {e}")
             return False
 
     def _get_last_content(self, task):
@@ -487,10 +480,10 @@ class MonitorService:
                 return json.loads(task.last_content)
             return None
         except json.JSONDecodeError as e:
-            logger.error(f"解析任务 {task.name} 的上次内容失败: {e}")
+            log_monitor_error(f"解析任务 {task.name} 的上次内容失败: {e}")
             return None
         except Exception as e:
-            logger.error(f"获取任务 {task.name} 的上次内容时出错: {e}")
+            log_monitor_error(f"获取任务 {task.name} 的上次内容时出错: {e}")
             return None
             
     def _update_task_status(self, task, success, response_time, error):
@@ -512,12 +505,12 @@ class MonitorService:
             db.session.commit()
             
         except Exception as e:
-            logger.error(f"更新任务状态时出错: {e}")
+            log_monitor_error(f"更新任务状态时出错: {e}")
             db.session.rollback()
             
     def _handle_error(self, task, error_msg, response_time):
         """处理错误"""
-        logger.error(f"任务 {task.name} 出错: {error_msg}")
+        log_monitor_error(f"任务 {task.name} 出错: {error_msg}")
         self._update_task_status(task, False, response_time, error_msg)
         
     def _send_notifications(self, task, results):
@@ -531,47 +524,24 @@ class MonitorService:
                     result = NotificationSenderFactory.send_notification(notification, task, message)
                     
                     if result['success']:
-                        logger.info(f"通知发送成功 {notification.name}: {result.get('message', '成功')}")
-                        log_monitor_info(f"通知发送成功: {notification.name}", task_id=task.id, task_name=task.name)
+                        log_monitor_info(f"通知发送成功 {notification.name}: {result.get('message', '成功')}")
                     else:
-                        logger.error(f"通知发送失败 {notification.name}: {result.get('error', '未知错误')}")
-                        log_monitor_error(f"通知发送失败: {notification.name} - {result.get('error', '未知错误')}", task_id=task.id, task_name=task.name)
+                        log_monitor_error(f"通知发送失败 {notification.name}: {result.get('error', '未知错误')}", task_id=task.id, task_name=task.name)
                         
                 except Exception as e:
-                    logger.error(f"发送通知异常 {notification.name}: {e}")
-                    log_monitor_error(f"发送通知异常: {notification.name} - {str(e)}", task_id=task.id, task_name=task.name)
+                    log_monitor_error(f"发送通知异常 {notification.name}: {e}", task_id=task.id, task_name=task.name)
                     
         except Exception as e:
-            logger.error(f"发送通知时出错: {e}")
+            log_monitor_error(f"发送通知时出错: {e}")
             
     def _build_notification_message(self, task, results):
         """构建通知消息"""
-        message = f"网页监控变化通知\n"
-        message += f"任务: {task.name}\n"
-        message += f"网址: {task.url}\n"
-        message += f"时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
-        
+        message = ""
         # 使用预先替换好的消息
         if results.get('formatted_message'):
-            message += f"说明: {results['formatted_message']}\n"
+            message += f"{results['formatted_message']}\n"
         elif task.message:
-            message += f"说明: {task.message}\n"
-            
-        # 获取上次内容进行对比
-        last_content = self._get_last_content(task)
-        
-        if results['elements']:
-            message += "\n当前监控结果:\n"
-            for name, value in results['elements'].items():
-                message += f"- {name}: {value}\n"
-                
-            # 如果有上次内容，显示变化对比
-            if last_content:
-                message += "\n变化对比:\n"
-                for name, current_value in results['elements'].items():
-                    last_value = last_content.get(name)
-                    if last_value != current_value:
-                        message += f"- {name}: {last_value} → {current_value}\n"
+            message += f"{task.message}\n"
                 
         return message
 
@@ -609,10 +579,10 @@ class MonitorService:
         except KeyError as e:
             # 如果模板中引用了不存在的元素，记录警告并返回原模板
             missing_key = str(e).strip("'\"")
-            logger.warning(f"模板中引用了不存在的元素: {missing_key}")
+            log_monitor_warning(f"模板中引用了不存在的元素: {missing_key}")
             return task.message
         except Exception as e:
-            logger.error(f"模板替换时发生错误: {e}")
+            log_monitor_error(f"模板替换时发生错误: {e}")
             return task.message
 
 

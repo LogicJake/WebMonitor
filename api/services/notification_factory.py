@@ -243,7 +243,7 @@ class EmailSender(NotificationSender):
             config = notification.get_config()
             
             # 检查必要配置
-            required_fields = ['smtp_server', 'smtp_port', 'username', 'password', 'to_email']
+            required_fields = ['smtp_server', 'smtp_port', 'username', 'password', 'email']
             for field in required_fields:
                 if not config.get(field):
                     return {
@@ -259,16 +259,14 @@ class EmailSender(NotificationSender):
             # 创建邮件
             msg = MIMEMultipart()
             msg['From'] = config['username']
-            msg['To'] = config['to_email']
+            msg['To'] = config['email']
             msg['Subject'] = f"网页监控通知 - {task.name}"
             
             # 邮件正文
             msg.attach(MIMEText(message, 'plain', 'utf-8'))
             
             # 发送邮件
-            server = smtplib.SMTP(config['smtp_server'], config['smtp_port'])
-            if config.get('use_tls', True):
-                server.starttls()
+            server = smtplib.SMTP_SSL(config['smtp_server'], config['smtp_port'])
             
             server.login(config['username'], config['password'])
             server.send_message(msg)

@@ -16,7 +16,7 @@ from api.controllers.notification_controller import notification_bp
 from api.controllers.monitor_controller import monitor_bp
 from api.controllers.log_controller import log_bp
 from api.services.monitor_service import monitor_service
-from api.services.log_service import setup_monitor_logging
+from api.services.log_service import setup_monitor_logging, log_monitor_info, log_monitor_warning, log_monitor_error
 from api import db
 
 # 配置日志
@@ -71,28 +71,28 @@ def create_app():
 def start_monitor_service():
     """启动监控服务"""
     try:
-        logger.info("正在启动监控服务...")
+        log_monitor_info("正在启动监控服务...")
         if monitor_service.start():
-            logger.info("监控服务启动成功")
+            log_monitor_info("监控服务启动成功")
         else:
-            logger.warning("监控服务已在运行中")
+            log_monitor_warning("监控服务已在运行中")
     except Exception as e:
-        logger.error(f"启动监控服务失败: {e}")
+        log_monitor_error(f"启动监控服务失败: {e}")
 
 def stop_monitor_service():
     """停止监控服务"""
     try:
-        logger.info("正在停止监控服务...")
+        log_monitor_info("正在停止监控服务...")
         if monitor_service.stop():
-            logger.info("监控服务停止成功")
+            log_monitor_info("监控服务停止成功")
         else:
-            logger.info("监控服务已停止")
+            log_monitor_info("监控服务已停止")
     except Exception as e:
-        logger.error(f"停止监控服务失败: {e}")
+        log_monitor_error(f"停止监控服务失败: {e}")
 
 def signal_handler(signum, frame):
     """信号处理器"""
-    logger.info(f"接收到信号 {signum}，正在关闭应用...")
+    log_monitor_info(f"接收到信号 {signum}，正在关闭应用...")
     stop_monitor_service()
     sys.exit(0)
 
@@ -112,19 +112,19 @@ if __name__ == '__main__':
         with app.app_context():
             start_monitor_service()
             
-            logger.info("=" * 50)
-            logger.info("Flask应用和监控服务已启动")
-            logger.info("Web服务: http://127.0.0.1:5000")
-            logger.info("监控服务: 后台运行")
-            logger.info("=" * 50)
+            log_monitor_info("=" * 50)
+            log_monitor_info("Flask应用和监控服务已启动")
+            log_monitor_info("Web服务: http://127.0.0.1:5000")
+            log_monitor_info("监控服务: 后台运行")
+            log_monitor_info("=" * 50)
             
             # 启动Flask应用
-            app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=False)
+            app.run(host='127.0.0.1', port=5000, debug=False, use_reloader=True)
             
     except KeyboardInterrupt:
-        logger.info("接收到键盘中断")
+        log_monitor_info("接收到键盘中断")
         signal_handler(signal.SIGINT, None)
     except Exception as e:
-        logger.error(f"应用启动失败: {e}")
+        log_monitor_error(f"应用启动失败: {e}")
         stop_monitor_service()
         sys.exit(1)

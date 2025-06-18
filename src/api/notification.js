@@ -131,7 +131,7 @@ export const NotificationService = {
    */
   async updateNotification(id, notificationData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/notifications/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/notification/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -170,6 +170,7 @@ const loadTasks = async () => {
   try {
     loading.value = true;
     tasks.value = await TaskService.getAllTasks();
+    console.log(tasks);
   } catch (error) {
     ErrorHandler.handleApiError(error, '获取任务列表失败');
   } finally {
@@ -208,13 +209,15 @@ const handleDelete = async (task) => {
 };
 
 const handleToggleStatus = async (task) => {
+  // 保存当前状态，因为el-switch已经改变了task.active的值
+  const newStatus = task.active;
   try {
-    await TaskService.updateTask(task.id, { active: !task.active });
+    await TaskService.updateTask(task.id, { active: newStatus });
     ElMessage.success('任务状态更新成功');
     await loadTasks();
   } catch (error) {
     ErrorHandler.handleApiError(error, '切换状态失败');
-    task.active = !task.active; // 回滚状态
+    task.active = !newStatus; // 回滚到原来的状态
   }
 };
 

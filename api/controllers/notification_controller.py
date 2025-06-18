@@ -78,7 +78,7 @@ def update_notification(notification_id):
                 'error': '无效的请求数据'
             }), 400
         
-        notification = NotificationService.update_notification(notification_id, **data)
+        notification = NotificationService.update_notification(notification_id, data)
         return jsonify({
             'success': True,
             'data': notification.to_dict()
