@@ -284,6 +284,11 @@
                 <el-icon><PlayIcon /></el-icon>
                 测试任务
               </el-button>
+              <div class="test-options">
+                <el-checkbox v-model="testSendNotification" style="margin-top: 10px;">
+                  测试时发送通知（仅在检测到变化时发送）
+                </el-checkbox>
+              </div>
               <div class="test-description">
                 <el-text type="info" size="small">
                   点击测试按钮验证任务配置是否正确，包括网页抓取、元素提取、消息模板等功能。
@@ -367,7 +372,7 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import { Delete, ArrowUp, VideoPlay as PlayIcon } from '@element-plus/icons-vue';
 import { TaskService } from '@/api/task';
 import { NotificationService } from '@/api/notification';
@@ -383,6 +388,7 @@ export default {
     const isEdit = ref(false);
     const submitting = ref(false);
     const testing = ref(false);
+    const testSendNotification = ref(false);
     const notificationsLoading = ref(false);
     const notifications = ref([]);
     const taskData = ref(null);
@@ -610,30 +616,6 @@ export default {
         if (!formRef.value) return;
         await formRef.value.validate();
         
-        // 弹出确认对话框，让用户选择是否发送通知
-        let sendNotification = false;
-        
-        try {
-          await ElMessageBox.confirm(
-            '是否在测试时发送通知？（仅在检测到变化时发送）',
-            '测试选项',
-            {
-              confirmButtonText: '发送通知',
-              cancelButtonText: '不发送通知',
-              type: 'question',
-              distinguishCancelAndClose: true
-            }
-          );
-          sendNotification = true;
-        } catch (action) {
-          if (action === 'cancel') {
-            sendNotification = false;
-          } else {
-            // 用户点击了关闭按钮，取消测试
-            return;
-          }
-        }
-        
         testing.value = true;
         testResult.value = null;
 
@@ -645,7 +627,7 @@ export default {
           // 编辑模式：测试已保存的任务
           result = await TaskService.testTask(
             route.params.id, 
-            sendNotification
+            testSendNotification.value
           );
         } else {
           // 新建模式：测试任务配置
@@ -663,7 +645,7 @@ export default {
           
           result = await TaskService.testTaskConfig(
             taskData,
-            sendNotification
+            testSendNotification.value
           );
         }
         
@@ -727,6 +709,7 @@ export default {
       rules,
       submitting,
       testing,
+      testSendNotification,
       isEdit,
       selectorTypes,
       operatorTypes,
@@ -923,6 +906,13 @@ export default {
 
 .test-actions {
   margin-bottom: 20px;
+}
+
+.test-options {
+  padding: 8px 0;
+  border-top: 1px solid var(--el-border-color-lighter);
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  margin: 10px 0;
 }
 
 .test-description {
