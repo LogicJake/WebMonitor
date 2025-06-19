@@ -51,10 +51,26 @@
                 </el-tag>
               </div>
             </div>
-            <div v-if="task.message" class="task-message">
-              <p><i class="el-icon-document"></i> 消息模板: {{ task.message }}</p>
+            <div v-if="task.custom_headers" class="task-headers">
+              <p><i class="el-icon-setting"></i> 自定义请求头: 已配置</p>
             </div>
             <p v-if="task.last_check"><i class="el-icon-check"></i> 上次检查: {{ new Date(task.last_check).toLocaleString() }}</p>
+            
+            <!-- 消息模板 -->
+            <div v-if="task.message" class="message-template-section">
+              <div class="content-header" @click="toggleMessageTemplate(task.id)">
+                <i class="el-icon-document"></i>
+                <span>消息模板</span>
+                <el-icon class="expand-icon" :class="{ 'expanded': expandedMessageTemplates.has(task.id) }">
+                  <ArrowDown />
+                </el-icon>
+              </div>
+              <div v-show="expandedMessageTemplates.has(task.id)" class="content-body">
+                <div class="message-template-content">
+                  {{ task.message }}
+                </div>
+              </div>
+            </div>
             
             <!-- 上次检查内容 -->
             <div v-if="task.last_content" class="last-content-section">
@@ -104,6 +120,7 @@ const router = useRouter();
 const loading = ref(false);
 const tasks = ref([]);
 const expandedTasks = ref(new Set());
+const expandedMessageTemplates = ref(new Set());
 
 const selectorTypes = {
   xpath: { label: 'XPath', type: 'primary' },
@@ -155,6 +172,14 @@ const toggleContent = (taskId) => {
   }
 };
 
+const toggleMessageTemplate = (taskId) => {
+  if (expandedMessageTemplates.value.has(taskId)) {
+    expandedMessageTemplates.value.delete(taskId);
+  } else {
+    expandedMessageTemplates.value.add(taskId);
+  }
+};
+
 const getLastContentData = (lastContent) => {
   try {
     if (!lastContent) return null;
@@ -170,7 +195,6 @@ const loadTasks = async () => {
   try {
     loading.value = true;
     tasks.value = await TaskService.getAllTasks();
-    console.log(tasks);
   } catch (error) {
     ErrorHandler.handleApiError(error, '获取任务列表失败');
   } finally {
@@ -287,18 +311,17 @@ onMounted(() => {
   word-break: break-all;
 }
 
-.task-message {
+.task-headers {
   margin-top: 8px;
   padding: 8px;
   background-color: var(--el-fill-color-light);
   border-radius: 4px;
 }
 
-.task-message p {
+.task-headers p {
   margin: 0;
   font-size: 13px;
   color: var(--el-text-color-regular);
-  word-break: break-all;
 }
 
 .selectors-list {
@@ -353,8 +376,9 @@ onMounted(() => {
   gap: 8px;
 }
 
-/* 上次检查内容样式 */
-.last-content-section {
+/* 折叠区域通用样式 */
+.last-content-section,
+.message-template-section {
   margin-top: 12px;
   border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
@@ -463,5 +487,19 @@ onMounted(() => {
   background-color: var(--el-fill-color);
   padding: 2px 6px;
   border-radius: 3px;
+}
+
+.message-template-content {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 150px;
+  overflow-y: auto;
+  padding: 12px;
+  background-color: var(--el-fill-color-lighter);
+  border-radius: 4px;
+  border-left: 3px solid var(--el-color-primary);
+  line-height: 1.5;
 }
 </style>

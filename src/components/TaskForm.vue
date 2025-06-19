@@ -41,6 +41,20 @@
           <span class="unit">秒</span>
         </el-form-item>
 
+        <el-form-item label="自定义请求头" prop="custom_headers">
+          <el-input
+            v-model="form.custom_headers"
+            type="textarea"
+            :rows="4"
+            placeholder='请输入自定义请求头，格式为JSON。例如：{"Authorization": "Bearer token123", "Accept": "application/json"}'
+            :maxlength="2000"
+            show-word-limit
+          />
+          <div class="form-item-tip">
+            💡 提示：自定义请求头为可选项，用于在HTTP请求中添加额外的头部信息。格式必须为有效的JSON对象，如：<code>{"key": "value"}</code>
+          </div>
+        </el-form-item>
+
         <el-form-item label="通知方式" prop="notification_ids">
           <el-select
             v-model="form.notification_ids"
@@ -291,6 +305,7 @@ export default {
       interval: 60,
       active: true,
       message: '',
+      custom_headers: '',
       selectors: [],
       notification_ids: [],
       change_conditions: []
@@ -311,6 +326,28 @@ export default {
       ],
       message: [
         { max: 5000, message: '消息模板内容不能超过5000个字符', trigger: 'blur' }
+      ],
+      custom_headers: [
+        { max: 2000, message: '自定义请求头不能超过2000个字符', trigger: 'blur' },
+        {
+          validator: (rule, value, callback) => {
+            if (!value || value.trim() === '') {
+              callback(); // 空值是允许的
+              return;
+            }
+            try {
+              const parsed = JSON.parse(value);
+              if (typeof parsed !== 'object' || Array.isArray(parsed)) {
+                callback(new Error('自定义请求头必须是有效的JSON对象'));
+                return;
+              }
+              callback();
+            } catch (error) {
+              callback(new Error('自定义请求头格式不正确，请输入有效的JSON'));
+            }
+          },
+          trigger: 'blur'
+        }
       ],
       notification_ids: [
         { 
@@ -410,6 +447,7 @@ export default {
         form.interval = task.interval;
         form.active = task.active;
         form.message = task.message || '';
+        form.custom_headers = task.custom_headers || '';
         form.selectors = task.selectors || [];
         form.notification_ids = task.notifications ? task.notifications.map(n => n.id) : [];
         form.change_conditions = task.change_conditions || [];
@@ -431,6 +469,7 @@ export default {
           interval: form.interval,
           active: form.active,
           message: form.message,
+          custom_headers: form.custom_headers,
           selectors: form.selectors,
           notification_ids: form.notification_ids,
           change_conditions: form.change_conditions

@@ -38,7 +38,8 @@ class TaskService:
             interval=data['interval'],
             name=data.get('name'),
             active=data.get('active', True),
-            message=data.get('message')
+            message=data.get('message'),
+            custom_headers=data.get('custom_headers')
         )
         
         # 添加通知方式关联
@@ -86,6 +87,8 @@ class TaskService:
             task.active = data['active']
         if 'message' in data:
             task.message = data['message']
+        if 'custom_headers' in data:
+            task.custom_headers = data['custom_headers']
         
         # 更新通知方式
         if 'notification_ids' in data:

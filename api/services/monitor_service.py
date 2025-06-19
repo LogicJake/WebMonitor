@@ -168,13 +168,28 @@ class MonitorService:
             
             start_time = time.time()
             
+            # 构建请求头
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            }
+            
+            # 添加自定义请求头
+            if task.custom_headers:
+                try:
+                    custom_headers = json.loads(task.custom_headers)
+                    if isinstance(custom_headers, dict):
+                        headers.update(custom_headers)
+                        log_monitor_debug(f"添加自定义请求头: {custom_headers}", task_id=task.id, task_name=task.name)
+                except json.JSONDecodeError as e:
+                    log_monitor_warning(f"解析自定义请求头失败: {e}", task_id=task.id, task_name=task.name)
+                except Exception as e:
+                    log_monitor_warning(f"处理自定义请求头时出错: {e}", task_id=task.id, task_name=task.name)
+            
             # 发送HTTP请求
             response = requests.get(
                 task.url,
                 timeout=30,
-                headers={
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-                },
+                headers=headers,
                 allow_redirects=True
             )
             
