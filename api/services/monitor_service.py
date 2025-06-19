@@ -113,7 +113,80 @@ class MonitorService:
                 time.sleep(30)  # 出错时等待更长时间
                 
         log_monitor_info("监控循环已退出")
+    
+    def test_task(self, task, send_notification=False):
+        """测试单个任务执行
         
+        Args:
+            task: 任务对象
+            send_notification: 是否发送通知
+            
+        Returns:
+            dict: 测试结果
+        """
+        try:
+            log_monitor_info(f"开始测试任务: {task.url}", task_id=task.id, task_name=task.name)
+            
+            # 请求网页
+            fetch_result = self._fetch_webpage(task)
+            
+            if not fetch_result['success']:
+                return {
+                    'success': False,
+                    'error': fetch_result['error'],
+                    'response_time': fetch_result['response_time']
+                }
+                
+            # 解析内容
+            parse_results = self._parse_content(task, fetch_result['content'])
+            
+            if parse_results.get('error'):
+                return {
+                    'success': False,
+                    'error': parse_results['error'],
+                    'response_time': fetch_result['response_time']
+                }
+            
+            # 进行模板替换
+            formatted_message = self._replace_template_placeholders(task, parse_results['elements'])
+            parse_results['formatted_message'] = formatted_message
+            
+            # 检查变化（不更新数据库）
+            has_changed = self._check_content_change(task, parse_results, debug=True)
+            
+            result = {
+                'success': True,
+                'response_time': fetch_result['response_time'],
+                'elements': parse_results['elements'],
+                'formatted_message': formatted_message,
+                'has_changed': has_changed,
+                'notification_sent': False
+            }
+            
+            # 如果需要发送通知且有变化
+            if send_notification and has_changed:
+                try:
+                    self._send_notifications(task, {
+                        'elements': parse_results['elements'],
+                        'formatted_message': formatted_message
+                    })
+                    result['notification_sent'] = True
+                    log_monitor_info(f"测试任务通知已发送", task_id=task.id, task_name=task.name)
+                except Exception as e:
+                    result['notification_error'] = str(e)
+                    log_monitor_error(f"测试任务发送通知失败: {e}", task_id=task.id, task_name=task.name)
+            
+            log_monitor_info(f"测试任务完成", task_id=task.id, task_name=task.name)
+            return result
+            
+        except Exception as e:
+            log_monitor_error(f"测试任务时出错: {e}", task_id=task.id, task_name=task.name)
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+
     def _check_all_tasks(self):
         """检查所有任务"""
         try:
@@ -263,11 +336,11 @@ class MonitorService:
                     return
                 
                 # 立即进行模板替换
-                results['formatted_message'] = self._replace_template_placeholders(task, results['elements'])
+                formatted_message = self._replace_template_placeholders(task, results['elements'])
+                results['formatted_message'] = formatted_message
                     
                 # 检查变化
-                # has_changed = self._check_content_change(task, results)
-                has_changed = True
+                has_changed = self._check_content_change(task, results)
                 
                 # 更新任务状态
                 self._update_task_status(task, True, fetch_result['response_time'], None)
@@ -321,12 +394,18 @@ class MonitorService:
             
         return results
         
-    def _check_content_change(self, task, current_results):
-        """检查内容变化"""
+    def _check_content_change(self, task, current_results, debug=False):
+        """检查内容变化
+        
+        Args:
+            task: 任务对象
+            current_results: 当前解析结果
+            debug: 调试模式，为True时不更新数据库
+        """
         try:
             # 如果任务有变化判断条件，使用自定义逻辑
             if task.change_conditions:
-                return self._check_change_with_conditions(task, current_results)
+                return self._check_change_with_conditions(task, current_results, debug)
             
             # 默认逻辑：比较格式化消息模板的变化
             current_message = current_results.get('formatted_message', '')
@@ -342,30 +421,47 @@ class MonitorService:
             # 检查消息是否有变化
             has_changed = False
             if not last_content:
-                log_monitor_info(f"任务 {task.name} 首次检查，建立基准")
+                if debug:
+                    log_monitor_info(f"测试任务首次检查，无基准数据")
+                else:
+                    log_monitor_info(f"任务 {task.name} 首次检查，建立基准")
                 has_changed = False
             else:
                 has_changed = current_message != last_message
                 if has_changed:
-                    log_monitor_info(f"任务 {task.name} 消息模板内容发生变化")
-                    log_monitor_debug(f"旧消息: {last_message}")
-                    log_monitor_debug(f"新消息: {current_message}")
+                    if debug:
+                        log_monitor_info(f"测试任务消息模板内容发生变化")
+                    else:
+                        log_monitor_info(f"任务 {task.name} 消息模板内容发生变化")
+                        log_monitor_debug(f"旧消息: {last_message}")
+                        log_monitor_debug(f"新消息: {current_message}")
+                else:
+                    if debug:
+                        log_monitor_info(f"测试任务消息模板内容无变化")
             
-            # 更新数据库中的内容
-            full_content = {
-                'elements': current_results['elements'],
-                'formatted_message': current_message
-            }
-            task.last_content = json.dumps(full_content, sort_keys=True, ensure_ascii=False)
+            # 只在非调试模式下更新数据库中的内容
+            if not debug:
+                full_content = {
+                    'elements': current_results['elements'],
+                    'formatted_message': current_message
+                }
+                task.last_content = json.dumps(full_content, sort_keys=True, ensure_ascii=False)
             
             return has_changed
             
         except Exception as e:
-            log_monitor_error(f"检查变化时出错: {e}")
+            error_msg = f"测试检查变化时出错: {e}" if debug else f"检查变化时出错: {e}"
+            log_monitor_error(error_msg)
             return False
 
-    def _check_change_with_conditions(self, task, current_results):
-        """使用自定义条件检查变化"""
+    def _check_change_with_conditions(self, task, current_results, debug=False):
+        """使用自定义条件检查变化
+        
+        Args:
+            task: 任务对象
+            current_results: 当前解析结果
+            debug: 调试模式，为True时不更新数据库
+        """
         try:
             # 获取上次内容
             last_content = self._get_last_content(task)
@@ -375,24 +471,34 @@ class MonitorService:
             # 按顺序检查每个条件，有一个符合就返回True
             for condition in task.change_conditions:
                 if self._evaluate_condition(condition, current_elements, last_elements):
-                    log_monitor_info(f"任务 {task.name} 变化条件 {condition.element_name} {condition.operator} 触发")
+                    if debug:
+                        log_monitor_info(f"测试任务变化条件 {condition.element_name} {condition.operator} 触发")
+                    else:
+                        log_monitor_info(f"任务 {task.name} 变化条件 {condition.element_name} {condition.operator} 触发")
                     return True
             
             # 没有条件触发，检查是否首次运行
             if not last_content:
-                log_monitor_info(f"任务 {task.name} 首次检查，建立基准")
+                if debug:
+                    log_monitor_info(f"测试任务首次检查，无基准数据")
+                else:
+                    log_monitor_info(f"任务 {task.name} 首次检查，建立基准")
                 return False
             
-            log_monitor_debug(f"任务 {task.name} 所有变化条件均未触发")
+            if debug:
+                log_monitor_info(f"测试任务所有变化条件均未触发")
+            else:
+                log_monitor_debug(f"任务 {task.name} 所有变化条件均未触发")
             return False
             
         finally:
-            # 更新数据库中的内容
-            full_content = {
-                'elements': current_results['elements'],
-                'formatted_message': current_results.get('formatted_message', '')
-            }
-            task.last_content = json.dumps(full_content, sort_keys=True, ensure_ascii=False)
+            # 只在非调试模式下更新数据库中的内容
+            if not debug:
+                full_content = {
+                    'elements': current_results['elements'],
+                    'formatted_message': current_results.get('formatted_message', '')
+                }
+                task.last_content = json.dumps(full_content, sort_keys=True, ensure_ascii=False)
 
     def _evaluate_condition(self, condition, current_elements, last_elements):
         """评估单个变化条件

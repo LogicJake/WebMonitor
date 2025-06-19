@@ -1,19 +1,22 @@
 <template>
   <div class="task-form">
-    <el-card class="form-card">
-      <template #header>
-        <div class="card-header">
-          <span>{{ isEdit ? '编辑任务' : '新增任务' }}</span>
-        </div>
-      </template>
+    <div class="form-layout">
+      <!-- 左侧表单区域 -->
+      <div class="form-section">
+        <el-card class="form-card">
+          <template #header>
+            <div class="card-header">
+              <span>{{ isEdit ? '编辑任务' : '新增任务' }}</span>
+            </div>
+          </template>
 
-      <el-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        label-width="100px"
-        @submit.prevent
-      >
+          <el-form
+            ref="formRef"
+            :model="form"
+            :rules="rules"
+            label-width="100px"
+            @submit.prevent
+          >
         <el-form-item label="任务名称" prop="name">
           <el-input
             v-model="form.name"
@@ -250,22 +253,122 @@
           </div>
         </el-form-item>
 
-        <el-form-item>
-          <el-button type="primary" @click="handleSubmit" :loading="submitting">
-            {{ isEdit ? '保存' : '创建' }}
-          </el-button>
-          <el-button @click="handleCancel">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+                    <el-form-item>
+              <el-button type="primary" @click="handleSubmit" :loading="submitting">
+                {{ isEdit ? '保存' : '创建' }}
+              </el-button>
+              <el-button @click="handleCancel">取消</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </div>
+
+      <!-- 右侧测试区域 -->
+      <div class="test-section">
+        <el-card class="test-card">
+          <template #header>
+            <div class="card-header">
+              <span>任务测试</span>
+            </div>
+          </template>
+
+          <div class="test-content">
+            <div class="test-actions">
+              <el-button 
+                type="success" 
+                @click="handleTest" 
+                :loading="testing"
+                size="large"
+                style="width: 100%;"
+              >
+                <el-icon><PlayIcon /></el-icon>
+                测试任务
+              </el-button>
+              <div class="test-description">
+                <el-text type="info" size="small">
+                  点击测试按钮验证任务配置是否正确，包括网页抓取、元素提取、消息模板等功能。
+                </el-text>
+              </div>
+            </div>
+
+            <!-- 测试结果显示 -->
+            <div v-if="testResult" class="test-result-container">
+              <el-alert
+                :title="testResult.success ? '测试成功' : '测试失败'"
+                :type="testResult.success ? 'success' : 'error'"
+                :closable="false"
+                show-icon
+              />
+              
+              <div v-if="testResult.success" class="test-details">
+                <el-descriptions title="执行详情" :column="1" border>
+                  <el-descriptions-item label="响应时间">
+                    {{ testResult.response_time ? testResult.response_time.toFixed(3) + 's' : 'N/A' }}
+                  </el-descriptions-item>
+                  <el-descriptions-item label="是否有变化">
+                    <el-tag :type="testResult.has_changed ? 'warning' : 'info'">
+                      {{ testResult.has_changed ? '有变化' : '无变化' }}
+                    </el-tag>
+                  </el-descriptions-item>
+                  <el-descriptions-item label="通知发送">
+                    <el-tag :type="testResult.notification_sent ? 'success' : 'info'">
+                      {{ testResult.notification_sent ? '已发送' : '未发送' }}
+                    </el-tag>
+                  </el-descriptions-item>
+                </el-descriptions>
+
+                <!-- 提取的元素值 -->
+                <div v-if="testResult.elements" class="test-elements">
+                  <h4>提取的元素值：</h4>
+                  <div class="elements-list">
+                    <div 
+                      v-for="(value, key) in testResult.elements" 
+                      :key="key" 
+                      class="element-item"
+                    >
+                      <div class="element-label">{{ key }}:</div>
+                      <div class="element-value">{{ value || '(空值)' }}</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- 格式化的消息 -->
+                <div v-if="testResult.formatted_message" class="test-message">
+                  <h4>格式化消息：</h4>
+                  <div class="message-content">
+                    {{ testResult.formatted_message }}
+                  </div>
+                </div>
+
+                <!-- 通知错误 -->
+                <div v-if="testResult.notification_error" class="notification-error">
+                  <el-alert
+                    title="通知发送失败"
+                    :description="testResult.notification_error"
+                    type="error"
+                    show-icon
+                    :closable="false"
+                  />
+                </div>
+              </div>
+
+              <div v-else class="test-error">
+                <p><strong>错误信息：</strong>{{ testResult.error }}</p>
+                <p v-if="testResult.response_time"><strong>响应时间：</strong>{{ testResult.response_time.toFixed(3) }}s</p>
+              </div>
+            </div>
+          </div>
+        </el-card>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
-import { Delete, ArrowUp } from '@element-plus/icons-vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { Delete, ArrowUp, VideoPlay as PlayIcon } from '@element-plus/icons-vue';
 import { TaskService } from '@/api/task';
 import { NotificationService } from '@/api/notification';
 import { ErrorHandler } from '@/utils/error-handler';
@@ -279,10 +382,12 @@ export default {
     const formRef = ref(null);
     const isEdit = ref(false);
     const submitting = ref(false);
+    const testing = ref(false);
     const notificationsLoading = ref(false);
     const notifications = ref([]);
     const taskData = ref(null);
     const activeCollapse = ref([]);
+    const testResult = ref(null);
 
     const selectorTypes = [
       { value: 'xpath', label: 'XPath' },
@@ -499,6 +604,93 @@ export default {
       router.push('/tasks');
     };
 
+    const handleTest = async () => {
+      try {
+        // 先验证表单
+        if (!formRef.value) return;
+        await formRef.value.validate();
+        
+        // 弹出确认对话框，让用户选择是否发送通知
+        let sendNotification = false;
+        
+        try {
+          await ElMessageBox.confirm(
+            '是否在测试时发送通知？（仅在检测到变化时发送）',
+            '测试选项',
+            {
+              confirmButtonText: '发送通知',
+              cancelButtonText: '不发送通知',
+              type: 'question',
+              distinguishCancelAndClose: true
+            }
+          );
+          sendNotification = true;
+        } catch (action) {
+          if (action === 'cancel') {
+            sendNotification = false;
+          } else {
+            // 用户点击了关闭按钮，取消测试
+            return;
+          }
+        }
+        
+        testing.value = true;
+        testResult.value = null;
+
+        ElMessage.info('正在执行任务测试...');
+        
+        let result;
+        
+        if (isEdit.value && route.params.id) {
+          // 编辑模式：测试已保存的任务
+          result = await TaskService.testTask(
+            route.params.id, 
+            sendNotification
+          );
+        } else {
+          // 新建模式：测试任务配置
+          const taskData = {
+            name: form.name,
+            url: form.url,
+            interval: form.interval,
+            active: form.active,
+            message: form.message,
+            custom_headers: form.custom_headers,
+            selectors: form.selectors,
+            notification_ids: form.notification_ids,
+            change_conditions: form.change_conditions
+          };
+          
+          result = await TaskService.testTaskConfig(
+            taskData,
+            sendNotification
+          );
+        }
+        
+        testResult.value = result;
+        
+        if (result.success) {
+          ElMessage.success('任务测试完成');
+        } else {
+          ElMessage.error('任务测试失败');
+        }
+        
+      } catch (error) {
+        if (error.name === 'ValidationError') {
+          ElMessage.error('请先完整填写任务配置');
+          return;
+        }
+        
+        testResult.value = {
+          success: false,
+          error: error.message || '测试请求失败'
+        };
+        ErrorHandler.handleApiError(error, '任务测试失败');
+      } finally {
+        testing.value = false;
+      }
+    };
+
     const addCondition = () => {
       form.change_conditions.push({
         element_name: '',
@@ -534,6 +726,7 @@ export default {
       form,
       rules,
       submitting,
+      testing,
       isEdit,
       selectorTypes,
       operatorTypes,
@@ -541,6 +734,7 @@ export default {
       removeSelector,
       handleSubmit,
       handleCancel,
+      handleTest,
       notificationsLoading,
       notifications,
       getNotificationTypeLabel,
@@ -551,8 +745,10 @@ export default {
       addCondition,
       removeCondition,
       moveConditionUp,
+      testResult,
       Delete,
-      ArrowUp
+      ArrowUp,
+      PlayIcon
     };
   }
 };
@@ -560,13 +756,36 @@ export default {
 
 <style scoped>
 .task-form {
-  max-width: 800px;
+  padding: 20px;
+}
+
+.form-layout {
+  display: flex;
+  gap: 20px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-.form-card {
+.form-section {
+  flex: 1;
+  min-width: 0;
+}
+
+.test-section {
+  width: 400px;
+  flex-shrink: 0;
+}
+
+.form-card,
+.test-card {
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  height: fit-content;
+}
+
+.test-card {
+  position: sticky;
+  top: 20px;
 }
 
 .card-header {
@@ -695,5 +914,135 @@ export default {
 .add-condition-btn {
   margin-top: 10px;
   width: 100%;
+}
+
+/* 测试区域样式 */
+.test-content {
+  padding: 0;
+}
+
+.test-actions {
+  margin-bottom: 20px;
+}
+
+.test-description {
+  margin-top: 10px;
+  padding: 8px;
+  background-color: var(--el-fill-color-light);
+  border-radius: 4px;
+  text-align: center;
+}
+
+/* 测试结果样式 */
+.test-result-container {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.test-details {
+  margin-top: 15px;
+}
+
+.test-elements {
+  margin-top: 20px;
+}
+
+.test-elements h4 {
+  margin: 0 0 10px 0;
+  color: var(--el-text-color-primary);
+  font-size: 14px;
+}
+
+.elements-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.element-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background-color: var(--el-fill-color-lighter);
+  border-radius: 6px;
+  border-left: 4px solid var(--el-color-success);
+}
+
+.element-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--el-text-color-regular);
+}
+
+.element-value {
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 100px;
+  overflow-y: auto;
+  padding: 6px 8px;
+  background-color: var(--el-bg-color);
+  border-radius: 3px;
+  border: 1px solid var(--el-border-color-lighter);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+.test-message {
+  margin-top: 20px;
+}
+
+.test-message h4 {
+  margin: 0 0 10px 0;
+  color: var(--el-text-color-primary);
+  font-size: 14px;
+}
+
+.message-content {
+  padding: 12px;
+  background-color: var(--el-fill-color-lighter);
+  border-radius: 6px;
+  border-left: 4px solid var(--el-color-warning);
+  font-size: 13px;
+  color: var(--el-text-color-primary);
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 150px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+.test-error {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: var(--el-fill-color-light);
+  border-radius: 6px;
+  border-left: 4px solid var(--el-color-danger);
+}
+
+.test-error p {
+  margin: 8px 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.notification-error {
+  margin-top: 15px;
+}
+
+/* 响应式布局 */
+@media (max-width: 1200px) {
+  .form-layout {
+    flex-direction: column;
+  }
+  
+  .test-section {
+    width: 100%;
+  }
+  
+  .test-card {
+    position: static;
+  }
 }
 </style>

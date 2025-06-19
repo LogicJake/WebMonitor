@@ -44,13 +44,7 @@ export const TaskService = {
       if (!response.ok) {
         throw await parseApiError(response);
       }
-      const data = await response.json();
-      if (!data.success) {
-        const error = new Error(data.error || '获取任务列表失败');
-        error.details = data.details;
-        throw error;
-      }
-      return data.data;
+      return await response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         const networkError = new Error('网络连接失败，请检查网络连接');
@@ -68,17 +62,11 @@ export const TaskService = {
    */
   async getTaskById(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/task/${id}`);
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}`);
       if (!response.ok) {
         throw await parseApiError(response);
       }
-      const data = await response.json();
-      if (!data.success) {
-        const error = new Error(data.error || '获取任务详情失败');
-        error.details = data.details;
-        throw error;
-      }
-      return data.data;
+      return await response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         const networkError = new Error('网络连接失败，请检查网络连接');
@@ -96,7 +84,7 @@ export const TaskService = {
    */
   async createTask(taskData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/task`, {
+      const response = await fetch(`${API_BASE_URL}/api/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,13 +94,7 @@ export const TaskService = {
       if (!response.ok) {
         throw await parseApiError(response);
       }
-      const data = await response.json();
-      if (!data.success) {
-        const error = new Error(data.error || '创建任务失败');
-        error.details = data.details;
-        throw error;
-      }
-      return data.data;
+      return await response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         const networkError = new Error('网络连接失败，请检查网络连接');
@@ -131,7 +113,7 @@ export const TaskService = {
    */
   async updateTask(id, taskData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/task/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -141,13 +123,7 @@ export const TaskService = {
       if (!response.ok) {
         throw await parseApiError(response);
       }
-      const data = await response.json();
-      if (!data.success) {
-        const error = new Error(data.error || '更新任务失败');
-        error.details = data.details;
-        throw error;
-      }
-      return data.data;
+      return await response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         const networkError = new Error('网络连接失败，请检查网络连接');
@@ -165,19 +141,76 @@ export const TaskService = {
    */
   async deleteTask(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/task/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
         throw await parseApiError(response);
       }
-      const data = await response.json();
-      if (!data.success) {
-        const error = new Error(data.error || '删除任务失败');
-        error.details = data.details;
-        throw error;
+      return await response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        const networkError = new Error('网络连接失败，请检查网络连接');
+        networkError.code = 'NETWORK_ERROR';
+        throw networkError;
       }
-      return data;
+      throw error;
+    }
+  },
+
+  /**
+   * 测试任务执行
+   * @param {number} id 任务ID
+   * @param {boolean} sendNotification 是否发送通知
+   * @returns {Promise<Object>} 测试结果
+   */
+  async testTask(id, sendNotification = false) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}/test`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          send_notification: sendNotification
+        }),
+      });
+      if (!response.ok) {
+        throw await parseApiError(response);
+      }
+      return await response.json();
+    } catch (error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        const networkError = new Error('网络连接失败，请检查网络连接');
+        networkError.code = 'NETWORK_ERROR';
+        throw networkError;
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * 测试任务配置（不需要保存任务）
+   * @param {Object} taskData 任务配置数据
+   * @param {boolean} sendNotification 是否发送通知
+   * @returns {Promise<Object>} 测试结果
+   */
+  async testTaskConfig(taskData, sendNotification = false) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/tasks/test`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...taskData,
+          send_notification: sendNotification
+        }),
+      });
+      if (!response.ok) {
+        throw await parseApiError(response);
+      }
+      return await response.json();
     } catch (error) {
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
         const networkError = new Error('网络连接失败，请检查网络连接');
