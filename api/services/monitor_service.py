@@ -161,7 +161,8 @@ class MonitorService:
                 'elements': parse_results['elements'],
                 'formatted_message': formatted_message,
                 'has_changed': has_changed,
-                'notification_sent': False
+                'notification_sent': False,
+                'screenshot': fetch_result.get('screenshot')  # 包含截图信息
             }
             
             # 如果需要发送通知且有变化

@@ -99,7 +99,8 @@ class RequestsFetcher(BaseFetcher):
                 'response_time': response_time,
                 'error': None,
                 'url': response.url,
-                'headers': dict(response.headers)
+                'headers': dict(response.headers),
+                'screenshot': None  # requests模式不支持截图
             }
             
         except requests.exceptions.Timeout:
@@ -209,6 +210,17 @@ class PlaywrightFetcher(BaseFetcher):
                     
                     # 获取页面内容
                     content = page.content()
+                    
+                    # 生成截图（base64编码）
+                    screenshot = None
+                    try:
+                        screenshot_bytes = page.screenshot(full_page=True)
+                        import base64
+                        screenshot = base64.b64encode(screenshot_bytes).decode('utf-8')
+                        log_monitor_info("页面截图生成成功")
+                    except Exception as e:
+                        log_monitor_warning(f"生成截图失败: {e}")
+                    
                     response_time = time.time() - start_time
                     
                     log_monitor_info(f"Playwright抓取成功，响应时间: {response_time:.3f}s")
@@ -220,7 +232,8 @@ class PlaywrightFetcher(BaseFetcher):
                         'response_time': response_time,
                         'error': None,
                         'url': response.url,
-                        'headers': dict(response.headers)
+                        'headers': dict(response.headers),
+                        'screenshot': screenshot
                     }
                     
                 finally:

@@ -371,6 +371,30 @@
                   </div>
                 </div>
 
+                <!-- 页面截图 -->
+                <div v-if="testResult.screenshot && form.use_playwright" class="test-screenshot">
+                  <h4>页面截图：</h4>
+                  <div class="screenshot-container">
+                    <el-image
+                      :src="`data:image/png;base64,${testResult.screenshot}`"
+                      :preview-src-list="[`data:image/png;base64,${testResult.screenshot}`]"
+                      fit="contain"
+                      class="screenshot-image"
+                      preview-teleported
+                    >
+                      <template #error>
+                        <div class="image-error">
+                          <el-icon><Picture /></el-icon>
+                          <span>截图加载失败</span>
+                        </div>
+                      </template>
+                    </el-image>
+                    <div class="screenshot-tip">
+                      💡 点击图片可放大查看，使用Playwright模式抓取的页面截图
+                    </div>
+                  </div>
+                </div>
+
                 <!-- 通知错误 -->
                 <div v-if="testResult.notification_error" class="notification-error">
                   <el-alert
@@ -399,7 +423,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { Delete, ArrowUp, VideoPlay as PlayIcon } from '@element-plus/icons-vue';
+import { Delete, ArrowUp, VideoPlay as PlayIcon, Picture } from '@element-plus/icons-vue';
 import { TaskService } from '@/api/task';
 import { NotificationService } from '@/api/notification';
 import { ErrorHandler } from '@/utils/error-handler';
@@ -752,7 +776,8 @@ export default {
       testResult,
       Delete,
       ArrowUp,
-      PlayIcon
+      PlayIcon,
+      Picture
     };
   }
 };
@@ -1040,6 +1065,55 @@ export default {
 
 .notification-error {
   margin-top: 15px;
+}
+
+/* 截图样式 */
+.test-screenshot {
+  margin-top: 20px;
+}
+
+.test-screenshot h4 {
+  margin: 0 0 10px 0;
+  color: var(--el-text-color-primary);
+  font-size: 14px;
+}
+
+.screenshot-container {
+  padding: 12px;
+  background-color: var(--el-fill-color-lighter);
+  border-radius: 6px;
+  border-left: 4px solid var(--el-color-primary);
+}
+
+.screenshot-image {
+  width: 100%;
+  max-height: 300px;
+  border-radius: 4px;
+  border: 1px solid var(--el-border-color-light);
+  cursor: pointer;
+}
+
+.image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  color: var(--el-text-color-secondary);
+  background-color: var(--el-fill-color-light);
+}
+
+.image-error .el-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.screenshot-tip {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  text-align: center;
+  line-height: 1.4;
 }
 
 /* 下拉框选项样式 */
