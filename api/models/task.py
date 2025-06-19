@@ -19,6 +19,7 @@ class Task(db.Model):
     active = db.Column(db.Boolean, default=True)
     message = db.Column(db.Text)
     custom_headers = db.Column(db.Text)  # 存储自定义请求头的JSON字符串
+    use_playwright = db.Column(db.Boolean, default=False)  # 是否使用Playwright抓取
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     last_check = db.Column(db.DateTime)
@@ -33,13 +34,14 @@ class Task(db.Model):
     notifications = db.relationship('Notification', secondary=task_notifications, lazy='subquery',
                                   backref=db.backref('tasks', lazy=True))
 
-    def __init__(self, url, interval, name=None, active=True, message=None, custom_headers=None):
+    def __init__(self, url, interval, name=None, active=True, message=None, custom_headers=None, use_playwright=False):
         self.url = url
         self.interval = interval
         self.name = name or '未命名任务'
         self.active = active
         self.message = message
         self.custom_headers = custom_headers
+        self.use_playwright = use_playwright
 
     def save(self):
         db.session.add(self)
@@ -60,6 +62,7 @@ class Task(db.Model):
             'active': self.active,
             'message': self.message,
             'custom_headers': self.custom_headers,
+            'use_playwright': self.use_playwright,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
             'last_check': self.last_check.isoformat() if self.last_check else None,

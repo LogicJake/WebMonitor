@@ -10,8 +10,9 @@ from api.models.notification import Notification
 from api import db
 import logging
 from flask import current_app
-from api.services.selector_factory import SelectorParserFactory
-from api.services.notification_factory import NotificationSenderFactory
+from api.factories.selector_factory import SelectorParserFactory
+from api.factories.notification_factory import NotificationSenderFactory
+from api.factories.fetcher_factory import FetcherFactory
 from api.services.log_service import log_monitor_info, log_monitor_warning, log_monitor_error, log_monitor_debug
 from typing import List, Dict
 
@@ -236,81 +237,18 @@ class MonitorService:
                     'error': str
                 }
         """
-        try:
-            log_monitor_info(f"开始检查任务: {task.url}", task_id=task.id, task_name=task.name)
-            
-            start_time = time.time()
-            
-            # 构建请求头
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-            
-            # 添加自定义请求头
-            if task.custom_headers:
-                try:
-                    custom_headers = json.loads(task.custom_headers)
-                    if isinstance(custom_headers, dict):
-                        headers.update(custom_headers)
-                        log_monitor_debug(f"添加自定义请求头: {custom_headers}", task_id=task.id, task_name=task.name)
-                except json.JSONDecodeError as e:
-                    log_monitor_warning(f"解析自定义请求头失败: {e}", task_id=task.id, task_name=task.name)
-                except Exception as e:
-                    log_monitor_warning(f"处理自定义请求头时出错: {e}", task_id=task.id, task_name=task.name)
-            
-            # 发送HTTP请求
-            response = requests.get(
-                task.url,
-                timeout=30,
-                headers=headers,
-                allow_redirects=True
-            )
-            
-            response_time = time.time() - start_time
-            
-            if response.status_code != 200:
-                return {
-                    'success': False,
-                    'content': None,
-                    'response_time': response_time,
-                    'error': f"HTTP错误: {response.status_code}"
-                }
-            
-            return {
-                'success': True,
-                'content': response.text,
-                'response_time': response_time,
-                'error': None
-            }
-            
-        except requests.exceptions.Timeout:
-            return {
-                'success': False,
-                'content': None,
-                'response_time': 30.0,
-                'error': "请求超时"
-            }
-        except requests.exceptions.ConnectionError:
-            return {
-                'success': False,
-                'content': None,
-                'response_time': 0,
-                'error': "连接失败"
-            }
-        except requests.exceptions.RequestException as e:
-            return {
-                'success': False,
-                'content': None,
-                'response_time': 0,
-                'error': f"请求异常: {str(e)}"
-            }
-        except Exception as e:
-            return {
-                'success': False,
-                'content': None,
-                'response_time': 0,
-                'error': f"未知错误: {str(e)}"
-            }
+        # 使用工厂类统一处理网页抓取
+        use_playwright = getattr(task, 'use_playwright', False)
+        custom_headers = getattr(task, 'custom_headers', None)
+        
+        return FetcherFactory.fetch_webpage(
+            url=task.url,
+            use_playwright=use_playwright,
+            custom_headers=custom_headers,
+            timeout=30
+        )
+    
+
 
     def _check_task(self, task_id):
         """检查单个任务"""

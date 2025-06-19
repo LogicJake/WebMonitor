@@ -39,7 +39,8 @@ class TaskService:
             name=data.get('name'),
             active=data.get('active', True),
             message=data.get('message'),
-            custom_headers=data.get('custom_headers')
+            custom_headers=data.get('custom_headers'),
+            use_playwright=data.get('use_playwright', False)
         )
         
         # 添加通知方式关联
@@ -89,6 +90,8 @@ class TaskService:
             task.message = data['message']
         if 'custom_headers' in data:
             task.custom_headers = data['custom_headers']
+        if 'use_playwright' in data:
+            task.use_playwright = data['use_playwright']
         
         # 更新通知方式
         if 'notification_ids' in data:

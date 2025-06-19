@@ -70,39 +70,15 @@ def delete_task(task_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@task_bp.route('/tasks/<int:task_id>/test', methods=['POST'])
-def test_task(task_id):
-    """测试任务执行"""
-    try:
-        data = request.get_json() or {}
-        send_notification = data.get('send_notification', False)
-        
-        # 获取任务
-        task = TaskService.get_task_by_id(task_id)
-        
-        # 创建监控服务实例进行测试
-        from flask import current_app
-        monitor_service = MonitorService(current_app._get_current_object())
-        
-        log_monitor_info(f"开始测试任务: {task.name}", task_id=task.id, task_name=task.name)
-        
-        # 执行测试
-        result = monitor_service.test_task(task, send_notification)
-        
-        return jsonify(result)
-        
-    except TaskNotFoundError:
-        return jsonify({'error': '任务不存在'}), 404
-    except Exception as e:
-        log_monitor_error(f"测试任务失败: {str(e)}")
-        return jsonify({
-            'error': f'测试失败: {str(e)}',
-            'traceback': traceback.format_exc()
-        }), 500
+
 
 @task_bp.route('/tasks/test', methods=['POST'])
 def test_task_config():
-    """测试任务配置（不需要保存任务）"""
+    """测试任务配置
+    
+    统一的任务测试接口，支持编辑和新增模式。
+    不需要保存任务到数据库，直接使用传入的配置进行测试。
+    """
     try:
         data = request.get_json()
         if not data:
@@ -128,7 +104,8 @@ def test_task_config():
             name=data.get('name', '测试任务'),
             active=data.get('active', True),
             message=data.get('message'),
-            custom_headers=data.get('custom_headers')
+            custom_headers=data.get('custom_headers'),
+            use_playwright=data.get('use_playwright', False)
         )
         temp_task.id = 0  # 临时ID
         

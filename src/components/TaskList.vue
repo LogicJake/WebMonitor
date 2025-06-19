@@ -23,6 +23,11 @@
           <div class="task-info">
             <p><i class="el-icon-link"></i> 网址: <span class="task-url">{{ task.url }}</span></p>
             <p><i class="el-icon-time"></i> 检查间隔: {{ task.interval }}秒</p>
+            <p><i class="el-icon-monitor"></i> 抓取方式: 
+              <el-tag size="small" :type="task.use_playwright ? 'warning' : 'success'">
+                {{ task.use_playwright ? 'Playwright（浏览器）' : 'requests（快速）' }}
+              </el-tag>
+            </p>
             <p><i class="el-icon-aim"></i> 元素选择器: {{ task.selectors?.length || 0 }}个</p>
             <div v-if="task.selectors?.length" class="selectors-list">
               <div v-for="selector in task.selectors" :key="selector.id" class="selector-item">

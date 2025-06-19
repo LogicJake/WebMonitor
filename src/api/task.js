@@ -158,54 +158,20 @@ export const TaskService = {
     }
   },
 
-  /**
-   * 测试任务执行
-   * @param {number} id 任务ID
-   * @param {boolean} sendNotification 是否发送通知
-   * @returns {Promise<Object>} 测试结果
-   */
-  async testTask(id, sendNotification = false) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/tasks/${id}/test`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          send_notification: sendNotification
-        }),
-      });
-      if (!response.ok) {
-        throw await parseApiError(response);
-      }
-      return await response.json();
-    } catch (error) {
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        const networkError = new Error('网络连接失败，请检查网络连接');
-        networkError.code = 'NETWORK_ERROR';
-        throw networkError;
-      }
-      throw error;
-    }
-  },
 
   /**
    * 测试任务配置（不需要保存任务）
-   * @param {Object} taskData 任务配置数据
-   * @param {boolean} sendNotification 是否发送通知
+   * @param {Object} taskData 任务配置数据（包含send_notification字段）
    * @returns {Promise<Object>} 测试结果
    */
-  async testTaskConfig(taskData, sendNotification = false) {
+  async testTaskConfig(taskData) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/tasks/test`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...taskData,
-          send_notification: sendNotification
-        }),
+        body: JSON.stringify(taskData),
       });
       if (!response.ok) {
         throw await parseApiError(response);

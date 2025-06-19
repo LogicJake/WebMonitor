@@ -34,6 +34,32 @@
           />
         </el-form-item>
 
+        <el-form-item label="抓取方式" prop="use_playwright">
+          <el-select v-model="form.use_playwright" placeholder="请选择抓取方式" style="width: 100%">
+            <el-option
+              :value="false"
+              label="requests（快速）"
+            >
+              <div>
+                <div>requests（快速）</div>
+                <div class="option-description">适用于静态网页，速度快，资源占用少</div>
+              </div>
+            </el-option>
+            <el-option
+              :value="true"
+              label="Playwright（浏览器）"
+            >
+              <div>
+                <div>Playwright（浏览器）</div>
+                <div class="option-description">适用于需要JavaScript渲染的动态网页，支持SPA应用</div>
+              </div>
+            </el-option>
+          </el-select>
+          <div class="form-item-tip">
+            💡 提示：requests模式适合大部分静态网页，响应速度快；Playwright模式适合需要JavaScript渲染的动态网页（如SPA应用），但会消耗更多资源。
+          </div>
+        </el-form-item>
+
         <el-form-item label="监控间隔" prop="interval">
           <el-input-number
             v-model="form.interval"
@@ -417,6 +443,7 @@ export default {
       active: true,
       message: '',
       custom_headers: '',
+      use_playwright: null,
       selectors: [],
       notification_ids: [],
       change_conditions: []
@@ -459,6 +486,9 @@ export default {
           },
           trigger: 'blur'
         }
+      ],
+      use_playwright: [
+        { required: true, message: '请选择抓取方式', trigger: 'change' }
       ],
       notification_ids: [
         { 
@@ -559,6 +589,7 @@ export default {
         form.active = task.active;
         form.message = task.message || '';
         form.custom_headers = task.custom_headers || '';
+        form.use_playwright = task.use_playwright !== undefined ? task.use_playwright : null;
         form.selectors = task.selectors || [];
         form.notification_ids = task.notifications ? task.notifications.map(n => n.id) : [];
         form.change_conditions = task.change_conditions || [];
@@ -581,6 +612,7 @@ export default {
           active: form.active,
           message: form.message,
           custom_headers: form.custom_headers,
+          use_playwright: form.use_playwright,
           selectors: form.selectors,
           notification_ids: form.notification_ids,
           change_conditions: form.change_conditions
@@ -621,33 +653,22 @@ export default {
 
         ElMessage.info('正在执行任务测试...');
         
-        let result;
+        // 统一使用任务配置参数进行测试
+        const taskData = {
+          name: form.name,
+          url: form.url,
+          interval: form.interval,
+          active: form.active,
+          message: form.message,
+          custom_headers: form.custom_headers,
+          use_playwright: form.use_playwright,
+          selectors: form.selectors,
+          notification_ids: form.notification_ids,
+          change_conditions: form.change_conditions,
+          send_notification: testSendNotification.value
+        };
         
-        if (isEdit.value && route.params.id) {
-          // 编辑模式：测试已保存的任务
-          result = await TaskService.testTask(
-            route.params.id, 
-            testSendNotification.value
-          );
-        } else {
-          // 新建模式：测试任务配置
-          const taskData = {
-            name: form.name,
-            url: form.url,
-            interval: form.interval,
-            active: form.active,
-            message: form.message,
-            custom_headers: form.custom_headers,
-            selectors: form.selectors,
-            notification_ids: form.notification_ids,
-            change_conditions: form.change_conditions
-          };
-          
-          result = await TaskService.testTaskConfig(
-            taskData,
-            testSendNotification.value
-          );
-        }
+        const result = await TaskService.testTaskConfig(taskData);
         
         testResult.value = result;
         
@@ -1019,6 +1040,14 @@ export default {
 
 .notification-error {
   margin-top: 15px;
+}
+
+/* 下拉框选项样式 */
+.option-description {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+  margin-top: 2px;
+  line-height: 1.3;
 }
 
 /* 响应式布局 */

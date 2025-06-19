@@ -20,9 +20,12 @@ wm_v2/
 │   ├── services/                # 业务逻辑层
 │   │   ├── task_service.py     # 任务服务
 │   │   ├── monitor_service.py  # 监控服务
+│   │   ├── notification_service.py    # 通知服务
+│   │   └── log_service.py              # 日志服务
+│   ├── factories/               # 工厂类
 │   │   ├── notification_factory.py    # 通知工厂
 │   │   ├── selector_factory.py        # 选择器工厂
-│   │   └── log_service.py              # 日志服务
+│   │   └── fetcher_factory.py         # 网页抓取器工厂
 │   └── utils/                   # 工具类
 │       └── exceptions.py        # 自定义异常
 ├── src/                         # 前端源码
@@ -56,8 +59,8 @@ wm_v2/
 - **app.py**: Flask应用主入口，配置路由和中间件
 - **monitor_service.py**: 核心监控服务，负责网页抓取和变化检测
 - **task_service.py**: 任务管理服务，处理CRUD操作
-- **selector_factory.py**: 选择器工厂，支持XPath/CSS/JSONPath解析
-- **notification_factory.py**: 通知工厂，支持多种通知方式
+- **notification_service.py**: 通知方式管理服务
+- **fetcher_factory.py**: 网页抓取器工厂，统一管理requests和Playwright抓取方式
 
 ### 前端架构
 
@@ -75,8 +78,9 @@ wm_v2/
 
 ### 关键特性
 
-1. **模块化设计**: 清晰的分层架构
-2. **工厂模式**: 选择器和通知方式的扩展性
+1. **模块化设计**: 清晰的分层架构，工厂类独立管理
+2. **工厂模式**: 选择器和通知方式的扩展性，支持插件化
 3. **服务层封装**: 业务逻辑与控制器分离
-4. **响应式前端**: Vue 3 + Element Plus
-5. **RESTful API**: 标准化的接口设计 
+4. **双模式抓取**: 支持requests和Playwright两种抓取方式
+5. **响应式前端**: Vue 3 + Element Plus
+6. **RESTful API**: 标准化的接口设计 
