@@ -92,6 +92,11 @@ def test_task_config():
             if field not in data:
                 return jsonify({'error': f'缺少必要字段: {field}'}), 400
         
+        # 验证检查间隔
+        interval = data.get('interval')
+        if not isinstance(interval, (int, float)) or interval < 60:
+            return jsonify({'error': '检查间隔必须至少为60秒（1分钟）'}), 400
+        
         # 创建临时任务对象（不保存到数据库）
         from api.models.task import Task
         from api.models.selector import Selector

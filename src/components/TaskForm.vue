@@ -63,8 +63,7 @@
         <el-form-item label="监控间隔" prop="interval">
           <el-input-number
             v-model="form.interval"
-            :min="1"
-            :max="3600"
+            :min="60"
             :step="1"
           />
           <span class="unit">秒</span>
@@ -463,7 +462,7 @@ export default {
     const form = reactive({
       name: '',
       url: '',
-      interval: 60,
+      interval: 300,
       active: true,
       message: '',
       custom_headers: '',
@@ -484,7 +483,7 @@ export default {
       ],
       interval: [
         { required: true, message: '请输入检查间隔', trigger: 'blur' },
-        { type: 'number', min: 1, max: 3600, message: '检查间隔必须在1-3600秒之间', trigger: 'blur' }
+        { type: 'number', min: 60, message: '检查间隔必须至少为60秒（1分钟）', trigger: 'blur' }
       ],
       message: [
         { max: 5000, message: '消息模板内容不能超过5000个字符', trigger: 'blur' }

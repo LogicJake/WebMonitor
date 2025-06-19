@@ -23,6 +23,13 @@ class TaskService:
     @staticmethod
     def create_task(data):
         """创建新任务"""
+        # 验证检查间隔
+        interval = data.get('interval')
+        if interval is None:
+            raise ValidationError('检查间隔不能为空')
+        if not isinstance(interval, (int, float)) or interval < 60:
+            raise ValidationError('检查间隔必须至少为60秒（1分钟）')
+        
         # 验证通知方式
         if 'notification_ids' not in data or not data['notification_ids']:
             raise ValidationError('至少需要选择一个通知方式')
@@ -83,7 +90,10 @@ class TaskService:
         if 'url' in data:
             task.url = data['url']
         if 'interval' in data:
-            task.interval = data['interval']
+            interval = data['interval']
+            if not isinstance(interval, (int, float)) or interval < 60:
+                raise ValidationError('检查间隔必须至少为60秒（1分钟）')
+            task.interval = interval
         if 'active' in data:
             task.active = data['active']
         if 'message' in data:
