@@ -1,9 +1,9 @@
 import { ElMessage, ElNotification } from 'element-plus';
 
 /**
- * 错误处理工具类
+ * 消息通知工具类
  */
-export class ErrorHandler {
+export class MessageUtil {
   /**
    * 处理 API 错误
    * @param {Error|Object} error 错误对象
@@ -162,5 +162,28 @@ export class ErrorHandler {
       duration: options.duration || 3000,
       showClose: true
     });
+  }
+
+  /**
+   * 处理信息消息
+   * @param {string} message 信息消息
+   * @param {Object} options 选项配置
+   */
+  static handleInfo(message, options = {}) {
+    if (options.useNotification) {
+      ElNotification({
+        title: '信息',
+        message: message,
+        type: 'info',
+        duration: options.duration || 3000
+      });
+    } else {
+      ElMessage({
+        message: message,
+        type: 'info',
+        duration: options.duration || 3000,
+        showClose: true
+      });
+    }
   }
 } 

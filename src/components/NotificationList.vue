@@ -136,10 +136,10 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
 import { NotificationService } from '@/api/notification';
-import { ErrorHandler } from '@/utils/error-handler';
+import { MessageUtil } from '@/utils/message-util';
 
 const loading = ref(false);
 const notifications = ref([]);
@@ -214,7 +214,11 @@ const loadNotifications = async () => {
     loading.value = true;
     notifications.value = await NotificationService.getAllNotifications();
   } catch (error) {
-    ErrorHandler.handleApiError(error, '获取通知方式列表失败');
+    if (error.code === 'NETWORK_ERROR') {
+      MessageUtil.handleNetworkError(error);
+    } else {
+      MessageUtil.handleApiError(error, '获取通知方式列表失败');
+    }
   } finally {
     loading.value = false;
   }
@@ -248,11 +252,15 @@ const handleDelete = async (notification) => {
     );
     
     await NotificationService.deleteNotification(notification.id);
-    ElMessage.success('通知方式删除成功');
+    MessageUtil.handleSuccess('通知方式删除成功');
     await loadNotifications();
   } catch (error) {
     if (error !== 'cancel') {
-      ErrorHandler.handleApiError(error, '删除通知方式失败');
+      if (error.code === 'NETWORK_ERROR') {
+        MessageUtil.handleNetworkError(error);
+      } else {
+        MessageUtil.handleApiError(error, '删除通知方式失败');
+      }
     }
   }
 };
@@ -286,19 +294,23 @@ const handleSubmit = async () => {
 
     if (isEdit.value) {
       await NotificationService.updateNotification(form.id, data);
-      ElMessage.success('通知方式更新成功');
+      MessageUtil.handleSuccess('通知方式更新成功');
     } else {
       await NotificationService.createNotification(data);
-      ElMessage.success('通知方式创建成功');
+      MessageUtil.handleSuccess('通知方式创建成功');
     }
 
     dialogVisible.value = false;
     await loadNotifications();
   } catch (error) {
     if (error.name === 'ValidationError') {
-      ElMessage.error('请检查表单填写是否正确');
+      MessageUtil.handleValidationError(error);
     } else {
-      ErrorHandler.handleApiError(error, isEdit.value ? '更新通知方式失败' : '创建通知方式失败');
+      if (error.code === 'NETWORK_ERROR') {
+        MessageUtil.handleNetworkError(error);
+      } else {
+        MessageUtil.handleApiError(error, isEdit.value ? '更新通知方式失败' : '创建通知方式失败');
+      }
     }
   } finally {
     submitting.value = false;

@@ -116,10 +116,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { Plus, ArrowDown } from '@element-plus/icons-vue';
 import { TaskService } from '@/api/task';
-import { ErrorHandler } from '@/utils/error-handler';
+import { MessageUtil } from '@/utils/message-util';
 
 const router = useRouter();
 const loading = ref(false);
@@ -201,7 +201,11 @@ const loadTasks = async () => {
     loading.value = true;
     tasks.value = await TaskService.getAllTasks();
   } catch (error) {
-    ErrorHandler.handleApiError(error, '获取任务列表失败');
+    if (error.code === 'NETWORK_ERROR') {
+      MessageUtil.handleNetworkError(error);
+    } else {
+      MessageUtil.handleApiError(error, '获取任务列表失败');
+    }
   } finally {
     loading.value = false;
   }
@@ -228,11 +232,15 @@ const handleDelete = async (task) => {
     );
     
     await TaskService.deleteTask(task.id);
-    ElMessage.success('任务删除成功');
+    MessageUtil.handleSuccess('任务删除成功');
     await loadTasks();
   } catch (error) {
     if (error !== 'cancel') {
-      ErrorHandler.handleApiError(error, '删除任务失败');
+      if (error.code === 'NETWORK_ERROR') {
+        MessageUtil.handleNetworkError(error);
+      } else {
+        MessageUtil.handleApiError(error, '删除任务失败');
+      }
     }
   }
 };
@@ -242,10 +250,14 @@ const handleToggleStatus = async (task) => {
   const newStatus = task.active;
   try {
     await TaskService.updateTask(task.id, { active: newStatus });
-    ElMessage.success('任务状态更新成功');
+    MessageUtil.handleSuccess('任务状态更新成功');
     await loadTasks();
   } catch (error) {
-    ErrorHandler.handleApiError(error, '切换状态失败');
+    if (error.code === 'NETWORK_ERROR') {
+      MessageUtil.handleNetworkError(error);
+    } else {
+      MessageUtil.handleApiError(error, '切换状态失败');
+    }
     task.active = !newStatus; // 回滚到原来的状态
   }
 };

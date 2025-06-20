@@ -5,7 +5,6 @@ from api.models.change_condition import ChangeCondition
 from api import db
 from api.models.notification import Notification
 from api.utils.exceptions import TaskNotFoundError, ValidationError
-from api.config.config import Config
 
 class TaskService:
     """任务服务类"""

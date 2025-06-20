@@ -127,9 +127,10 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { Refresh, Delete } from '@element-plus/icons-vue';
 import { LogService } from '@/api/log';
+import { MessageUtil } from '@/utils/message-util';
 
 export default {
   name: 'LogViewer',
@@ -157,7 +158,11 @@ export default {
         logs.value = data;
       } catch (error) {
         console.error('获取日志失败:', error);
-        ElMessage.error('获取日志失败: ' + error.message);
+        if (error.code === 'NETWORK_ERROR') {
+          MessageUtil.handleNetworkError(error);
+        } else {
+          MessageUtil.handleApiError(error, '获取日志失败');
+        }
       } finally {
         loading.value = false;
       }
@@ -169,6 +174,11 @@ export default {
         stats.value = data;
       } catch (error) {
         console.error('获取统计信息失败:', error);
+        if (error.code === 'NETWORK_ERROR') {
+          MessageUtil.handleNetworkError(error);
+        } else {
+          MessageUtil.handleApiError(error, '获取统计信息失败');
+        }
       }
     };
     
@@ -194,12 +204,16 @@ export default {
         
         clearLoading.value = true;
         await LogService.clearLogs();
-        ElMessage.success('日志已清空');
+        MessageUtil.handleSuccess('日志已清空');
         await refreshLogs();
       } catch (error) {
         if (error !== 'cancel') {
           console.error('清空日志失败:', error);
-          ElMessage.error('清空日志失败: ' + error.message);
+          if (error.code === 'NETWORK_ERROR') {
+            MessageUtil.handleNetworkError(error);
+          } else {
+            MessageUtil.handleApiError(error, '清空日志失败');
+          }
         }
       } finally {
         clearLoading.value = false;

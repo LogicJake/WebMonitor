@@ -8,15 +8,12 @@ from datetime import datetime, timedelta
 from api.models.task import Task
 from api.models.notification import Notification
 from api import db
-import logging
 from flask import current_app
 from api.factories.selector_factory import SelectorParserFactory
 from api.factories.notification_factory import NotificationSenderFactory
 from api.factories.fetcher_factory import FetcherFactory
 from api.services.log_service import log_monitor_info, log_monitor_warning, log_monitor_error, log_monitor_debug
 from typing import List, Dict
-
-logger = logging.getLogger(__name__)
 
 class MonitorService:
     def __init__(self, app=None):
@@ -188,7 +185,7 @@ class MonitorService:
                 'error': str(e)
             }
     
-
+        
     def _check_all_tasks(self):
         """检查所有任务"""
         try:
@@ -525,7 +522,7 @@ class MonitorService:
         except Exception as e:
             log_monitor_error(f"评估变化条件时出错: {e}")
             return False
-
+            
     def _get_last_content(self, task):
         """获取任务的上次内容
         

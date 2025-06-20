@@ -14,10 +14,6 @@ class Config:
     
     # 跨域配置
     CORS_ORIGINS = ['http://localhost:8080']
-    
-    # 任务配置
-    DEFAULT_TASK_INTERVAL = 60  # 默认监控间隔（秒）
-    MIN_TASK_INTERVAL = 10      # 最小监控间隔（秒）
 
 class DevelopmentConfig(Config):
     """开发环境配置"""

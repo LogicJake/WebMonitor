@@ -6,11 +6,8 @@
 
 import requests
 import json
-import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
-
-logger = logging.getLogger(__name__)
 
 
 class NotificationSender(ABC):

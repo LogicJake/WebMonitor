@@ -421,11 +421,11 @@
 <script>
 import { ref, reactive, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+
 import { Delete, ArrowUp, VideoPlay as PlayIcon, Picture } from '@element-plus/icons-vue';
 import { TaskService } from '@/api/task';
 import { NotificationService } from '@/api/notification';
-import { ErrorHandler } from '@/utils/error-handler';
+import { MessageUtil } from '@/utils/message-util';
 
 export default {
   name: 'TaskForm',
@@ -582,9 +582,13 @@ export default {
       try {
         notificationsLoading.value = true;
         notifications.value = await NotificationService.getAllNotifications();
-      } catch (error) {
-        ErrorHandler.handleApiError(error, '获取通知方式列表失败');
-      } finally {
+          } catch (error) {
+      if (error.code === 'NETWORK_ERROR') {
+        MessageUtil.handleNetworkError(error);
+      } else {
+        MessageUtil.handleApiError(error, '获取通知方式列表失败');
+      }
+    } finally {
         notificationsLoading.value = false;
       }
     };
@@ -617,7 +621,11 @@ export default {
         form.notification_ids = task.notifications ? task.notifications.map(n => n.id) : [];
         form.change_conditions = task.change_conditions || [];
       } catch (error) {
-        ErrorHandler.handleApiError(error, '获取任务信息失败');
+        if (error.code === 'NETWORK_ERROR') {
+          MessageUtil.handleNetworkError(error);
+        } else {
+          MessageUtil.handleApiError(error, '获取任务信息失败');
+        }
       }
     };
 
@@ -643,18 +651,22 @@ export default {
 
         if (isEdit.value) {
           await TaskService.updateTask(route.params.id, data);
-          ElMessage.success('任务更新成功');
+          MessageUtil.handleSuccess('任务更新成功');
         } else {
           await TaskService.createTask(data);
-          ElMessage.success('任务创建成功');
+          MessageUtil.handleSuccess('任务创建成功');
         }
 
         router.push('/tasks');
       } catch (error) {
         if (error.name === 'ValidationError') {
-          ElMessage.error('请检查表单填写是否正确');
+          MessageUtil.handleValidationError(error);
         } else {
-          ErrorHandler.handleApiError(error, isEdit.value ? '更新任务失败' : '创建任务失败');
+          if (error.code === 'NETWORK_ERROR') {
+          MessageUtil.handleNetworkError(error);
+        } else {
+          MessageUtil.handleApiError(error, isEdit.value ? '更新任务失败' : '创建任务失败');
+        }
         }
       } finally {
         submitting.value = false;
@@ -674,7 +686,7 @@ export default {
         testing.value = true;
         testResult.value = null;
 
-        ElMessage.info('正在执行任务测试...');
+        MessageUtil.handleInfo('正在执行任务测试...');
         
         // 统一使用任务配置参数进行测试
         const taskData = {
@@ -696,14 +708,14 @@ export default {
         testResult.value = result;
         
         if (result.success) {
-          ElMessage.success('任务测试完成');
+          MessageUtil.handleSuccess('任务测试完成');
         } else {
-          ElMessage.error('任务测试失败');
+          MessageUtil.handleApiError(new Error('任务测试失败'), '任务测试失败');
         }
         
       } catch (error) {
         if (error.name === 'ValidationError') {
-          ElMessage.error('请先完整填写任务配置');
+          MessageUtil.handleValidationError(error, '请先完整填写任务配置');
           return;
         }
         
@@ -711,7 +723,11 @@ export default {
           success: false,
           error: error.message || '测试请求失败'
         };
-        ErrorHandler.handleApiError(error, '任务测试失败');
+        if (error.code === 'NETWORK_ERROR') {
+          MessageUtil.handleNetworkError(error);
+        } else {
+          MessageUtil.handleApiError(error, '任务测试失败');
+        }
       } finally {
         testing.value = false;
       }

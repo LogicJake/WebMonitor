@@ -69,6 +69,7 @@
 
 <script>
 import { MonitorService } from '@/api/monitor'
+import { MessageUtil } from '@/utils/message-util'
 
 export default {
   name: 'MonitorStatus',
@@ -110,9 +111,9 @@ export default {
       } catch (error) {
         console.error('获取监控状态失败:', error)
         if (error.code === 'NETWORK_ERROR') {
-          this.$message.error('网络连接失败，请检查网络连接')
+          MessageUtil.handleNetworkError(error)
         } else {
-          this.$message.error('获取监控状态失败: ' + error.message)
+          MessageUtil.handleApiError(error, '获取监控状态失败')
         }
       } finally {
         this.loading = false
@@ -123,14 +124,14 @@ export default {
       try {
         this.loading = true
         const data = await MonitorService.start()
-        this.$message.success(data.message || '监控服务启动成功')
+        MessageUtil.handleSuccess(data.message || '监控服务启动成功')
         await this.refreshStatus()
       } catch (error) {
         console.error('启动监控失败:', error)
         if (error.code === 'NETWORK_ERROR') {
-          this.$message.error('网络连接失败，请检查网络连接')
+          MessageUtil.handleNetworkError(error)
         } else {
-          this.$message.error('启动监控失败: ' + error.message)
+          MessageUtil.handleApiError(error, '启动监控失败')
         }
       } finally {
         this.loading = false
@@ -141,14 +142,14 @@ export default {
       try {
         this.loading = true
         const data = await MonitorService.stop()
-        this.$message.success(data.message || '监控服务停止成功')
+        MessageUtil.handleSuccess(data.message || '监控服务停止成功')
         await this.refreshStatus()
       } catch (error) {
         console.error('停止监控失败:', error)
         if (error.code === 'NETWORK_ERROR') {
-          this.$message.error('网络连接失败，请检查网络连接')
+          MessageUtil.handleNetworkError(error)
         } else {
-          this.$message.error('停止监控失败: ' + error.message)
+          MessageUtil.handleApiError(error, '停止监控失败')
         }
       } finally {
         this.loading = false
